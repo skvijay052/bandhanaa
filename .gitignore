@@ -1,0 +1,9 @@
+.next
+node_modules
+.env*
+!.env.example
+npm-debug.log*
+.edge-headless/
+.netlify/
+*.tsbuildinfo
+/login-live-*.png
