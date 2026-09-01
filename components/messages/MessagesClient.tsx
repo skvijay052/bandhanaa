@@ -6,22 +6,25 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   BadgeCheck,
+  Bell,
   CheckCheck,
   ArrowLeft,
   ChevronRight,
   Info,
   ImageIcon,
+  Heart,
   Mic,
   MoreVertical,
+  Phone,
   Search,
   Send,
   ShieldCheck,
   SlidersHorizontal,
   Smile,
+  Sparkles,
   SquarePen,
 } from "lucide-react";
 
-import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
 import {
   type ChatMessage,
   type Conversation,
@@ -233,38 +236,45 @@ export function MessagesClient({
   return (
     <div className="h-dvh overflow-hidden bg-white dark:bg-[var(--app-bg)]">
       <div className="app-shell">
-        <AppSidebar active="Messages" />
+        <AppSidebar active="Messages" hideMobileNavigation={mobileChatOpen} />
         <div className="grid min-w-0 flex-1 md:grid-cols-[390px_minmax(0,1fr)] xl:grid-cols-[430px_minmax(0,1fr)]">
-            <ConversationPanel
-              filter={filter}
-              setFilter={setFilter}
-              query={query}
-              setQuery={setQuery}
-              visible={visible}
-              selectedId={selectedId}
-              setSelectedId={(id) => { setSelectedId(id); setMobileChatOpen(true); }}
-              mobileChatOpen={mobileChatOpen}
-              unread={unread}
-              viewerName={viewerName}
+          <ConversationPanel
+            filter={filter}
+            setFilter={setFilter}
+            query={query}
+            setQuery={setQuery}
+            visible={visible}
+            selectedId={selectedId}
+            setSelectedId={(id) => {
+              setSelectedId(id);
+              setMobileChatOpen(true);
+            }}
+            mobileChatOpen={mobileChatOpen}
+            unread={unread}
+            viewerName={viewerName}
+          />
+          {selected ? (
+            <ChatPanel
+              selected={selected}
+              chat={selectedMessages}
+              draft={draft}
+              setDraft={setDraft}
+              sendMessage={sendMessage}
+              notice={notice}
+              mobileOpen={mobileChatOpen}
+              onBack={() => setMobileChatOpen(false)}
+              onDetails={() => setDetailsOpen((open) => !open)}
             />
-            {selected ? (
-              <ChatPanel
-                selected={selected}
-                chat={selectedMessages}
-                draft={draft}
-                setDraft={setDraft}
-                sendMessage={sendMessage}
-                notice={notice}
-                mobileOpen={mobileChatOpen}
-                onBack={() => setMobileChatOpen(false)}
-                onDetails={() => setDetailsOpen((open) => !open)}
-              />
-            ) : (
-              <EmptyChat />
-            )}
-            {selected && detailsOpen ? <ProfileDetails conversation={selected} onClose={() => setDetailsOpen(false)} /> : null}
+          ) : (
+            <EmptyChat />
+          )}
+          {selected && detailsOpen ? (
+            <ProfileDetails
+              conversation={selected}
+              onClose={() => setDetailsOpen(false)}
+            />
+          ) : null}
         </div>
-        {!mobileChatOpen ? <MobileBottomNavigation active="Messages" /> : null}
       </div>
     </div>
   );
@@ -294,10 +304,16 @@ function ConversationPanel({
   viewerName: string;
 }) {
   return (
-    <section className={`min-w-0 border-r border-[#dbdfe4] bg-white dark:border-[var(--app-border)] dark:bg-[var(--app-surface)] ${mobileChatOpen ? "max-md:hidden" : ""}`}>
-      <div className="px-7 pb-4 pt-7 max-md:px-4 max-md:pt-4">
-        <div className="flex items-center justify-between">
-          <h1 className="truncate text-[20px] font-bold tracking-[-.02em] text-[#0f1419] dark:text-[var(--app-text)]">{viewerName}</h1>
+    <section
+      className={`relative min-w-0 overflow-hidden border-r border-[#dbdfe4] bg-white max-md:bg-[#fbfcff] dark:border-[var(--app-border)] dark:bg-[var(--app-surface)] ${mobileChatOpen ? "max-md:hidden" : ""}`}
+    >
+      <div className="pointer-events-none absolute -left-28 -top-24 size-[420px] rounded-full bg-[#dff9f3]/80 blur-2xl md:hidden" />
+      <div className="pointer-events-none absolute -right-40 top-12 size-[400px] rounded-full bg-[#eee7ff]/80 blur-2xl md:hidden" />
+      <div className="relative px-7 pb-4 pt-7 max-md:px-4 max-md:pb-3 max-md:pt-5">
+        <div className="hidden items-center justify-between md:flex">
+          <h1 className="truncate text-[20px] font-bold tracking-[-.02em] text-[#0f1419] dark:text-[var(--app-text)]">
+            {viewerName}
+          </h1>
           <button
             aria-label="New message"
             className="grid size-11 place-items-center rounded-full text-[#0f1419] transition hover:bg-[#f0f2f5]"
@@ -305,21 +321,78 @@ function ConversationPanel({
             <SquarePen size={24} />
           </button>
         </div>
-        <label className="mt-5 flex h-12 items-center gap-3 rounded-2xl bg-[#f1f3f5] px-5 text-[#667781] dark:bg-[var(--app-surface-2)]">
+        <div className="flex items-center justify-between md:hidden">
+          <Brand compact />
+          <div className="flex gap-2.5">
+            <Link
+              href="/matches?tab=shortlisted"
+              aria-label="Shortlist"
+              className="grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+            >
+              <Heart size={22} strokeWidth={1.8} />
+            </Link>
+            <Link
+              href="/notifications"
+              aria-label="Notifications"
+              className="relative grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+            >
+              <Bell size={22} strokeWidth={1.8} />
+              <span className="absolute right-2 top-2 size-2 rounded-full bg-[#8b3de8] ring-2 ring-white" />
+            </Link>
+          </div>
+        </div>
+        <div className="mt-6 md:hidden">
+          <h1 className="text-[27px] font-bold tracking-[-.035em] text-[#0f1419]">
+            Messages
+          </h1>
+          <p className="mt-1 text-[13px] text-[#687684]">Your conversations</p>
+        </div>
+        <label className="mt-5 flex h-12 items-center gap-3 rounded-full bg-[#f1f3f5] px-5 text-[#667781] max-md:bg-white/95 max-md:shadow-[0_8px_28px_rgba(63,38,110,.07)] dark:bg-[var(--app-surface-2)]">
           <Search size={18} />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-[#777c91]"
-            placeholder="Search"
+            placeholder="Search messages"
           />
+          <SlidersHorizontal size={18} className="md:hidden" />
         </label>
-        <div className="mt-7 flex items-center justify-between">
+        <div className="mt-7 hidden items-center justify-between md:flex">
           <h2 className="text-[18px] font-bold">Messages</h2>
-          <button onClick={() => setFilter(filter === "unread" ? "all" : "unread")} className={`text-[14px] font-semibold ${filter === "unread" ? "text-[#1d9bf0]" : "text-[#536471]"}`}>Requests{unread ? ` (${unread})` : ""}</button>
+          <button
+            onClick={() => setFilter(filter === "unread" ? "all" : "unread")}
+            className={`text-[14px] font-semibold ${filter === "unread" ? "text-[#1d9bf0]" : "text-[#536471]"}`}
+          >
+            Requests{unread ? ` (${unread})` : ""}
+          </button>
+        </div>
+        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 md:hidden">
+          <FilterPill
+            active={filter === "all"}
+            onClick={() => setFilter("all")}
+          >
+            All
+          </FilterPill>
+          <FilterPill
+            active={filter === "unread"}
+            onClick={() => setFilter("unread")}
+          >
+            Unread
+            {unread ? (
+              <span className="ml-1 grid size-5 place-items-center rounded-full bg-[#8b3de8] text-[9px] text-white">
+                {unread}
+              </span>
+            ) : null}
+          </FilterPill>
+          <FilterPill active={false} onClick={() => setFilter("all")}>
+            Matches
+          </FilterPill>
+          <FilterPill active={false} onClick={() => setFilter("all")}>
+            Requests
+          </FilterPill>
         </div>
       </div>
-      <div className="h-[calc(100dvh-190px)] overflow-y-auto px-3 pb-20 md:pb-4">
+      <div className="relative h-[calc(100dvh-190px)] overflow-y-auto px-3 pb-28 max-md:h-[calc(100dvh-250px)] md:pb-4">
         {visible.length ? (
           visible.map((item) => (
             <ConversationRow
@@ -353,9 +426,9 @@ function ConversationRow({
   return (
     <button
       onClick={onClick}
-      className={`mb-1 flex w-full items-center gap-4 rounded-xl px-4 py-3 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1d9bf0] ${active ? "bg-[#f1f3f5] dark:bg-[var(--app-selected)]" : "bg-white hover:bg-[#f7f9f9] dark:bg-[var(--app-surface)] dark:hover:bg-[var(--app-hover)]"}`}
+      className={`relative mb-3 flex min-h-[92px] w-full items-center gap-3 rounded-[22px] px-4 py-3 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1d9bf0] max-md:bg-white/95 max-md:shadow-[0_9px_26px_rgba(63,38,110,.07)] ${active ? "md:bg-[#f1f3f5] dark:bg-[var(--app-selected)]" : "md:bg-white md:hover:bg-[#f7f9f9] dark:bg-[var(--app-surface)] dark:hover:bg-[var(--app-hover)]"}`}
     >
-      <span className="relative size-[64px] shrink-0 overflow-hidden rounded-full bg-slate-100">
+      <span className="relative size-[62px] shrink-0 overflow-hidden rounded-[18px] bg-slate-100 md:size-[64px] md:rounded-full">
         <ProfileImage
           src={item.avatar}
           alt=""
@@ -366,27 +439,55 @@ function ConversationRow({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
-          <strong className="text-[15px] font-medium text-[#111b21] dark:text-[var(--app-text)]">
+          <strong className="text-[15px] font-bold text-[#111b21] dark:text-[var(--app-text)]">
             {item.name}
           </strong>
           {item.verified ? (
-            <BadgeCheck size={17} className="shrink-0 fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white" aria-label="Verified" />
+            <BadgeCheck
+              size={17}
+              className="shrink-0 fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
+              aria-label="Verified"
+            />
           ) : null}
           {active ? (
             <span className="ml-auto size-1.5 rounded-full bg-[#1d9bf0]" />
           ) : null}
         </span>
+        <span className="mt-1 block truncate text-[11px] text-[#667781] md:hidden">
+          {item.profession}
+        </span>
         <span className="mt-1 block truncate text-[13px] text-[#667781]">
           {item.preview} · {item.time}
         </span>
       </span>
-      <span className="flex shrink-0 flex-col items-end justify-center text-[11px] text-[#667781]">
+      <span className="flex shrink-0 flex-col items-end justify-center text-[11px] text-[#667781] max-md:absolute max-md:right-4 max-md:top-4 max-md:gap-5">
+        <span className="md:hidden">{item.time}</span>
         {item.unread ? (
           <span className="grid size-5 place-items-center rounded-full bg-[#ed2082] font-bold text-white">
             {item.unread}
           </span>
         ) : null}
       </span>
+    </button>
+  );
+}
+
+function FilterPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex h-10 shrink-0 items-center rounded-full px-5 text-[12px] font-semibold ${active ? "border border-[#d9baff] bg-[#f3eaff] text-[#7c2fe0]" : "bg-white/90 text-[#536471] shadow-sm"}`}
+    >
+      {children}
     </button>
   );
 }
@@ -413,9 +514,18 @@ function ChatPanel({
   onDetails: () => void;
 }) {
   return (
-    <section className={`${mobileOpen ? "fixed inset-0 z-[60] flex" : "hidden"} min-h-0 min-w-0 flex-col bg-white md:relative md:inset-auto md:z-auto md:flex dark:bg-[#171418]`}>
-      <header className="z-10 flex h-20 shrink-0 items-center border-b border-[#dbdfe4] bg-white px-4 dark:border-[var(--app-border)] dark:bg-[var(--app-surface)] md:px-6">
-        <button type="button" onClick={onBack} aria-label="Back to conversations" className="mr-2 grid size-9 place-items-center rounded-full text-[#667781] hover:bg-[#f0f2f5] md:hidden"><ArrowLeft size={21} /></button>
+    <section
+      className={`${mobileOpen ? "fixed inset-0 z-[110] flex" : "hidden"} min-h-0 min-w-0 flex-col bg-[#fbfcff] md:relative md:inset-auto md:z-auto md:flex md:bg-white dark:bg-[#171418]`}
+    >
+      <header className="z-10 flex h-[86px] shrink-0 items-center bg-white/90 px-4 shadow-[0_5px_20px_rgba(63,38,110,.05)] dark:border-[var(--app-border)] dark:bg-[var(--app-surface)] md:h-20 md:border-b md:border-[#dbdfe4] md:px-6">
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Back to conversations"
+          className="mr-2 grid size-9 place-items-center rounded-full text-[#667781] hover:bg-[#f0f2f5] md:hidden"
+        >
+          <ArrowLeft size={21} />
+        </button>
         <span className="relative size-12 overflow-hidden rounded-full">
           <ProfileImage
             src={selected.avatar}
@@ -427,17 +537,51 @@ function ChatPanel({
         </span>
         <div className="ml-3 min-w-0">
           <h2 className="flex items-center gap-1.5 text-[16px] font-semibold text-[#111b21] dark:text-[var(--app-text)]">
-            {selected.name}, {selected.age}
-            {selected.verified ? <BadgeCheck size={17} className="shrink-0 fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white" aria-label="Verified" /> : null}
+            {selected.name}
+            <span className="max-md:hidden">, {selected.age}</span>
+            {selected.verified ? (
+              <BadgeCheck
+                size={17}
+                className="shrink-0 fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
+                aria-label="Verified"
+              />
+            ) : null}
           </h2>
           <p className="mt-1 text-[12px] text-[#646a80]">
             {selected.profession} &nbsp;•&nbsp; {selected.city}
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2 text-[#0f1419]">
-          <button aria-label="View profile details" onClick={onDetails} className="app-icon-button"><Info size={24} /></button>
+          <button aria-label="Call" className="app-icon-button md:hidden">
+            <Phone size={22} />
+          </button>
+          <button
+            aria-label="View profile details"
+            onClick={onDetails}
+            className="app-icon-button"
+          >
+            <MoreVertical size={24} className="md:hidden" />
+            <Info size={24} className="max-md:hidden" />
+          </button>
         </div>
       </header>
+      <Link
+        href={`/profile/${selected.partnerId}`}
+        className="mx-4 mt-4 flex min-h-[78px] shrink-0 items-center rounded-[22px] bg-white/95 px-4 shadow-[0_8px_26px_rgba(63,38,110,.07)] md:hidden"
+      >
+        <span className="grid size-11 place-items-center rounded-full bg-[#f3eaff] text-[#8b3de8]">
+          <Sparkles size={21} />
+        </span>
+        <span className="ml-3 min-w-0 flex-1">
+          <strong className="block text-[14px] text-[#0f1419]">
+            You matched with {selected.name}
+          </strong>
+          <span className="mt-1 block truncate text-[11px] text-[#687684]">
+            Start a meaningful conversation together
+          </span>
+        </span>
+        <ChevronRight size={20} className="text-[#687684]" />
+      </Link>
       <div className="hidden">
         <ProfileImage
           src="/discover-banner.png"
@@ -456,8 +600,8 @@ function ChatPanel({
           </p>
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto bg-white px-4 py-6 md:px-[5%] dark:bg-[#171418]">
-        <div className="mx-auto mb-6 w-fit px-3 py-1 text-[11px] font-medium text-[#8a939b] dark:bg-[#211e23]">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-transparent px-4 py-5 md:bg-white md:px-[5%] md:py-6 dark:bg-[#171418]">
+        <div className="mx-auto mb-6 w-fit rounded-full bg-white/80 px-4 py-1.5 text-[11px] font-medium text-[#8a939b] dark:bg-[#211e23]">
           Today
         </div>
         <div className="space-y-1.5">
@@ -484,23 +628,36 @@ function ChatPanel({
           </span>
         </div>
       </div>
-      <div className="mx-5 mb-[calc(1.5rem+env(safe-area-inset-bottom))] mt-3 flex min-h-14 shrink-0 items-center gap-2 rounded-full border border-[#cfd6dc] bg-white p-1.5 pl-5 shadow-[0_2px_8px_rgba(15,20,25,.04)] dark:border-[var(--app-border)] dark:bg-[var(--app-surface-2)] max-md:mx-3">
+      <div className="mx-5 mb-[calc(.75rem+env(safe-area-inset-bottom))] mt-2 flex min-h-14 shrink-0 items-center gap-2 rounded-[20px] border border-white bg-white p-1.5 pl-3 shadow-[0_7px_24px_rgba(63,38,110,.10)] dark:border-[var(--app-border)] dark:bg-[var(--app-surface-2)] max-md:mx-3">
+        <button
+          type="button"
+          aria-label="Add attachment"
+          className="grid size-9 shrink-0 place-items-center rounded-full text-[#8b3de8]"
+        >
+          <span className="text-[28px] font-light leading-none">+</span>
+        </button>
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") void sendMessage();
           }}
-          placeholder="Message..."
+          placeholder="Type a message..."
           className="min-h-10 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-[#8696a0]"
         />
+        <Smile size={20} className="shrink-0 text-[#687684] md:hidden" />
+        <ImageIcon size={20} className="shrink-0 text-[#687684] md:hidden" />
         <button
           onClick={() => void sendMessage()}
           disabled={!draft.trim()}
           aria-label="Send message"
-          className={`grid size-11 shrink-0 place-items-center rounded-full text-white transition-colors ${draft.trim() ? "bg-[#1d9bf0] hover:bg-[#1689df]" : "cursor-not-allowed bg-[#b8c0c7]"}`}
+          className={`grid size-11 shrink-0 place-items-center rounded-full text-white transition-colors ${draft.trim() ? "bg-[#8b3de8] hover:bg-[#7628d1]" : "cursor-not-allowed bg-[#b8c0c7]"}`}
         >
-          <Send size={19} fill="currentColor" />
+          {draft.trim() ? (
+            <Send size={18} fill="currentColor" />
+          ) : (
+            <Mic size={19} />
+          )}
         </button>
       </div>
       {notice ? (
@@ -520,7 +677,9 @@ function EmptyChat() {
     <section className="hidden place-items-center bg-[#efeae2] text-center md:grid dark:bg-[#171418]">
       <div>
         <MessageSquareIcon />
-        <h2 className="mt-4 text-[20px] font-semibold">Meaningful conversations start here.</h2>
+        <h2 className="mt-4 text-[20px] font-semibold">
+          Meaningful conversations start here.
+        </h2>
         <p className="mt-2 max-w-sm text-sm leading-6 text-[#73778b]">
           Accept an interest or wait for someone to accept yours to begin a
           private conversation.
@@ -530,26 +689,61 @@ function EmptyChat() {
   );
 }
 
-function ProfileDetails({ conversation, onClose }: { conversation: Conversation; onClose: () => void }) {
+function ProfileDetails({
+  conversation,
+  onClose,
+}: {
+  conversation: Conversation;
+  onClose: () => void;
+}) {
   return (
     <aside className="fixed inset-0 z-[70] overflow-y-auto bg-white dark:bg-[var(--app-surface)] md:absolute md:inset-y-0 md:right-0 md:left-auto md:w-[340px] md:border-l md:border-[#e9edef] md:shadow-[-8px_0_24px_rgba(17,27,33,.08)] dark:md:border-[var(--app-border)]">
       <header className="flex h-16 items-center border-b border-[#e9edef] px-4 dark:border-[var(--app-border)]">
-        <button onClick={onClose} aria-label="Close profile details" className="app-icon-button"><ArrowLeft size={20} /></button>
+        <button
+          onClick={onClose}
+          aria-label="Close profile details"
+          className="app-icon-button"
+        >
+          <ArrowLeft size={20} />
+        </button>
         <h2 className="ml-3 text-[16px] font-semibold">Profile details</h2>
       </header>
       <div className="px-6 py-7 text-center">
-        <span className="relative mx-auto block size-32 overflow-hidden rounded-full"><ProfileImage src={conversation.avatar} alt={conversation.name} fill sizes="128px" className="object-cover" /></span>
-        <h3 className="mt-4 text-[20px] font-semibold">{conversation.name}, {conversation.age}</h3>
-        <p className="mt-1 text-[13px] text-[#667781]">{conversation.profession}</p>
+        <span className="relative mx-auto block size-32 overflow-hidden rounded-full">
+          <ProfileImage
+            src={conversation.avatar}
+            alt={conversation.name}
+            fill
+            sizes="128px"
+            className="object-cover"
+          />
+        </span>
+        <h3 className="mt-4 text-[20px] font-semibold">
+          {conversation.name}, {conversation.age}
+        </h3>
+        <p className="mt-1 text-[13px] text-[#667781]">
+          {conversation.profession}
+        </p>
         <p className="mt-1 text-[13px] text-[#667781]">{conversation.city}</p>
-        <Link href={`/profile/${conversation.partnerId}`} className="mt-5 inline-flex h-10 items-center rounded-lg bg-[linear-gradient(135deg,#ff4d8d,#8b5cf6)] px-5 text-[13px] font-semibold text-white">View Profile</Link>
+        <Link
+          href={`/profile/${conversation.partnerId}`}
+          className="mt-5 inline-flex h-10 items-center rounded-lg bg-[linear-gradient(135deg,#ff4d8d,#8b5cf6)] px-5 text-[13px] font-semibold text-white"
+        >
+          View Profile
+        </Link>
       </div>
       <div className="border-y border-[#e9edef] dark:border-[var(--app-border)]">
-        <button className="flex h-14 w-full items-center justify-between px-5 text-[14px] hover:bg-[#f5f6f6] dark:hover:bg-[var(--app-hover)]">Shared media <ChevronRight size={18} /></button>
+        <button className="flex h-14 w-full items-center justify-between px-5 text-[14px] hover:bg-[#f5f6f6] dark:hover:bg-[var(--app-hover)]">
+          Shared media <ChevronRight size={18} />
+        </button>
       </div>
       <div className="mt-3 border-y border-[#e9edef] text-left dark:border-[var(--app-border)]">
-        <button className="h-14 w-full px-5 text-[14px] text-[#e45858] hover:bg-red-50 dark:hover:bg-[var(--app-hover)]">Block {conversation.name}</button>
-        <button className="h-14 w-full border-t border-[#e9edef] px-5 text-[14px] text-[#e45858] hover:bg-red-50 dark:border-[var(--app-border)] dark:hover:bg-[var(--app-hover)]">Report profile</button>
+        <button className="h-14 w-full px-5 text-[14px] text-[#e45858] hover:bg-red-50 dark:hover:bg-[var(--app-hover)]">
+          Block {conversation.name}
+        </button>
+        <button className="h-14 w-full border-t border-[#e9edef] px-5 text-[14px] text-[#e45858] hover:bg-red-50 dark:border-[var(--app-border)] dark:hover:bg-[var(--app-hover)]">
+          Report profile
+        </button>
       </div>
     </aside>
   );
@@ -593,12 +787,19 @@ function MessageBubble({
           />
         </span>
       ) : null}
-      <div className={`max-w-[82%] whitespace-pre-line rounded-[18px] px-4 py-2.5 text-[14px] leading-[1.45] md:max-w-[68%] ${mine ? "bg-[#1d9bf0] text-white" : "bg-[#f0f2f5] text-[#111b21] dark:bg-[#211e23] dark:text-[var(--app-text)]"}`}>
+      <div
+        className={`max-w-[82%] whitespace-pre-line rounded-[20px] px-4 py-3 text-[14px] leading-[1.45] shadow-[0_5px_18px_rgba(63,38,110,.06)] md:max-w-[68%] ${mine ? "bg-[#f0e5ff] text-[#0f1419]" : "bg-white text-[#111b21] dark:bg-[#211e23] dark:text-[var(--app-text)]"}`}
+      >
         <p>{message.text}</p>
-        <p className={`mt-0.5 flex items-center justify-end gap-1 text-[10px] ${mine ? "text-white/75" : "text-[#667781]"}`}>
+        <p
+          className={`mt-1 flex items-center justify-end gap-1 text-[10px] ${mine ? "text-[#687684]" : "text-[#667781]"}`}
+        >
           {message.time}
           {message.seen ? (
-            <CheckCheck size={14} className={mine ? "text-white/80" : "text-[#1d9bf0]"} />
+            <CheckCheck
+              size={14}
+              className={mine ? "text-[#8b3de8]" : "text-[#1d9bf0]"}
+            />
           ) : null}
         </p>
       </div>

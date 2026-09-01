@@ -14,4 +14,8 @@ export interface InterestProfile {
   verified: boolean;
   image: string;
   compatibility?: number;
+  height?: string;
+  religion?: string;
+  motherTongue?: string;
+  online?: boolean;
 }

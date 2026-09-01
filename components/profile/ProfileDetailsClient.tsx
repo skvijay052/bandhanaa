@@ -35,7 +35,6 @@ import {
 import { Brand } from "@/components/auth/Brand";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { DesktopTopBar } from "@/components/layout/DesktopTopBar";
-import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
 import type {
   CompactProfile,
   ProfileDetail,
@@ -83,17 +82,26 @@ export function ProfileDetailsClient({
       setNotice("Something went wrong. Please try again.");
       return;
     }
-    const current = existing?.find((row) => row.status === "accepted") ?? existing?.find((row) => row.status === "pending");
+    const current =
+      existing?.find((row) => row.status === "accepted") ??
+      existing?.find((row) => row.status === "pending");
     if (current?.status === "accepted") {
       setRelation("following");
       return;
     }
     if (current?.status === "pending") {
-      setRelation(current.liker_id === currentUserId ? "outgoing_pending" : "incoming_pending");
+      setRelation(
+        current.liker_id === currentUserId
+          ? "outgoing_pending"
+          : "incoming_pending",
+      );
       return;
     }
     if (existing?.length) {
-      const { error: removeError } = await supabase.from("profile_likes").delete().or(relationFilter);
+      const { error: removeError } = await supabase
+        .from("profile_likes")
+        .delete()
+        .or(relationFilter);
       if (removeError) {
         setNotice("Something went wrong. Please try again.");
         return;
@@ -143,7 +151,10 @@ export function ProfileDetailsClient({
 
   async function removeRelationship(message: string) {
     setNotice("");
-    const { error } = await createClient().from("profile_likes").delete().or(relationFilter);
+    const { error } = await createClient()
+      .from("profile_likes")
+      .delete()
+      .or(relationFilter);
     if (error) setNotice("Something went wrong. Please try again.");
     else {
       setRelation("none");
@@ -168,23 +179,43 @@ export function ProfileDetailsClient({
                       size={20}
                       className="fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
                     />
-                    
                   </h1>
                   <p className="mt-1 text-[16px] text-[var(--text-primary)]">
                     {profile.occupation}
                   </p>
-                  <div className="mt-4 flex flex-wrap gap-7 text-[15px]"><span><strong>{profile.photos.length}</strong> photos</span><span><strong>{profile.compatibility}%</strong> match</span></div>
-                  <p className="mt-5 max-w-[620px] text-[15px] leading-5 text-[var(--text-primary)]">{profile.about}</p>
-                  <p className="mt-2 flex flex-wrap items-center gap-2 text-[14px] text-[var(--text-secondary)]"><MapPin size={14} />{profile.location}<span>·</span><CalendarDays size={14} />{profile.age} years</p>
+                  <div className="mt-4 flex flex-wrap gap-7 text-[15px]">
+                    <span>
+                      <strong>{profile.photos.length}</strong> photos
+                    </span>
+                    <span>
+                      <strong>{profile.compatibility}%</strong> match
+                    </span>
+                  </div>
+                  <p className="mt-5 max-w-[620px] text-[15px] leading-5 text-[var(--text-primary)]">
+                    {profile.about}
+                  </p>
+                  <p className="mt-2 flex flex-wrap items-center gap-2 text-[14px] text-[var(--text-secondary)]">
+                    <MapPin size={14} />
+                    {profile.location}
+                    <span>·</span>
+                    <CalendarDays size={14} />
+                    {profile.age} years
+                  </p>
                 </div>
                 <ProfileActions
                   relation={relation}
                   profileName={profile.name}
                   onFollow={follow}
-                  onCancelRequest={() => removeRelationship("Follow request cancelled.")}
+                  onCancelRequest={() =>
+                    removeRelationship("Follow request cancelled.")
+                  }
                   onConfirmRequest={confirmRequest}
                   onDeleteRequest={deleteIncomingRequest}
-                  onUnfollow={() => removeRelationship("You are no longer following this profile.")}
+                  onUnfollow={() =>
+                    removeRelationship(
+                      "You are no longer following this profile.",
+                    )
+                  }
                   onBlockedMessage={() =>
                     setNotice(
                       "Messaging becomes available after the interest is accepted.",
@@ -192,7 +223,10 @@ export function ProfileDetailsClient({
                   }
                 />
                 {notice ? (
-                  <p role="status" className={`fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-lg px-5 py-3 text-[14px] font-medium text-white shadow-lg ${notice.startsWith("Something") ? "bg-[#f4212e]" : "bg-[#0f1419]"}`}>
+                  <p
+                    role="status"
+                    className={`fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 rounded-lg px-5 py-3 text-[14px] font-medium text-white shadow-lg ${notice.startsWith("Something") ? "bg-[#f4212e]" : "bg-[#0f1419]"}`}
+                  >
                     {notice}
                   </p>
                 ) : null}
@@ -209,14 +243,17 @@ export function ProfileDetailsClient({
               profile={profile}
               status={relation}
               onFollow={follow}
-              onCancelRequest={() => removeRelationship("Follow request cancelled.")}
+              onCancelRequest={() =>
+                removeRelationship("Follow request cancelled.")
+              }
               onConfirmRequest={confirmRequest}
               onDeleteRequest={deleteIncomingRequest}
-              onUnfollow={() => removeRelationship("You are no longer following this profile.")}
+              onUnfollow={() =>
+                removeRelationship("You are no longer following this profile.")
+              }
             />
           </main>
         </div>
-        <MobileBottomNavigation active={null} connectionsLast />
       </div>
     </div>
   );
@@ -262,12 +299,8 @@ function ProfilePhoto({ profile }: { profile: ProfileDetail }) {
         sizes="(max-width:767px) 132px,180px"
         className="object-cover"
       />
-      <span className="hidden">
-        ✓ Verified
-      </span>
-      <span className="hidden">
-        Online
-      </span>
+      <span className="hidden">✓ Verified</span>
+      <span className="hidden">Online</span>
       <span className="hidden">
         <Camera size={12} />6 Photos
       </span>
@@ -306,20 +339,22 @@ function ProfileActions({
   const matched = relation === "following";
   return (
     <div className="profile-action-row mt-6 max-md:mt-5">
-      <FollowButton status={relation} profileName={profileName} onFollow={onFollow} onCancelRequest={onCancelRequest} onConfirmRequest={onConfirmRequest} onDeleteRequest={onDeleteRequest} onUnfollow={onUnfollow} />
+      <FollowButton
+        status={relation}
+        profileName={profileName}
+        onFollow={onFollow}
+        onCancelRequest={onCancelRequest}
+        onConfirmRequest={onConfirmRequest}
+        onDeleteRequest={onDeleteRequest}
+        onUnfollow={onUnfollow}
+      />
       {matched ? (
-        <Link
-          href="/messages"
-          className="profile-action-secondary"
-        >
+        <Link href="/messages" className="profile-action-secondary">
           <MessageSquare size={16} />
           Message
         </Link>
       ) : (
-        <button
-          onClick={onBlockedMessage}
-          className="profile-action-secondary"
-        >
+        <button onClick={onBlockedMessage} className="profile-action-secondary">
           <MessageSquare size={16} />
           Message
         </button>
@@ -371,15 +406,31 @@ function DesktopContent({ profile }: { profile: ProfileDetail }) {
       </section>
       <PhotoGallery profile={profile} />
       <div className="mt-5 space-y-4">
-        <InfoCard sectionId="profile-lifestyle" title="Lifestyle" rows={profile.lifestyle} />
+        <InfoCard
+          sectionId="profile-lifestyle"
+          title="Lifestyle"
+          rows={profile.lifestyle}
+        />
         <InfoCard
           sectionId="profile-family"
           title="Family"
           rows={profile.family}
         />
-        {profile.interests.length ? <InfoCard title="Interests" rows={profile.interests} /> : null}
-        <InfoCard sectionId="profile-partner-preferences" title="What I'm Looking For" rows={profile.preferences} />
-        {profile.horoscope.length ? <InfoCard sectionId="profile-horoscope" title="Horoscope" rows={profile.horoscope} /> : null}
+        {profile.interests.length ? (
+          <InfoCard title="Interests" rows={profile.interests} />
+        ) : null}
+        <InfoCard
+          sectionId="profile-partner-preferences"
+          title="What I'm Looking For"
+          rows={profile.preferences}
+        />
+        {profile.horoscope.length ? (
+          <InfoCard
+            sectionId="profile-horoscope"
+            title="Horoscope"
+            rows={profile.horoscope}
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -389,10 +440,15 @@ function ProfileTabs() {
   const goToSection = (label: string) => {
     setActive(label);
     const id = `profile-${label.toLowerCase().replaceAll(" ", "-")}`;
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
   return (
-    <nav aria-label="Profile sections" className="sticky top-0 z-40 flex h-[54px] items-center justify-between border-b border-[#e6edf2] bg-white/95 px-3 text-[14px] font-semibold backdrop-blur-md">
+    <nav
+      aria-label="Profile sections"
+      className="sticky top-0 z-40 flex h-[54px] items-center justify-between border-b border-[#e6edf2] bg-white/95 px-3 text-[14px] font-semibold backdrop-blur-md"
+    >
       {[
         "About",
         "Photos",
@@ -444,7 +500,8 @@ function DetailsCard({ profile }: { profile: ProfileDetail }) {
         </p>
         <p className="flex gap-2">
           <BriefcaseBusiness size={13} />
-          {profile.occupation}{profile.company ? ` at ${profile.company}` : ""}
+          {profile.occupation}
+          {profile.company ? ` at ${profile.company}` : ""}
         </p>
         <p className="flex gap-2">
           <CalendarDays size={13} />
@@ -457,8 +514,14 @@ function DetailsCard({ profile }: { profile: ProfileDetail }) {
 function PhotoGallery({ profile }: { profile: ProfileDetail }) {
   const [activePhoto, setActivePhoto] = useState<number | null>(null);
   const photoCount = profile.photos.length;
-  const previousPhoto = () => setActivePhoto((current) => current === null ? null : (current - 1 + photoCount) % photoCount);
-  const nextPhoto = () => setActivePhoto((current) => current === null ? null : (current + 1) % photoCount);
+  const previousPhoto = () =>
+    setActivePhoto((current) =>
+      current === null ? null : (current - 1 + photoCount) % photoCount,
+    );
+  const nextPhoto = () =>
+    setActivePhoto((current) =>
+      current === null ? null : (current + 1) % photoCount,
+    );
 
   useEffect(() => {
     if (activePhoto === null) return;
@@ -480,29 +543,39 @@ function PhotoGallery({ profile }: { profile: ProfileDetail }) {
 
   return (
     <>
-      <section id="profile-photos" className="mt-6 scroll-mt-5 rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]">
-      <div>
-        <div><h2 className="text-[18px] font-bold">Photos ({profile.photos.length})</h2><p className="mt-1 text-[14px] text-[#596077]">A glimpse into {profile.name.split(" ")[0]}&apos;s life.</p></div>
-      </div>
-      <div className="mt-4 grid grid-cols-6 gap-2">
-        {profile.photos.map((photo, index) => (
-          <button
-            type="button"
-            key={index}
-            onClick={() => setActivePhoto(index)}
-            aria-label={`Open ${profile.name} photo ${index + 1}`}
-            className="relative aspect-[.82/1] overflow-hidden rounded-xl outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#1d9bf0] focus-visible:ring-offset-2"
-          >
-            <ProfileImage
-              src={photo}
-              alt={`${profile.name} photo ${index + 1}`}
-              fill
-              sizes="100px"
-              className="object-cover"
-            />
-          </button>
-        ))}
-      </div>
+      <section
+        id="profile-photos"
+        className="mt-6 scroll-mt-5 rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]"
+      >
+        <div>
+          <div>
+            <h2 className="text-[18px] font-bold">
+              Photos ({profile.photos.length})
+            </h2>
+            <p className="mt-1 text-[14px] text-[#596077]">
+              A glimpse into {profile.name.split(" ")[0]}&apos;s life.
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 grid grid-cols-6 gap-2">
+          {profile.photos.map((photo, index) => (
+            <button
+              type="button"
+              key={index}
+              onClick={() => setActivePhoto(index)}
+              aria-label={`Open ${profile.name} photo ${index + 1}`}
+              className="relative aspect-[.82/1] overflow-hidden rounded-xl outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[#1d9bf0] focus-visible:ring-offset-2"
+            >
+              <ProfileImage
+                src={photo}
+                alt={`${profile.name} photo ${index + 1}`}
+                fill
+                sizes="100px"
+                className="object-cover"
+              />
+            </button>
+          ))}
+        </div>
       </section>
       {activePhoto !== null ? (
         <div
@@ -514,19 +587,41 @@ function PhotoGallery({ profile }: { profile: ProfileDetail }) {
           }}
           className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
         >
-          <button type="button" onClick={() => setActivePhoto(null)} aria-label="Close photo viewer" className="absolute right-5 top-5 z-10 grid size-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+          <button
+            type="button"
+            onClick={() => setActivePhoto(null)}
+            aria-label="Close photo viewer"
+            className="absolute right-5 top-5 z-10 grid size-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          >
             <X size={24} />
           </button>
           {photoCount > 1 ? (
-            <button type="button" onClick={previousPhoto} aria-label="Previous photo" className="absolute left-4 z-10 grid size-12 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:left-8">
+            <button
+              type="button"
+              onClick={previousPhoto}
+              aria-label="Previous photo"
+              className="absolute left-4 z-10 grid size-12 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:left-8"
+            >
               <ChevronLeft size={30} />
             </button>
           ) : null}
           <div className="relative h-[82vh] w-[min(86vw,920px)]">
-            <ProfileImage src={profile.photos[activePhoto]} alt={`${profile.name} photo ${activePhoto + 1}`} fill priority sizes="86vw" className="object-contain" />
+            <ProfileImage
+              src={profile.photos[activePhoto]}
+              alt={`${profile.name} photo ${activePhoto + 1}`}
+              fill
+              priority
+              sizes="86vw"
+              className="object-contain"
+            />
           </div>
           {photoCount > 1 ? (
-            <button type="button" onClick={nextPhoto} aria-label="Next photo" className="absolute right-4 z-10 grid size-12 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:right-8">
+            <button
+              type="button"
+              onClick={nextPhoto}
+              aria-label="Next photo"
+              className="absolute right-4 z-10 grid size-12 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white md:right-8"
+            >
               <ChevronRight size={30} />
             </button>
           ) : null}
@@ -540,13 +635,27 @@ function PhotoGallery({ profile }: { profile: ProfileDetail }) {
 }
 type MatchRow = string | { label: string; value?: string; matched?: boolean };
 
-function InfoCard({ title, rows, sectionId }: { title: string; rows: MatchRow[]; sectionId?: string }) {
+function InfoCard({
+  title,
+  rows,
+  sectionId,
+}: {
+  title: string;
+  rows: MatchRow[];
+  sectionId?: string;
+}) {
   return (
-    <section id={sectionId} className="scroll-mt-5 rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]">
+    <section
+      id={sectionId}
+      className="scroll-mt-5 rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]"
+    >
       <h3 className="text-[18px] font-bold">{title}</h3>
       <ul className="mt-5 grid grid-cols-1 gap-x-6 gap-y-5 text-[14px] sm:grid-cols-2 lg:grid-cols-3">
         {rows.map((row) => {
-          const item = typeof row === "string" ? { label: row, matched: true } : { ...row, matched: row.matched ?? true };
+          const item =
+            typeof row === "string"
+              ? { label: row, matched: true }
+              : { ...row, matched: row.matched ?? true };
           return (
             <li key={item.label} className="flex items-center gap-2">
               <span
@@ -554,10 +663,25 @@ function InfoCard({ title, rows, sectionId }: { title: string; rows: MatchRow[];
                 title={item.matched ? "Matching" : "Not matching"}
                 className={`grid size-7 shrink-0 place-items-center rounded-full ${item.matched ? "bg-[#e5f8ed] text-[#168a52]" : "bg-[#fdebec] text-[#d92d3a]"}`}
               >
-                {item.matched ? <Check size={14} strokeWidth={2.5} /> : <X size={14} strokeWidth={2.5} />}
+                {item.matched ? (
+                  <Check size={14} strokeWidth={2.5} />
+                ) : (
+                  <X size={14} strokeWidth={2.5} />
+                )}
               </span>
               <span className={item.matched ? "" : "text-[#b4232f]"}>
-                {item.value ? <><span className="block text-[12px] text-[#71768a]">{item.label}</span><strong className="mt-1 block font-semibold text-[var(--text-primary)]">{item.value}</strong></> : item.label}
+                {item.value ? (
+                  <>
+                    <span className="block text-[12px] text-[#71768a]">
+                      {item.label}
+                    </span>
+                    <strong className="mt-1 block font-semibold text-[var(--text-primary)]">
+                      {item.value}
+                    </strong>
+                  </>
+                ) : (
+                  item.label
+                )}
               </span>
             </li>
           );
@@ -633,10 +757,18 @@ function MobileContent({
         </div>
       </section>
       <div className="mx-3 space-y-4">
-        {profile.lifestyle.length ? <InfoCard title="Lifestyle" rows={profile.lifestyle} /> : null}
-        {profile.family.length ? <InfoCard title="Family" rows={profile.family} /> : null}
-        {profile.preferences.length ? <InfoCard title="What I'm Looking For" rows={profile.preferences} /> : null}
-        {profile.horoscope.length ? <InfoCard title="Horoscope" rows={profile.horoscope} /> : null}
+        {profile.lifestyle.length ? (
+          <InfoCard title="Lifestyle" rows={profile.lifestyle} />
+        ) : null}
+        {profile.family.length ? (
+          <InfoCard title="Family" rows={profile.family} />
+        ) : null}
+        {profile.preferences.length ? (
+          <InfoCard title="What I'm Looking For" rows={profile.preferences} />
+        ) : null}
+        {profile.horoscope.length ? (
+          <InfoCard title="Horoscope" rows={profile.horoscope} />
+        ) : null}
       </div>
       <MatchScore profile={profile} />
       <MoreProfiles profiles={moreProfiles} />
@@ -733,7 +865,10 @@ function InterestCta({
   onUnfollow: () => Promise<void>;
 }) {
   return (
-    <section id="profile-verification" className="mt-8 scroll-mt-5 flex items-center rounded-xl bg-[linear-gradient(90deg,#e8f5fe,#f5fbff)] px-6 py-5 max-md:hidden">
+    <section
+      id="profile-verification"
+      className="mt-8 scroll-mt-5 flex items-center rounded-xl bg-[linear-gradient(90deg,#e8f5fe,#f5fbff)] px-6 py-5 max-md:hidden"
+    >
       <HeartHandshake size={44} className="text-[#1d9bf0]" />
       <div className="ml-5">
         <h2 className="text-[17px] font-bold">
@@ -743,7 +878,16 @@ function InterestCta({
           Send interest and start a meaningful conversation.
         </p>
       </div>
-      <FollowButton status={status} profileName={profile.name} onFollow={onFollow} onCancelRequest={onCancelRequest} onConfirmRequest={onConfirmRequest} onDeleteRequest={onDeleteRequest} onUnfollow={onUnfollow} className="ml-auto w-[220px]" />
+      <FollowButton
+        status={status}
+        profileName={profile.name}
+        onFollow={onFollow}
+        onCancelRequest={onCancelRequest}
+        onConfirmRequest={onConfirmRequest}
+        onDeleteRequest={onDeleteRequest}
+        onUnfollow={onUnfollow}
+        className="ml-auto w-[220px]"
+      />
     </section>
   );
 }

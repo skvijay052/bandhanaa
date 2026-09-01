@@ -13,14 +13,11 @@ import {
   Shield,
 } from "lucide-react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import type { PrivacySettings } from "@/data/privacy";
 import { createClient } from "@/lib/supabase/client";
 import { SettingsNavigation } from "./SettingsNavigation";
-export function PrivacyClient({
-  initial,
-}: {
-  initial: PrivacySettings;
-}) {
+export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
   const router = useRouter();
   const [settings, setSettings] = useState(initial);
   const [error, setError] = useState("");
@@ -47,9 +44,13 @@ export function PrivacyClient({
       <div className="app-shell edit-profile-shell !h-full">
         <AppSidebar active="Settings" />
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
-            <SettingsNavigation active="Settings & Privacy" />
-            <div className="h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-4">
-              <div className="mx-auto w-full max-w-[780px] py-6 md:py-8">
+          <SettingsNavigation active="Settings & Privacy" />
+          <div className="h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-4">
+            <MobilePageHeader
+              title="Settings"
+              description="Privacy, safety and account controls"
+            />
+            <div className="mx-auto w-full max-w-[780px] py-6 md:py-8">
               <header className="flex items-center md:hidden">
                 <button onClick={() => router.back()}>
                   <ArrowLeft size={20} />
@@ -164,8 +165,8 @@ export function PrivacyClient({
                   {error}
                 </p>
               ) : null}
-              </div>
             </div>
+          </div>
         </div>
       </div>
     </main>
@@ -209,10 +210,14 @@ function ValueRow({
       <Icon size={21} strokeWidth={1.8} />
       <div className="ml-4">
         <strong className="text-[15px] font-normal">{title}</strong>
-        <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">{subtitle}</p>
+        <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
+          {subtitle}
+        </p>
       </div>
       {value ? (
-        <span className="ml-auto text-[13px] font-normal text-[var(--text-secondary)]">{value}</span>
+        <span className="ml-auto text-[13px] font-normal text-[var(--text-secondary)]">
+          {value}
+        </span>
       ) : null}
       <ChevronRight size={18} className="ml-2" />
     </div>
@@ -243,7 +248,9 @@ function ToggleRow({
       <Icon size={21} strokeWidth={1.8} />
       <div className="ml-4">
         <strong className="text-[15px] font-normal">{title}</strong>
-        <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">{subtitle}</p>
+        <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
+          {subtitle}
+        </p>
       </div>
       <button
         type="button"
@@ -253,7 +260,9 @@ function ToggleRow({
         onClick={() => onChange(!checked)}
         className={`relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1d9bf0] ${checked ? "bg-[#0f1419]" : "bg-[#8b949e]"}`}
       >
-        <span className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${checked ? "translate-x-[23px]" : "translate-x-[3px]"}`} />
+        <span
+          className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${checked ? "translate-x-[23px]" : "translate-x-[3px]"}`}
+        />
       </button>
     </div>
   );

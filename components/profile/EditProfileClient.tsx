@@ -20,6 +20,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import { createClient } from "@/lib/supabase/client";
 import {
   editSections,
@@ -62,7 +63,9 @@ function toItems(labels: string[], values: Record<string, string>) {
 }
 function locationField(label: string) {
   const match = label.match(/^(Family|Preferred|Birth) (Country|State|City)$/);
-  return match ? { prefix: match[1], part: match[2] as "Country" | "State" | "City" } : null;
+  return match
+    ? { prefix: match[1], part: match[2] as "Country" | "State" | "City" }
+    : null;
 }
 function toTimeInput(value: string) {
   if (/^\d{2}:\d{2}$/.test(value)) return value;
@@ -171,6 +174,7 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <DesktopSectionNav active={section} onChange={setSection} />
           <div className="h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-3">
+            <MobilePageHeader />
             <header className="mx-auto flex max-w-[780px] items-start py-6 md:py-8">
               <button
                 onClick={() => router.push("/my-profile")}
@@ -194,9 +198,29 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
             </header>
             <div className="mx-auto max-w-[780px]">
               <section className="mb-8 flex items-center rounded-2xl bg-[#f2f3f5] p-5 max-md:p-4">
-                <span className="relative size-16 shrink-0 overflow-hidden rounded-full"><ProfileImage src={draft.avatar} alt={draft.displayName} fill sizes="64px" className="object-cover" /></span>
-                <div className="ml-4 min-w-0"><strong className="block truncate text-[16px]">{draft.displayName}</strong><span className="mt-1 block text-[13px] text-[var(--text-secondary)]">Profile is {draft.completion}% complete</span></div>
-                <button onClick={() => setSection("Photos")} className="ml-auto h-10 rounded-lg bg-[#1d9bf0] px-5 text-[14px] font-semibold text-white hover:bg-[#1689df]">Change photo</button>
+                <span className="relative size-16 shrink-0 overflow-hidden rounded-full">
+                  <ProfileImage
+                    src={draft.avatar}
+                    alt={draft.displayName}
+                    fill
+                    sizes="64px"
+                    className="object-cover"
+                  />
+                </span>
+                <div className="ml-4 min-w-0">
+                  <strong className="block truncate text-[16px]">
+                    {draft.displayName}
+                  </strong>
+                  <span className="mt-1 block text-[13px] text-[var(--text-secondary)]">
+                    Profile is {draft.completion}% complete
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSection("Photos")}
+                  className="ml-auto h-10 rounded-lg bg-[#1d9bf0] px-5 text-[14px] font-semibold text-white hover:bg-[#1689df]"
+                >
+                  Change photo
+                </button>
               </section>
               <MobileSectionNav active={section} onChange={setSection} />
               <section className="py-2 md:py-3">
@@ -249,7 +273,9 @@ function DesktopSectionNav({
 }) {
   return (
     <aside className="hidden h-full min-h-0 overflow-y-auto border-r border-[var(--border)] bg-white px-6 py-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:block">
-      <h1 className="px-2 text-[24px] font-bold tracking-[-0.02em]">Settings</h1>
+      <h1 className="px-2 text-[24px] font-bold tracking-[-0.02em]">
+        Settings
+      </h1>
       <label className="mt-7 flex h-12 items-center gap-3 rounded-full bg-[#f2f3f5] px-4 text-[var(--text-secondary)]">
         <Search size={19} aria-hidden="true" />
         <input
@@ -363,16 +389,24 @@ function SectionContent({
         <div className="mt-4 rounded-xl border border-[#d7e8f5] bg-[#f5fbff] p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-[13px] font-semibold text-[#0f1419]">Generate your Zodiac sign</p>
-              <p className="mt-1 text-[11px] text-[#536471]">Uses your date of birth. Nakshatra, Rashi and Lagna remain editable because they require accurate birth time and place.</p>
+              <p className="text-[13px] font-semibold text-[#0f1419]">
+                Generate your Zodiac sign
+              </p>
+              <p className="mt-1 text-[11px] text-[#536471]">
+                Uses your date of birth. Nakshatra, Rashi and Lagna remain
+                editable because they require accurate birth time and place.
+              </p>
             </div>
             <button
               type="button"
               onClick={() => {
-                const birthDate = structured["Date of Birth"] || draft.birthDate;
+                const birthDate =
+                  structured["Date of Birth"] || draft.birthDate;
                 const zodiac = zodiacSignForDate(birthDate);
                 if (!zodiac) {
-                  setNotice("Add a valid date of birth before generating your horoscope.");
+                  setNotice(
+                    "Add a valid date of birth before generating your horoscope.",
+                  );
                   return;
                 }
                 setField("birthDate", birthDate);
@@ -381,7 +415,9 @@ function SectionContent({
                   "Date of Birth": birthDate,
                   "Zodiac Sign": zodiac,
                 }));
-                setNotice(`Horoscope generated: ${zodiac}. Save changes to display it on your profile.`);
+                setNotice(
+                  `Horoscope generated: ${zodiac}. Save changes to display it on your profile.`,
+                );
               }}
               className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-[#1d9bf0] px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#1689df]"
             >
@@ -394,69 +430,111 @@ function SectionContent({
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         {labels.map((label) => {
           const location = locationField(label);
-          if (label.startsWith("About")) return (
-            <label key={label} className="form-label md:col-span-2">
-              {label}
-              <textarea
-                value={structured[label] ?? ""}
-                maxLength={500}
-                onChange={(e) =>
-                  setStructured((current) => ({
-                    ...current,
-                    [label]: e.target.value,
-                  }))
-                }
-                className="form-textarea"
-              />
-            </label>
-          );
-          if (label === "Date of Birth") return (
-            <label key={label} className="form-label">
-              {label}
-              <input type="date" max={new Date().toISOString().slice(0, 10)} value={structured[label] || draft.birthDate || ""} onChange={(e) => { setField("birthDate", e.target.value); setStructured((current) => ({ ...current, [label]: e.target.value })); }} className="form-control cursor-pointer [color-scheme:light]" />
-            </label>
-          );
-          if (label === "Time of Birth") return (
-            <label key={label} className="form-label">
-              {label}
-              <input type="time" step={300} value={toTimeInput(structured[label] ?? "")} onChange={(e) => setStructured((current) => ({ ...current, [label]: e.target.value }))} className="form-control cursor-pointer [color-scheme:light]" />
-            </label>
-          );
+          if (label.startsWith("About"))
+            return (
+              <label key={label} className="form-label md:col-span-2">
+                {label}
+                <textarea
+                  value={structured[label] ?? ""}
+                  maxLength={500}
+                  onChange={(e) =>
+                    setStructured((current) => ({
+                      ...current,
+                      [label]: e.target.value,
+                    }))
+                  }
+                  className="form-textarea"
+                />
+              </label>
+            );
+          if (label === "Date of Birth")
+            return (
+              <label key={label} className="form-label">
+                {label}
+                <input
+                  type="date"
+                  max={new Date().toISOString().slice(0, 10)}
+                  value={structured[label] || draft.birthDate || ""}
+                  onChange={(e) => {
+                    setField("birthDate", e.target.value);
+                    setStructured((current) => ({
+                      ...current,
+                      [label]: e.target.value,
+                    }));
+                  }}
+                  className="form-control cursor-pointer [color-scheme:light]"
+                />
+              </label>
+            );
+          if (label === "Time of Birth")
+            return (
+              <label key={label} className="form-label">
+                {label}
+                <input
+                  type="time"
+                  step={300}
+                  value={toTimeInput(structured[label] ?? "")}
+                  onChange={(e) =>
+                    setStructured((current) => ({
+                      ...current,
+                      [label]: e.target.value,
+                    }))
+                  }
+                  className="form-control cursor-pointer [color-scheme:light]"
+                />
+              </label>
+            );
           if (location) {
             const countryKey = `${location.prefix} Country`;
             const stateKey = `${location.prefix} State`;
             const selectedCountry = structured[countryKey] ?? "";
             const selectedState = structured[stateKey] ?? "";
-            const locationOptions = location.part === "Country"
-              ? countries
-              : location.part === "State"
-                ? stateOptions(selectedCountry)
-                : cityOptions(selectedState);
-            return <SearchableSelect
-              key={label}
-              label={location.part}
-              value={structured[label] ?? ""}
-              options={locationOptions}
-              allowCustom={location.part !== "Country"}
-              onChange={(value) => setStructured((current) => ({
-                ...current,
-                [label]: value,
-                ...(location.part === "Country" ? { [`${location.prefix} State`]: "", [`${location.prefix} City`]: "" } : {}),
-                ...(location.part === "State" ? { [`${location.prefix} City`]: "" } : {}),
-              }))}
-            />;
+            const locationOptions =
+              location.part === "Country"
+                ? countries
+                : location.part === "State"
+                  ? stateOptions(selectedCountry)
+                  : cityOptions(selectedState);
+            return (
+              <SearchableSelect
+                key={label}
+                label={location.part}
+                value={structured[label] ?? ""}
+                options={locationOptions}
+                allowCustom={location.part !== "Country"}
+                onChange={(value) =>
+                  setStructured((current) => ({
+                    ...current,
+                    [label]: value,
+                    ...(location.part === "Country"
+                      ? {
+                          [`${location.prefix} State`]: "",
+                          [`${location.prefix} City`]: "",
+                        }
+                      : {}),
+                    ...(location.part === "State"
+                      ? { [`${location.prefix} City`]: "" }
+                      : {}),
+                  }))
+                }
+              />
+            );
           }
-          return <SearchableSelect
-            key={label}
-            label={label}
-            value={structured[label] ?? ""}
-            options={profileFieldOptions(label, structured.Religion)}
-            onChange={(value) => setStructured((current) => ({
-              ...current,
-              [label]: value,
-              ...(label === "Religion" ? { "Caste (Optional)": "" } : {}),
-            }))}
-          />;
+          return (
+            <SearchableSelect
+              key={label}
+              label={label}
+              value={structured[label] ?? ""}
+              options={profileFieldOptions(label, structured.Religion)}
+              onChange={(value) =>
+                setStructured((current) => ({
+                  ...current,
+                  [label]: value,
+                  ...(label === "Religion" ? { "Caste (Optional)": "" } : {}),
+                }))
+              }
+            />
+          );
         })}
       </div>
     </div>
@@ -519,17 +597,91 @@ function BasicForm({
           onChange={(x) => setField("birthDate", x)}
           required
         />
-        <SearchableSelect label="Gender" value={draft.gender} options={profileFieldOptions("Gender")} onChange={(x) => setField("gender", x)} required />
-        <SearchableSelect label="Marital Status" value={draft.maritalStatus} options={profileFieldOptions("Marital Status")} onChange={(x) => setField("maritalStatus", x)} required />
-        <SearchableSelect label="Religion" value={draft.religion} options={profileFieldOptions("Religion")} onChange={(x) => setField("religion", x)} required />
-        <SearchableSelect label="Mother Tongue" value={draft.motherTongue} options={profileFieldOptions("Mother Tongue")} onChange={(x) => setField("motherTongue", x)} required />
-        <SearchableSelect label="Height" value={draft.height} options={profileFieldOptions("Height")} onChange={(x) => setField("height", x)} required />
-        <SearchableSelect label="Weight" value={draft.weight} options={profileFieldOptions("Weight")} onChange={(x) => setField("weight", x)} />
-        <SearchableSelect label="Country" value={draft.country} options={countries} onChange={(value) => { setField("country", value); setField("state", ""); setField("city", ""); }} required />
-        <SearchableSelect label="State" value={draft.state} options={stateOptions(draft.country)} onChange={(value) => { setField("state", value); setField("city", ""); }} required allowCustom />
-        <SearchableSelect label="City" value={draft.city} options={cityOptions(draft.state)} onChange={(x) => setField("city", x)} required allowCustom />
-        <SearchableSelect label="Education" value={draft.education} options={profileFieldOptions("Education")} onChange={(x) => setField("education", x)} required />
-        <SearchableSelect label="Profession" value={draft.profession} options={profileFieldOptions("Profession")} onChange={(x) => setField("profession", x)} required />
+        <SearchableSelect
+          label="Gender"
+          value={draft.gender}
+          options={profileFieldOptions("Gender")}
+          onChange={(x) => setField("gender", x)}
+          required
+        />
+        <SearchableSelect
+          label="Marital Status"
+          value={draft.maritalStatus}
+          options={profileFieldOptions("Marital Status")}
+          onChange={(x) => setField("maritalStatus", x)}
+          required
+        />
+        <SearchableSelect
+          label="Religion"
+          value={draft.religion}
+          options={profileFieldOptions("Religion")}
+          onChange={(x) => setField("religion", x)}
+          required
+        />
+        <SearchableSelect
+          label="Mother Tongue"
+          value={draft.motherTongue}
+          options={profileFieldOptions("Mother Tongue")}
+          onChange={(x) => setField("motherTongue", x)}
+          required
+        />
+        <SearchableSelect
+          label="Height"
+          value={draft.height}
+          options={profileFieldOptions("Height")}
+          onChange={(x) => setField("height", x)}
+          required
+        />
+        <SearchableSelect
+          label="Weight"
+          value={draft.weight}
+          options={profileFieldOptions("Weight")}
+          onChange={(x) => setField("weight", x)}
+        />
+        <SearchableSelect
+          label="Country"
+          value={draft.country}
+          options={countries}
+          onChange={(value) => {
+            setField("country", value);
+            setField("state", "");
+            setField("city", "");
+          }}
+          required
+        />
+        <SearchableSelect
+          label="State"
+          value={draft.state}
+          options={stateOptions(draft.country)}
+          onChange={(value) => {
+            setField("state", value);
+            setField("city", "");
+          }}
+          required
+          allowCustom
+        />
+        <SearchableSelect
+          label="City"
+          value={draft.city}
+          options={cityOptions(draft.state)}
+          onChange={(x) => setField("city", x)}
+          required
+          allowCustom
+        />
+        <SearchableSelect
+          label="Education"
+          value={draft.education}
+          options={profileFieldOptions("Education")}
+          onChange={(x) => setField("education", x)}
+          required
+        />
+        <SearchableSelect
+          label="Profession"
+          value={draft.profession}
+          options={profileFieldOptions("Profession")}
+          onChange={(x) => setField("profession", x)}
+          required
+        />
         <Field
           label="Company"
           value={draft.company}
@@ -618,7 +770,9 @@ function VisibilityEditor({
   ];
   return (
     <div className="max-w-[760px]">
-      <h2 className="text-[22px] font-bold tracking-[-0.01em]">Profile Visibility</h2>
+      <h2 className="text-[22px] font-bold tracking-[-0.01em]">
+        Profile Visibility
+      </h2>
       <p className="mt-1 text-[14px] font-normal text-[var(--text-secondary)]">
         Control who can see your profile and what information is visible to
         others.
@@ -626,70 +780,79 @@ function VisibilityEditor({
       <section className="mt-9">
         <h3 className="text-[16px] font-semibold">Who can see your profile</h3>
         <div className="mt-4 space-y-1">
-        {choices.map((choice) => (
-          <label
-            key={choice.value}
-            className="flex min-h-[62px] cursor-pointer items-center rounded-lg px-1 transition-colors hover:bg-[#f7f9f9]"
-          >
-            <input
-              type="radio"
-              name="visibility"
-              checked={draft.visibility === choice.value}
-              onChange={() => setField("visibility", choice.value)}
-              className="peer sr-only"
-            />
-            <span className={`grid size-[30px] shrink-0 place-items-center rounded-full border bg-white ${draft.visibility === choice.value ? "border-[#0f1419]" : "border-[#9aa0a6]"}`}>
-              <span className={`size-[18px] rounded-full ${draft.visibility === choice.value ? "bg-[#0f1419]" : "bg-transparent"}`} />
-            </span>
-            <span className="ml-4">
-              <strong className="block text-[15px] font-normal">{choice.label}</strong>
-              <span className="mt-0.5 block text-[12px] font-normal text-[var(--text-secondary)]">
-                {choice.description}
+          {choices.map((choice) => (
+            <label
+              key={choice.value}
+              className="flex min-h-[62px] cursor-pointer items-center rounded-lg px-1 transition-colors hover:bg-[#f7f9f9]"
+            >
+              <input
+                type="radio"
+                name="visibility"
+                checked={draft.visibility === choice.value}
+                onChange={() => setField("visibility", choice.value)}
+                className="peer sr-only"
+              />
+              <span
+                className={`grid size-[30px] shrink-0 place-items-center rounded-full border bg-white ${draft.visibility === choice.value ? "border-[#0f1419]" : "border-[#9aa0a6]"}`}
+              >
+                <span
+                  className={`size-[18px] rounded-full ${draft.visibility === choice.value ? "bg-[#0f1419]" : "bg-transparent"}`}
+                />
               </span>
-            </span>
-          </label>
-        ))}
+              <span className="ml-4">
+                <strong className="block text-[15px] font-normal">
+                  {choice.label}
+                </strong>
+                <span className="mt-0.5 block text-[12px] font-normal text-[var(--text-secondary)]">
+                  {choice.description}
+                </span>
+              </span>
+            </label>
+          ))}
         </div>
       </section>
 
       <div className="my-8 h-px bg-[var(--border)]" />
 
       <section>
-        <h3 className="text-[16px] font-semibold">Information visible to others</h3>
+        <h3 className="text-[16px] font-semibold">
+          Information visible to others
+        </h3>
         <p className="mt-1 text-[13px] font-normal text-[var(--text-secondary)]">
           Choose which profile details other members can see.
         </p>
         <div className="mt-4 divide-y divide-[var(--border)]">
-        {Object.entries(draft.visibilityDetails).map(([label, enabled]) => (
-          <div
-            key={label}
-            className="flex min-h-[72px] items-center px-1"
-          >
-            <span>
-              <strong className="block text-[15px] font-normal">{label}</strong>
-              <span className="mt-0.5 block text-[12px] font-normal text-[var(--text-secondary)]">
-                Show this information on your profile
+          {Object.entries(draft.visibilityDetails).map(([label, enabled]) => (
+            <div key={label} className="flex min-h-[72px] items-center px-1">
+              <span>
+                <strong className="block text-[15px] font-normal">
+                  {label}
+                </strong>
+                <span className="mt-0.5 block text-[12px] font-normal text-[var(--text-secondary)]">
+                  Show this information on your profile
+                </span>
               </span>
-            </span>
-            <button
-              type="button"
-              role="switch"
-              aria-checked={enabled}
-              aria-label={`Show ${label}`}
-              onClick={() =>
-                setField("visibilityDetails", {
-                  ...draft.visibilityDetails,
-                  [label]: !enabled,
-                })
-              }
-              className={`relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1d9bf0] ${enabled ? "bg-[#0f1419]" : "bg-[#8b949e]"}`}
-            >
-              <span className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${enabled ? "translate-x-[23px]" : "translate-x-[3px]"}`} />
-            </button>
-          </div>
-        ))}
+              <button
+                type="button"
+                role="switch"
+                aria-checked={enabled}
+                aria-label={`Show ${label}`}
+                onClick={() =>
+                  setField("visibilityDetails", {
+                    ...draft.visibilityDetails,
+                    [label]: !enabled,
+                  })
+                }
+                className={`relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1d9bf0] ${enabled ? "bg-[#0f1419]" : "bg-[#8b949e]"}`}
+              >
+                <span
+                  className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${enabled ? "translate-x-[23px]" : "translate-x-[3px]"}`}
+                />
+              </button>
+            </div>
+          ))}
         </div>
       </section>
-      </div>
+    </div>
   );
 }

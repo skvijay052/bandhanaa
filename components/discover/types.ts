@@ -11,5 +11,6 @@ export type DiscoverProfile = {
   bio: string;
   image: string;
   match: number;
+  online: boolean;
   relationship: "none" | "outgoing_pending" | "incoming_pending" | "following";
 };

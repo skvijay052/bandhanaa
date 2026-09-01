@@ -28,6 +28,7 @@ create table if not exists public.profiles (
   profile_completion integer not null default 0 check (profile_completion between 0 and 100),
   compatibility integer not null default 85 check (compatibility between 0 and 100),
   is_discoverable boolean not null default true,
+  last_seen_at timestamptz,
   created_at timestamptz not null default timezone('utc', now()),
   updated_at timestamptz not null default timezone('utc', now())
 );
@@ -57,6 +58,7 @@ alter table public.profiles add column if not exists profile_visibility text not
 alter table public.profiles add column if not exists profile_completion integer not null default 0 check (profile_completion between 0 and 100);
 alter table public.profiles add column if not exists compatibility integer not null default 85 check (compatibility between 0 and 100);
 alter table public.profiles add column if not exists is_discoverable boolean not null default true;
+alter table public.profiles add column if not exists last_seen_at timestamptz;
 
 -- Normalize legacy combined locations such as "Bengaluru, Karnataka" while
 -- preserving already normalized Country / State / City values.

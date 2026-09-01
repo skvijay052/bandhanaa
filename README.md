@@ -31,6 +31,20 @@ In Supabase Authentication > URL Configuration:
 
 The URL passed to Supabase must exactly match an allowed redirect URL. Add only domains used by this project.
 
+## Registration email OTP
+
+Keep **Confirm email** enabled in Supabase Authentication. Under Authentication > Emails > Templates > Confirm signup, set the subject to `Verify your Bandhanaa account` and use `{{ .Token }}` in the email body:
+
+```html
+<h2>Verify your Bandhanaa account</h2>
+<p>Use the verification code below to verify your email address.</p>
+<h1 style="letter-spacing: 8px">{{ .Token }}</h1>
+<p>Enter this code in Bandhanaa to continue.</p>
+<p>If you did not create this account, you can safely ignore this email.</p>
+```
+
+The application expects the default six-digit Supabase email OTP. If the project OTP length is changed in Supabase, update `OTP_LENGTH` in `components/auth/VerifyEmailForm.tsx` to match.
+
 ## Future AI features
 
 Keep future model/provider clients under `lib/ai`, server-only orchestration in route handlers or server actions, and persistence in dedicated RLS-protected tables. Do not expose model credentials to client components; stream only authorized results from server endpoints.

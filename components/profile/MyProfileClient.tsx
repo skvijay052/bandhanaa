@@ -2,7 +2,6 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
 import type { MyProfileData } from "@/data/my-profile";
 import { createClient } from "@/lib/supabase/client";
 import { genderProfilePhoto } from "@/lib/profile-photo";
@@ -10,13 +9,20 @@ import { AboutMeSection } from "./AboutMeSection";
 import { CompleteProfileCTA } from "./CompleteProfileCTA";
 import { MyProfileHero } from "./MyProfileHero";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import { MobileVisibility } from "./MobileProfileSections";
 import { PhotosSection } from "./PhotosSection";
 import { PhotoCropModal } from "./PhotoCropModal";
 import { DetailCard } from "./ProfileDetailCards";
 import { ProfileProgress } from "./ProfileProgress";
 import { ProfileTabs } from "./ProfileTabs";
-export function MyProfileClient({ profile, acceptedInterestCount }: { profile: MyProfileData; acceptedInterestCount: number }) {
+export function MyProfileClient({
+  profile,
+  acceptedInterestCount,
+}: {
+  profile: MyProfileData;
+  acceptedInterestCount: number;
+}) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [viewProfile, setViewProfile] = useState(profile);
@@ -65,9 +71,10 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
       .from("profile-photos")
       .getPublicUrl(path);
     const url = publicData.publicUrl;
-    const photos = uploadMode === "avatar"
-      ? viewProfile.photos
-      : [...viewProfile.photos, url].slice(0, 6);
+    const photos =
+      uploadMode === "avatar"
+        ? viewProfile.photos
+        : [...viewProfile.photos, url].slice(0, 6);
     const update =
       uploadMode === "avatar" ? { avatar_url: url, photos } : { photos };
     const { error: updateFailure } = await supabase
@@ -105,7 +112,10 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
     const deletingAvatar = viewProfile.avatar === photo;
     const update = deletingAvatar ? { photos, avatar_url: null } : { photos };
     const supabase = createClient();
-    const { error } = await supabase.from("profiles").update(update).eq("id", viewProfile.id);
+    const { error } = await supabase
+      .from("profiles")
+      .update(update)
+      .eq("id", viewProfile.id);
     if (error) {
       setUploadError("Unable to delete the photo. Please try again.");
       return;
@@ -115,7 +125,9 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
       const pathname = new URL(photo).pathname;
       const markerIndex = pathname.indexOf(marker);
       if (markerIndex >= 0) {
-        const storagePath = decodeURIComponent(pathname.slice(markerIndex + marker.length));
+        const storagePath = decodeURIComponent(
+          pathname.slice(markerIndex + marker.length),
+        );
         await supabase.storage.from("profile-photos").remove([storagePath]);
       }
     } catch {
@@ -124,7 +136,9 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
     setViewProfile((current) => ({
       ...current,
       photos,
-      avatar: deletingAvatar ? photos[0] ?? genderProfilePhoto(current.gender) : current.avatar,
+      avatar: deletingAvatar
+        ? (photos[0] ?? genderProfilePhoto(current.gender))
+        : current.avatar,
     }));
     router.refresh();
   }
@@ -133,6 +147,10 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
       <div className="app-shell">
         <AppSidebar active="Profile" />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-0">
+          <MobilePageHeader
+            title="My Profile"
+            description="Your details and preferences"
+          />
           <div className="mx-auto max-w-[1060px] px-5 pb-8 max-md:px-0">
             <MyProfileHero
               profile={viewProfile}
@@ -165,8 +183,13 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
               />
             </div>
             <div className="hidden md:block">
-              <section id="profile-about" className="mt-6 scroll-mt-[70px] grid grid-cols-[minmax(0,1fr)_240px] gap-6 px-4">
-                <div className="rounded-2xl bg-white px-4 py-2"><AboutMeSection profile={viewProfile} /></div>
+              <section
+                id="profile-about"
+                className="mt-6 scroll-mt-[70px] grid grid-cols-[minmax(0,1fr)_240px] gap-6 px-4"
+              >
+                <div className="rounded-2xl bg-white px-4 py-2">
+                  <AboutMeSection profile={viewProfile} />
+                </div>
                 <aside className="space-y-4">
                   <section className="rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]">
                     <h2 className="text-[17px] font-bold">
@@ -177,11 +200,17 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
                       <br />
                       everyone on Bandhanaa.
                     </p>
-                    <button onClick={edit} className="mt-5 h-10 rounded-lg border border-[#1d9bf0] px-5 text-[14px] font-semibold text-[#1d9bf0] hover:bg-[#e8f5fe]">
+                    <button
+                      onClick={edit}
+                      className="mt-5 h-10 rounded-lg border border-[#1d9bf0] px-5 text-[14px] font-semibold text-[#1d9bf0] hover:bg-[#e8f5fe]"
+                    >
                       Edit
                     </button>
                   </section>
-                  <button onClick={edit} className="flex h-[78px] w-full items-center rounded-2xl border border-[#e6edf2] bg-white px-5 text-left shadow-[0_8px_24px_rgba(15,20,25,.035)] hover:border-[#b9dff8]">
+                  <button
+                    onClick={edit}
+                    className="flex h-[78px] w-full items-center rounded-2xl border border-[#e6edf2] bg-white px-5 text-left shadow-[0_8px_24px_rgba(15,20,25,.035)] hover:border-[#b9dff8]"
+                  >
                     <span>
                       <strong className="block text-[14px]">
                         Who can see my profile?
@@ -202,28 +231,43 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
                   onDeletePhoto={deletePhoto}
                 />
               </div>
-              <div id="profile-lifestyle" className="mt-4 scroll-mt-[70px] px-4">
+              <div
+                id="profile-lifestyle"
+                className="mt-4 scroll-mt-[70px] px-4"
+              >
                 <DetailCard title="Lifestyle" items={viewProfile.lifestyle} />
               </div>
               <div id="profile-family" className="mt-4 scroll-mt-[70px] px-4">
                 <DetailCard title="Family" items={viewProfile.family} />
               </div>
-              <div id="profile-partner-preferences" className="mt-4 scroll-mt-[70px] px-4">
+              <div
+                id="profile-partner-preferences"
+                className="mt-4 scroll-mt-[70px] px-4"
+              >
                 <DetailCard
                   title="What I'm Looking For"
                   items={viewProfile.preferences}
                   columns={4}
                 />
               </div>
-              <div id="profile-horoscope" className="mt-4 scroll-mt-[70px] px-4">
+              <div
+                id="profile-horoscope"
+                className="mt-4 scroll-mt-[70px] px-4"
+              >
                 <DetailCard title="Horoscope" items={viewProfile.horoscope} />
               </div>
-              <div id="profile-verification" className="mt-5 scroll-mt-[70px] px-4">
+              <div
+                id="profile-verification"
+                className="mt-5 scroll-mt-[70px] px-4"
+              >
                 <CompleteProfileCTA />
               </div>
             </div>
             <div className="space-y-4 px-4 md:hidden">
-              <section id="profile-about-mobile" className="scroll-mt-[76px] pt-5">
+              <section
+                id="profile-about-mobile"
+                className="scroll-mt-[76px] pt-5"
+              >
                 <AboutMeSection
                   profile={viewProfile}
                   mobile
@@ -231,17 +275,39 @@ export function MyProfileClient({ profile, acceptedInterestCount }: { profile: M
                   onExpand={() => setExpanded((x) => !x)}
                 />
               </section>
-              <div id="profile-photos-mobile" className="scroll-mt-[76px]"><PhotosSection profile={viewProfile} mobile onAdd={() => choosePhoto("gallery")} onSetProfilePicture={setProfilePicture} onDeletePhoto={deletePhoto} /></div>
-              <div id="profile-lifestyle-mobile" className="scroll-mt-[76px]"><DetailCard title="Lifestyle" items={viewProfile.lifestyle} /></div>
-              <div id="profile-family-mobile" className="scroll-mt-[76px]"><DetailCard title="Family" items={viewProfile.family} /></div>
-              <div id="profile-partner-preferences-mobile" className="scroll-mt-[76px]"><DetailCard title="What I'm Looking For" items={viewProfile.preferences} columns={4} /></div>
-              <div id="profile-horoscope-mobile" className="scroll-mt-[76px]"><DetailCard title="Horoscope" items={viewProfile.horoscope} /></div>
+              <div id="profile-photos-mobile" className="scroll-mt-[76px]">
+                <PhotosSection
+                  profile={viewProfile}
+                  mobile
+                  onAdd={() => choosePhoto("gallery")}
+                  onSetProfilePicture={setProfilePicture}
+                  onDeletePhoto={deletePhoto}
+                />
+              </div>
+              <div id="profile-lifestyle-mobile" className="scroll-mt-[76px]">
+                <DetailCard title="Lifestyle" items={viewProfile.lifestyle} />
+              </div>
+              <div id="profile-family-mobile" className="scroll-mt-[76px]">
+                <DetailCard title="Family" items={viewProfile.family} />
+              </div>
+              <div
+                id="profile-partner-preferences-mobile"
+                className="scroll-mt-[76px]"
+              >
+                <DetailCard
+                  title="What I'm Looking For"
+                  items={viewProfile.preferences}
+                  columns={4}
+                />
+              </div>
+              <div id="profile-horoscope-mobile" className="scroll-mt-[76px]">
+                <DetailCard title="Horoscope" items={viewProfile.horoscope} />
+              </div>
               <MobileVisibility visibility={viewProfile.visibility} />
               <CompleteProfileCTA mobile />
             </div>
           </div>
         </div>
-        <MobileBottomNavigation active={null} connectionsLast />
         {cropSource ? (
           <PhotoCropModal
             source={cropSource}

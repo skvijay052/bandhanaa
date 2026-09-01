@@ -35,6 +35,8 @@ type ProfilePhotoRow = {
   mother_tongue: string | null;
 };
 
+type OnlineStatusRow = { id: string; last_seen_at: string | null };
+
 export default async function Page() {
   const supabase = await createClient();
   const {
@@ -44,8 +46,14 @@ export default async function Page() {
 
   const [recommendations, savedShortlists, relationships] = await Promise.all([
     supabase.rpc("get_recommended_profiles", { result_limit: 24 }),
-    supabase.from("profile_shortlists").select("profile_id").eq("user_id", user.id),
-    supabase.from("profile_likes").select("liker_id,liked_id,status").or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
+    supabase
+      .from("profile_shortlists")
+      .select("profile_id")
+      .eq("user_id", user.id),
+    supabase
+      .from("profile_likes")
+      .select("liker_id,liked_id,status")
+      .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
   ]);
 
   if (recommendations.error) {
@@ -55,14 +63,26 @@ export default async function Page() {
     );
   }
 
-  const recommendationRows = (recommendations.data ?? []) as RecommendationRow[];
+  const recommendationRows = (recommendations.data ??
+    []) as RecommendationRow[];
   const recommendationIds = recommendationRows.map((profile) => profile.id);
-  const photoResult = recommendationIds.length
-    ? await supabase
-        .from("profiles")
-        .select("id, avatar_url, photos, gender, city, state, country, marital_status, height, religion, mother_tongue")
-        .in("id", recommendationIds)
-    : { data: [], error: null };
+  const [photoResult, onlineResult] = recommendationIds.length
+    ? await Promise.all([
+        supabase
+          .from("profiles")
+          .select(
+            "id, avatar_url, photos, gender, city, state, country, marital_status, height, religion, mother_tongue",
+          )
+          .in("id", recommendationIds),
+        supabase
+          .from("profiles")
+          .select("id, last_seen_at")
+          .in("id", recommendationIds),
+      ])
+    : [
+        { data: [], error: null },
+        { data: [], error: null },
+      ];
 
   if (photoResult.error) {
     console.error("Unable to load discover photos:", photoResult.error.message);
@@ -74,11 +94,25 @@ export default async function Page() {
       profile,
     ]),
   );
+  const onlineByProfile = new Map(
+    ((onlineResult.data ?? []) as OnlineStatusRow[]).map((profile) => [
+      profile.id,
+      profile.last_seen_at,
+    ]),
+  );
 
   const profiles: DiscoverProfile[] = recommendationRows.map((profile) => {
     const storedPhotos = photosByProfile.get(profile.id);
-    const relationship = relationships.data?.find((item) => item.liker_id === profile.id || item.liked_id === profile.id);
-    const location = [storedPhotos?.city ?? profile.city, storedPhotos?.state, storedPhotos?.country].filter(Boolean).join(", ");
+    const relationship = relationships.data?.find(
+      (item) => item.liker_id === profile.id || item.liked_id === profile.id,
+    );
+    const location = [
+      storedPhotos?.city ?? profile.city,
+      storedPhotos?.state,
+      storedPhotos?.country,
+    ]
+      .filter(Boolean)
+      .join(", ");
     return {
       id: profile.id,
       name: profile.display_name ?? "Member",
@@ -95,6 +129,12 @@ export default async function Page() {
         genderDiscoverPhoto(storedPhotos?.gender),
       ),
       match: profile.match_score ?? 85,
+      online: Boolean(
+        onlineByProfile.get(profile.id) &&
+        Date.now() -
+          new Date(onlineByProfile.get(profile.id) as string).getTime() <
+          120_000,
+      ),
       relationship: getRelationshipState(relationship, user.id),
     };
   });
@@ -116,7 +156,9 @@ export default async function Page() {
       firstName={firstName}
       avatarUrl={avatarUrl}
       profiles={profiles}
-      initialShortlisted={savedShortlists.data?.map((item) => item.profile_id) ?? []}
+      initialShortlisted={
+        savedShortlists.data?.map((item) => item.profile_id) ?? []
+      }
     />
   );
 }

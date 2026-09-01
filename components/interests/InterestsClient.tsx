@@ -2,10 +2,9 @@
 
 import { useMemo, useState } from "react";
 
-import { AppHeader } from "@/components/layout/AppHeader";
+import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { DesktopTopBar } from "@/components/layout/DesktopTopBar";
-import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
 import type { InterestProfile, InterestTab } from "@/data/interests";
 import { createClient } from "@/lib/supabase/client";
 import { InterestOverviewCard } from "./InterestOverviewCard";
@@ -105,11 +104,15 @@ export function InterestsClient({
         </AppSidebar>
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-0">
           <DesktopTopBar avatarUrl={avatarUrl} name={viewerName} />
-          <div className="md:hidden">
-            <AppHeader avatarUrl={avatarUrl} name={viewerName} />
-          </div>
+          <MobilePageHeader
+            title="Interests"
+            description="Manage sent and received interests"
+          />
           <main>
-            <PageHeader title="Interests" description="Manage sent and received interests." />
+            <PageHeader
+              title="Interests"
+              description="Manage sent and received interests."
+            />
             <div className="px-9 pb-9 pt-3 max-md:px-4 max-md:pb-5 max-md:pt-3">
               <InterestsTabs
                 active={activeTab}
@@ -148,7 +151,6 @@ export function InterestsClient({
             </div>
           </main>
         </div>
-        <MobileBottomNavigation active="Interests" />
       </div>
     </div>
   );

@@ -146,6 +146,9 @@
   background-size: 200% 100%;
   animation: route-skeleton-shimmer 1.35s ease-in-out infinite;
 }
+button#nl-badge {
+    display: none;
+}
 @keyframes route-skeleton-shimmer { to { background-position: -200% 0; } }
 
 /* Legacy accent bridge: keep existing components visually consistent while

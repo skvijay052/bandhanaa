@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import type { ConnectionProfile } from "@/data/connections";
 import { createClient } from "@/lib/supabase/client";
 import { ActiveConnectionCard } from "./ActiveConnectionCard";
@@ -35,7 +35,11 @@ export function ConnectionsClient({
       .eq("liker_id", profile.interestLikerId)
       .eq("liked_id", currentUserId);
     if (!error) router.refresh();
-    setUpdating((current) => { const next = new Set(current); next.delete(profile.id); return next; });
+    setUpdating((current) => {
+      const next = new Set(current);
+      next.delete(profile.id);
+      return next;
+    });
   };
   const showActive =
     tab === "All" || tab === "Active" || tab === "Our Connections";
@@ -46,8 +50,15 @@ export function ConnectionsClient({
         <AppSidebar active="Requests" />
         <div className="flex min-w-0 flex-1">
           <div className="min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-5">
+            <MobilePageHeader
+              title="Connections"
+              description="Manage and nurture your connections"
+            />
             <div className="hidden md:block">
-              <PageHeader title="Connections" description="Manage and nurture your connections in one place." />
+              <PageHeader
+                title="Connections"
+                description="Manage and nurture your connections in one place."
+              />
               <ConnectionTabs active={tab} onChange={setTab} />
               <div className="px-7 pt-4 md:px-8">
                 {showActive ? (
@@ -79,8 +90,15 @@ export function ConnectionsClient({
                         <PendingConnectionCard
                           key={profile.id}
                           profile={profile}
-                          sent={profile.requestDirection === "sent" || updating.has(profile.id)}
-                          actionLabel={profile.requestDirection === "received" ? "Accept request" : "Request sent"}
+                          sent={
+                            profile.requestDirection === "sent" ||
+                            updating.has(profile.id)
+                          }
+                          actionLabel={
+                            profile.requestDirection === "received"
+                              ? "Accept request"
+                              : "Request sent"
+                          }
                           onSayHello={() => void acceptRequest(profile)}
                         />
                       ))}
@@ -95,7 +113,10 @@ export function ConnectionsClient({
               </div>
             </div>
             <div className="md:hidden">
-              <PageHeader title="Connections" description="Manage your connections." />
+              <PageHeader
+                title="Connections"
+                description="Manage your connections."
+              />
               <ConnectionTabs active={tab} onChange={setTab} mobile />
               <div className="px-4 pt-4">
                 {showActive ? (
@@ -122,8 +143,15 @@ export function ConnectionsClient({
                         key={profile.id}
                         profile={profile}
                         pending
-                        sent={profile.requestDirection === "sent" || updating.has(profile.id)}
-                        actionLabel={profile.requestDirection === "received" ? "Accept" : "Requested"}
+                        sent={
+                          profile.requestDirection === "sent" ||
+                          updating.has(profile.id)
+                        }
+                        actionLabel={
+                          profile.requestDirection === "received"
+                            ? "Accept"
+                            : "Requested"
+                        }
                         onSayHello={() => void acceptRequest(profile)}
                       />
                     ))}
@@ -133,7 +161,6 @@ export function ConnectionsClient({
             </div>
           </div>
         </div>
-        <MobileBottomNavigation active="Connections" connectionsLast />
       </div>
     </main>
   );
