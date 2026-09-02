@@ -431,7 +431,7 @@ function MobileProfileExperience({
           1/{Math.max(profile.photos.length, 1)}
         </span>
       </section>
-      <section className="relative z-10 -mt-8 mx-4 rounded-[24px] bg-white p-5 shadow-[0_14px_40px_rgba(63,38,110,.14)] dark:bg-[var(--surface)]">
+      <section className="relative z-10 -mt-8 mx-4 rounded-[24px] bg-white p-5 shadow-[0_14px_40px_rgba(63,38,110,.14)]">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="flex items-center gap-2 text-[25px] font-bold leading-tight tracking-[-.04em]">
@@ -490,7 +490,7 @@ function MobileProfileExperience({
           </button>
         ) : null}
       </section>
-      <nav className="sticky top-0 z-[70] mx-4 mt-4 flex overflow-x-auto rounded-[20px] bg-white/95 px-2 py-3 shadow-[0_10px_30px_rgba(63,38,110,.08)] backdrop-blur-xl [scrollbar-color:#c8a6ff_transparent] [scrollbar-width:thin] dark:bg-[var(--surface)]">
+      <nav className="sticky top-0 z-[70] mx-4 mt-4 flex overflow-x-auto rounded-[20px] bg-white/95 px-2 py-3 shadow-[0_10px_30px_rgba(63,38,110,.08)] backdrop-blur-xl [scrollbar-color:#c8a6ff_transparent] [scrollbar-width:thin]">
         {[
           [UserRound, "About"],
           [Camera, "Photos"],
@@ -514,7 +514,7 @@ function MobileProfileExperience({
       </nav>
       <section
         id="mobile-about"
-        className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]"
+        className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)]"
       >
         <h2 className="text-[18px] font-bold">About {firstName}</h2>
         <p
@@ -544,7 +544,7 @@ function MobileProfileExperience({
           </p>
         </div>
       </section>
-      <section className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]">
+      <section className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)]">
         <h2 className="text-[18px] font-bold">
           Why you match{" "}
           <span className="ml-2 rounded-full bg-[#f3eaff] px-2 py-1 text-[11px] text-[#8c45ff]">
@@ -574,7 +574,7 @@ function MobileProfileExperience({
           See compatibility details ›
         </button>
       </section>
-      <section className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]">
+      <section className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)]">
         <h2 className="text-[18px] font-bold">Basic Details</h2>
         <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-5">
           {basics.map(([Icon, label, value]) => (
@@ -596,7 +596,7 @@ function MobileProfileExperience({
       </section>
       <section
         id="mobile-photos"
-        className="mx-4 mt-4 scroll-mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]"
+        className="mx-4 mt-4 scroll-mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)]"
       >
         <h2 className="text-[18px] font-bold">Photos</h2>
         <div className="mt-4 grid grid-cols-3 gap-2">
@@ -709,7 +709,7 @@ function MobileProfileFieldSection({
   return (
     <section
       id={id}
-      className="mx-4 mt-4 scroll-mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]"
+      className="mx-4 mt-4 scroll-mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)]"
     >
       <h2 className="text-[18px] font-bold">{title}</h2>
       {items.length ? (
