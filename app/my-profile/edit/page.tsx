@@ -30,7 +30,7 @@ function items(value: unknown, labels: string[], fallback: DetailItem[] = []) {
         : label.startsWith("Birth ")
           ? "Birth Place"
           : "";
-    const oldValue = oldLabel ? map.get(oldLabel) ?? "" : "";
+    const oldValue = oldLabel ? (map.get(oldLabel) ?? "") : "";
     if (label.endsWith(" Country") && oldValue) return "India";
     if (label.endsWith(" State")) return oldValue.split(",")[1]?.trim() ?? "";
     if (label.endsWith(" City")) return oldValue.split(",")[0]?.trim() ?? "";
@@ -67,7 +67,7 @@ export default async function EditProfilePage() {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, display_name, avatar_url, gender, birth_date, age, weight, profession, company, city, state, country, religion, education, height, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, profile_visibility, visibility_details, profile_completion",
+      "id, display_name, avatar_url, gender, birth_date, age, weight, profession, company, city, state, country, religion, education, height, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, profile_visibility, visibility_details, profile_completion, registration_status",
     )
     .eq("id", user.id)
     .single();
@@ -77,6 +77,13 @@ export default async function EditProfilePage() {
   const avatar = resolveProfilePhoto(row, String(metadata.avatar_url ?? ""));
   const initial: EditProfileData = {
     id: user.id,
+    registrationStatus: ["draft", "awaiting_verification", "active"].includes(
+      String(row.registration_status),
+    )
+      ? (String(
+          row.registration_status,
+        ) as EditProfileData["registrationStatus"])
+      : "draft",
     completion: Number(row.profile_completion ?? 0),
     displayName: String(
       row.display_name ?? metadata.display_name ?? metadata.full_name ?? "",
@@ -88,8 +95,12 @@ export default async function EditProfilePage() {
     motherTongue: String(row.mother_tongue ?? profileDefaults.motherTongue),
     height: String(row.height ?? profileDefaults.height),
     weight: String(row.weight ?? ""),
-    city: String(row.city ?? "").split(",")[0].trim(),
-    state: String(row.state ?? String(row.city ?? "").split(",")[1] ?? "").trim(),
+    city: String(row.city ?? "")
+      .split(",")[0]
+      .trim(),
+    state: String(
+      row.state ?? String(row.city ?? "").split(",")[1] ?? "",
+    ).trim(),
     country: String(row.country ?? "India"),
     education: String(row.education ?? profileDefaults.education),
     profession: String(row.profession ?? ""),
