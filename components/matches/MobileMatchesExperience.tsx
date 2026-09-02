@@ -46,7 +46,7 @@ export function MobileMatchesExperience({
           <Link
             href="/matches?tab=shortlisted"
             aria-label="Shortlisted profiles"
-            className="grid size-9 place-items-center rounded-[13px] bg-white p-1 shadow-[0_8px_24px_rgba(44,33,80,.1)] dark:bg-[var(--surface)]"
+            className="grid size-9 place-items-center rounded-[13px] bg-white p-1 shadow-[0_8px_24px_rgba(44,33,80,.1)]"
           >
             <Heart size={17} />
           </Link>
@@ -141,7 +141,7 @@ function Pill({
   return (
     <button
       type="button"
-      className={`mobile-matches-pill flex h-7 shrink-0 items-center gap-1 rounded-full px-3 text-[13px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[var(--text-primary)] dark:bg-[var(--surface)]"}`}
+      className={`mobile-matches-pill flex h-7 shrink-0 items-center gap-1 rounded-full px-3 text-[13px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[var(--text-primary)]"}`}
     >
       {icon}
       {label}
@@ -172,7 +172,7 @@ function MobileMatchCard({
   onInterest: () => void;
 }) {
   return (
-    <article className="overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)] dark:bg-[var(--surface)]">
+    <article className="overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)]">
       <div className="relative aspect-[0.88] min-h-[390px] overflow-hidden bg-[#e8e9ec]">
         <Link href={`/profile/${profile.id}`} className="absolute inset-0">
           <ProfileImage
@@ -304,7 +304,7 @@ function MobileMatchCardLegacy({
   onInterest: () => void;
 }) {
   return (
-    <article className="grid grid-cols-[42%_minmax(0,1fr)] gap-3 rounded-[24px] bg-white p-3 shadow-[0_12px_35px_rgba(44,33,80,.1)] dark:bg-[var(--surface)]">
+    <article className="grid grid-cols-[42%_minmax(0,1fr)] gap-3 rounded-[24px] bg-white p-3 shadow-[0_12px_35px_rgba(44,33,80,.1)]">
       <div className="relative min-h-[250px] overflow-hidden rounded-[20px] bg-[#eee] min-[430px]:min-h-[270px]">
         <Link href={`/profile/${profile.id}`} className="absolute inset-0">
           <ProfileImage
