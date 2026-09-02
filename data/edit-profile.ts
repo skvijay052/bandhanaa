@@ -9,6 +9,7 @@ export type EditSection =
   | "Profile Visibility";
 export interface EditProfileData {
   id: string;
+  registrationStatus: "draft" | "awaiting_verification" | "active";
   completion: number;
   displayName: string;
   birthDate: string;
