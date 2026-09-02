@@ -1,6 +1,5 @@
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { Bell, ChevronDown, LogOut, Search } from "lucide-react";
-import { ThemeToggle } from "./ThemeToggle";
 
 export function DesktopTopBar({
   avatarUrl,
@@ -12,10 +11,7 @@ export function DesktopTopBar({
   return (
     <header className="hidden" aria-hidden="true">
       <div className="flex items-center gap-7">
-        <button
-          aria-label="Search"
-          className="app-icon-button"
-        >
+        <button aria-label="Search" className="app-icon-button">
           <Search size={23} strokeWidth={1.7} />
         </button>
         <button
@@ -27,7 +23,6 @@ export function DesktopTopBar({
             12
           </span>
         </button>
-        <ThemeToggle />
         <details className="group relative">
           <summary className="flex cursor-pointer list-none items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-pink-300 [&::-webkit-details-marker]:hidden">
             <span className="relative block size-10 overflow-hidden rounded-full bg-slate-100">
