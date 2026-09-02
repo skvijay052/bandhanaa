@@ -298,7 +298,7 @@ function MobileRequestsPage({
       </header>
       <div
         role="tablist"
-        className="relative mt-6 grid h-[62px] grid-cols-3 rounded-[19px] border border-[#eee9f2] bg-white/90 shadow-[0_8px_28px_rgba(63,38,110,.06)] dark:bg-[var(--surface)]"
+        className="relative mt-6 grid h-[62px] grid-cols-3 rounded-[19px] border border-[#eee9f2] bg-white/90 shadow-[0_8px_28px_rgba(63,38,110,.06)]"
       >
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
@@ -428,7 +428,7 @@ function MobileRequestCard({
   onRemove: () => void;
 }) {
   return (
-    <article className="grid min-h-[230px] grid-cols-[31%_minmax(0,1fr)] gap-4 rounded-[24px] border border-white/90 bg-white/95 p-3 shadow-[0_12px_32px_rgba(63,38,110,.08)] dark:bg-[var(--surface)]">
+    <article className="grid min-h-[230px] grid-cols-[31%_minmax(0,1fr)] gap-4 rounded-[24px] border border-white/90 bg-white/95 p-3 shadow-[0_12px_32px_rgba(63,38,110,.08)]">
       <Link
         href={`/profile/${profile.profileId}`}
         className="relative min-h-[205px] overflow-hidden rounded-[18px] bg-[#eff3f4]"
@@ -716,7 +716,7 @@ function ConfirmRemovalModal({
       className="fixed inset-0 z-[200] grid place-items-end bg-black/45 p-4 backdrop-blur-[2px] md:place-items-center"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div className="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-2xl dark:bg-[var(--surface)]">
+      <div className="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-2xl">
         <div className="mx-auto grid size-12 place-items-center rounded-full bg-[#fff0f5] text-[#e72c6c]">
           <X size={22} />
         </div>
