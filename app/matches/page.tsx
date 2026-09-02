@@ -14,6 +14,7 @@ type RecommendationRow = {
   avatar_url: string | null;
   age: number | null;
   profession: string | null;
+  bio: string | null;
   city: string | null;
   match_score: number | null;
 };
@@ -106,6 +107,7 @@ export default async function MatchesPage({
       state: location.state,
       occupation: profile.profession ?? "Professional",
       company: details?.company ?? undefined,
+      about: profile.bio ?? "",
       height: details?.height ?? "Not added",
       religion: details?.religion ?? "Not added",
       language: details?.mother_tongue ?? "Not added",

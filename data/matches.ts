@@ -6,6 +6,7 @@ export interface MatchProfile {
   state: string;
   occupation: string;
   company?: string;
+  about: string;
   height: string;
   religion: string;
   language: string;

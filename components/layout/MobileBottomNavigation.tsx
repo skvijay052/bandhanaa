@@ -49,7 +49,6 @@ export function MobileBottomNavigation({
             pathname.startsWith(`${href}/`) ||
             (label === "More" && pathname.startsWith("/settings"));
           const raised = "raised" in item && item.raised;
-          const badge = label === "Requests" ? requestCount : 0;
           return (
             <Link
               key={`${href}-${index}`}
@@ -63,20 +62,13 @@ export function MobileBottomNavigation({
                   <Icon size={25} strokeWidth={1.8} />
                 </span>
               ) : (
-                <span className="relative grid place-items-center">
-                  <Icon
-                    size={22}
-                    strokeWidth={1.8}
-                    fill={active ? "currentColor" : "none"}
-                  />
-                  {badge ? (
-                    <span className="absolute -right-3 -top-3 grid size-5 place-items-center rounded-full bg-[#f53586] text-[10px] font-bold text-white">
-                      {badge}
-                    </span>
-                  ) : null}
-                </span>
+                <Icon
+                  size={22}
+                  strokeWidth={1.8}
+                  fill={active && label !== "More" ? "currentColor" : "none"}
+                />
               )}
-              {label ? <span>{label}</span> : null}
+              <span>{label}</span>
               {active ? (
                 <span className="absolute bottom-1.5 h-[3px] w-8 rounded-full bg-[#8b3de8]" />
               ) : null}

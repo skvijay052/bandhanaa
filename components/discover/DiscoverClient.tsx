@@ -169,10 +169,6 @@ export function DiscoverClient({
               completion={profileCompletion}
               shortlisted={shortlisted}
               onShortlist={(id) => void toggleShortlist(id)}
-              onRelationship={(profile) => void updateRelationship(profile)}
-              onDismiss={(id) =>
-                setHiddenProfiles((current) => [...current, id])
-              }
             />
             <DiscoverSearch
               query={query}

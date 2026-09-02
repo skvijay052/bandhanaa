@@ -7,13 +7,11 @@ import {
   Bookmark,
   BriefcaseBusiness,
   GraduationCap,
-  Heart,
   MapPin,
   Search,
   SlidersHorizontal,
   Sparkles,
   Star,
-  X,
 } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
 import { ProfileImage } from "@/components/ui/ProfileImage";
@@ -30,8 +28,6 @@ type Props = {
   completion: number;
   shortlisted: string[];
   onShortlist: (id: string) => void;
-  onRelationship: (profile: DiscoverProfile) => void;
-  onDismiss: (id: string) => void;
 };
 
 export function MobileDiscoverExperience({
@@ -45,8 +41,6 @@ export function MobileDiscoverExperience({
   completion,
   shortlisted,
   onShortlist,
-  onRelationship,
-  onDismiss,
 }: Props) {
   const featured = profiles[0];
   return (
@@ -165,8 +159,6 @@ export function MobileDiscoverExperience({
           profile={featured}
           liked={shortlisted.includes(featured.id)}
           onShortlist={() => onShortlist(featured.id)}
-          onRelationship={() => onRelationship(featured)}
-          onDismiss={() => onDismiss(featured.id)}
         />
       ) : (
         <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">
@@ -244,16 +236,11 @@ function FeaturedProfile({
   profile,
   liked,
   onShortlist,
-  onRelationship,
-  onDismiss,
 }: {
   profile: DiscoverProfile;
   liked: boolean;
   onShortlist: () => void;
-  onRelationship: () => void;
-  onDismiss: () => void;
 }) {
-  const relationshipActive = profile.relationship !== "none";
   return (
     <article className="mt-5 overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)] dark:bg-[var(--surface)]">
       <div className="relative h-[440px] overflow-hidden">
@@ -286,10 +273,12 @@ function FeaturedProfile({
           />
         </button>
         <div className="absolute inset-x-5 bottom-5 text-white">
-          <h2 className="flex items-center gap-2 text-[31px] font-bold tracking-[-.03em]">
-            {profile.name}, {profile.age}
-            <BadgeCheck size={23} className="fill-[#ff4d9b] text-white" />
-          </h2>
+          <Link href={`/profile/${profile.id}`} className="inline-flex">
+            <h2 className="flex items-center gap-2 text-[31px] font-bold tracking-[-.03em]">
+              {profile.name}, {profile.age}
+              <BadgeCheck size={23} className="fill-[#ff4d9b] text-white" />
+            </h2>
+          </Link>
           <p className="mt-1 text-[16px]">{profile.job}</p>
           <p className="mt-2 flex items-center gap-2 text-[15px]">
             <MapPin size={17} fill="white" />
@@ -321,31 +310,6 @@ function FeaturedProfile({
         <p className="mt-5 line-clamp-2 text-[15px] leading-6 text-[var(--text-secondary)]">
           {profile.bio}
         </p>
-        <div className="mt-5 flex items-center justify-center gap-9">
-          <Action label="Dismiss" onClick={onDismiss}>
-            <X size={35} className="text-[#68717d]" />
-          </Action>
-          <Action
-            label={relationshipActive ? "Requested" : "Send request"}
-            onClick={onRelationship}
-          >
-            <Star
-              size={35}
-              fill={relationshipActive ? "#8c45ff" : "none"}
-              className="text-[#8c45ff]"
-            />
-          </Action>
-          <Action
-            label={liked ? "Shortlisted" : "Shortlist"}
-            onClick={onShortlist}
-          >
-            <Heart
-              size={36}
-              fill={liked ? "#ff3040" : "none"}
-              className="text-[#ff4d9b]"
-            />
-          </Action>
-        </div>
       </div>
     </article>
   );
@@ -374,25 +338,5 @@ function Detail({
         </strong>
       </span>
     </div>
-  );
-}
-function Action({
-  children,
-  label,
-  onClick,
-}: {
-  children: React.ReactNode;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      className="mobile-profile-action grid size-[52px] place-items-center rounded-full bg-white shadow-[0_10px_25px_rgba(44,33,80,.12)] dark:bg-[var(--surface-hover)]"
-    >
-      {children}
-    </button>
   );
 }

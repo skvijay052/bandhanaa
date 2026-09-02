@@ -4,11 +4,13 @@ import Link from "next/link";
 import {
   BadgeCheck,
   Bell,
+  Bookmark,
   BriefcaseBusiness,
   Eye,
   GraduationCap,
   Heart,
   MapPin,
+  Ruler,
   Search,
   Sparkles,
 } from "lucide-react";
@@ -170,81 +172,107 @@ function MobileMatchCard({
   onInterest: () => void;
 }) {
   return (
-    <article className="grid min-h-[164px] grid-cols-[29%_minmax(0,1fr)] gap-3 rounded-[20px] border border-white/90 bg-white/95 p-2.5 shadow-[0_10px_28px_rgba(63,38,110,.08)] dark:bg-[var(--surface)]">
-      <Link
-        href={`/profile/${profile.id}`}
-        className="relative min-h-[143px] overflow-hidden rounded-[15px] bg-[#eff3f4]"
-      >
-        <ProfileImage
-          src={profile.image}
-          alt={profile.name}
-          fill
-          priority={priority}
-          sizes="29vw"
-          className="object-cover"
-        />
-        <span
-          className={`absolute bottom-2 left-2 size-2.5 rounded-full ring-2 ring-white ${profile.online ? "bg-[#25d86d]" : "bg-[#9aa5af]"}`}
-        />
-      </Link>
-      <div className="flex min-w-0 flex-col py-1">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <h2 className="flex items-center gap-1.5 truncate font-bold tracking-[-.03em] text-[var(--text-primary)]">
-              {profile.name}, {profile.age}
-              {profile.verified ? (
-                <BadgeCheck
-                  size={16}
-                  className="shrink-0 fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
-                />
-              ) : null}
-            </h2>
-            <p className="mt-1.5 flex items-center gap-1.5 truncate text-[var(--text-secondary)]">
-              <BriefcaseBusiness size={12} />
-              {profile.occupation}
-            </p>
-            <p className="mt-1.5 flex items-center gap-1.5 truncate text-[var(--text-secondary)]">
-              <MapPin size={12} />
-              {profile.city}, {profile.state}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onShortlist}
-            aria-label={liked ? "Remove from shortlist" : "Add to shortlist"}
-            className="grid size-7 shrink-0 place-items-center rounded-lg bg-[#faf7ff] text-[#536471]"
-          >
-            <Heart
-              size={13}
-              fill={liked ? "#ff3040" : "none"}
-              className={liked ? "text-[#ff3040]" : ""}
-            />
-          </button>
-        </div>
-        <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-[#f3eaff] px-2.5 py-1 font-semibold text-[#8b3de8]">
-          <Sparkles size={12} />
-          {profile.compatibility}% Match
+    <article className="overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)] dark:bg-[var(--surface)]">
+      <div className="relative aspect-[0.88] min-h-[390px] overflow-hidden bg-[#e8e9ec]">
+        <Link href={`/profile/${profile.id}`} className="absolute inset-0">
+          <ProfileImage
+            src={profile.image}
+            alt={profile.name}
+            fill
+            priority={priority}
+            sizes="calc(100vw - 32px)"
+            className="object-cover"
+          />
+        </Link>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/5" />
+        <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm">
+          <i
+            className={`size-2 rounded-full ${profile.online ? "bg-[#31df7d]" : "bg-white"}`}
+          />
+          {profile.online ? "Online" : "Offline"}
         </span>
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-2.5">
-          <Link
-            href={`/profile/${profile.id}`}
-            className="flex h-9 items-center justify-center gap-1 rounded-full border border-[#8b3de8] px-1.5 font-semibold text-[#8b3de8]"
-          >
-            <Eye size={12} />
-            View Profile
-          </Link>
-          <button
-            type="button"
-            onClick={onInterest}
-            disabled={sent}
-            className="flex h-9 items-center justify-center gap-1 rounded-full bg-gradient-to-r from-[#873df1] to-[#f547a2] px-1.5 font-semibold text-white disabled:opacity-70"
-          >
-            <Heart size={12} />
-            {sent ? "Requested" : "Send Interest"}
-          </button>
+        <button
+          type="button"
+          onClick={onShortlist}
+          aria-label={liked ? "Remove from shortlist" : "Add to shortlist"}
+          className="absolute right-4 top-4 grid size-10 place-items-center rounded-[12px] bg-white text-[#8b3de8] shadow-[0_5px_18px_rgba(0,0,0,.14)]"
+        >
+          <Bookmark size={18} fill={liked ? "currentColor" : "none"} />
+        </button>
+        <div className="absolute inset-x-5 bottom-5 text-white">
+          <h2 className="flex items-center gap-1.5 text-[18px] font-semibold tracking-[-.02em]">
+            {profile.name}, {profile.age}
+            {profile.verified ? (
+              <BadgeCheck
+                size={16}
+                className="fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
+              />
+            ) : null}
+          </h2>
+          <p className="mt-2 text-[12px]">{profile.occupation}</p>
+          <p className="mt-2 flex items-center gap-1.5 text-[12px]">
+            <MapPin size={14} fill="white" />
+            {profile.city}, {profile.state}, India
+          </p>
         </div>
+        <span className="absolute bottom-5 right-4 rounded-full bg-black/60 px-3 py-1.5 text-[11px] font-semibold text-white">
+          1/{Math.max(profile.photoCount, 1)}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-3 divide-x divide-[#eceaf0] border-b border-[#eceaf0] px-2 py-4">
+        <MatchDetail icon={GraduationCap} label="Education" value={profile.education} />
+        <MatchDetail icon={BriefcaseBusiness} label="Profession" value={profile.occupation} />
+        <MatchDetail icon={Ruler} label="Height" value={profile.height} />
+      </div>
+
+      <p className="line-clamp-2 min-h-[60px] px-5 py-4 text-[12px] leading-6 text-[#687184]">
+        {profile.about || "No description added yet."}
+      </p>
+
+      <div className="grid grid-cols-2 gap-3 border-t border-[#eceaf0] p-3">
+        <Link
+          href={`/profile/${profile.id}`}
+          className="flex h-10 items-center justify-center gap-1.5 rounded-full border border-[#9b4cf2] text-[12px] font-semibold text-[#8b3de8]"
+        >
+          <Eye size={14} />
+          View Profile
+        </Link>
+        <button
+          type="button"
+          onClick={onInterest}
+          disabled={sent}
+          className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#a34cef] to-[#f45ca9] text-[12px] font-semibold text-white disabled:opacity-80"
+        >
+          <Heart size={14} />
+          {sent ? "Requested" : "Send Interest"}
+        </button>
       </div>
     </article>
+  );
+}
+
+function MatchDetail({
+  icon: Icon,
+  label,
+  value,
+}: {
+  icon: typeof GraduationCap;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-2 px-2">
+      <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#f6efff] text-[#7651a8]">
+        <Icon size={14} />
+      </span>
+      <span className="min-w-0">
+        <small className="block truncate text-[9px] text-[#8a91a1]">{label}</small>
+        <strong className="mt-1 block truncate text-[10px] font-medium text-[#252936]">
+          {value}
+        </strong>
+      </span>
+    </div>
   );
 }
 
