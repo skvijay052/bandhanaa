@@ -3,14 +3,13 @@
 import Link from "next/link";
 import {
   BadgeCheck,
-  Bell,
   Bookmark,
   BriefcaseBusiness,
   GraduationCap,
   MapPin,
   Search,
+  Heart,
   SlidersHorizontal,
-  Sparkles,
   Star,
 } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
@@ -45,44 +44,26 @@ export function MobileDiscoverExperience({
   const featured = profiles[0];
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
-      <header className="flex items-center justify-between">
-        <Link href="/discover" className="w-[170px]" aria-label="Bandhanaa">
+      <header className="grid grid-cols-[40px_1fr_40px] items-center">
+        <span aria-hidden="true" />
+        <Link
+          href="/discover"
+          className="justify-self-center"
+          aria-label="Bandhanaa"
+        >
           <Brand compact />
         </Link>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            aria-label="Focus profile search"
-            onClick={() =>
-              document.getElementById("mobile-discover-search")?.focus()
-            }
+        <div className="justify-self-end">
+          <Link
+            href="/matches?tab=shortlisted"
+            aria-label="Shortlisted profiles"
             className="grid size-9 place-items-center rounded-[13px] bg-white p-1 text-[#0f1419] shadow-[0_8px_24px_rgba(44,33,80,.1)] dark:bg-[var(--surface)] dark:text-[var(--text-primary)]"
           >
-            <Search size={16} />
-          </button>
-          <Link
-            href="/notifications"
-            aria-label="Notifications"
-            className="relative grid size-9 place-items-center rounded-[13px] bg-white p-1 text-[#0f1419] shadow-[0_8px_24px_rgba(44,33,80,.1)] dark:bg-[var(--surface)] dark:text-[var(--text-primary)]"
-          >
-            <Bell size={16} />
-            <span className="absolute right-1 top-1 size-2 rounded-full border border-white bg-[#a53bff] dark:border-[var(--surface)]" />
+            <Heart size={17} />
           </Link>
         </div>
       </header>
-      <div className="mt-8">
-        <h1 className="flex items-center gap-2 text-[34px] font-extrabold tracking-[-.04em] text-[var(--text-primary)]">
-          Discover{" "}
-          <Sparkles
-            size={18}
-            className="relative top-px shrink-0 fill-[#8c45ff] text-[#8c45ff]"
-          />
-        </h1>
-        <p className="mt-1 text-[16px] text-[var(--text-secondary)]">
-          Find someone meaningful 💗
-        </p>
-      </div>
-      <label className="mobile-discover-search mt-6 flex h-11 items-center rounded-full border border-[#e6e2ea] bg-white px-3 text-[#87909e] shadow-[0_7px_22px_rgba(44,33,80,.08)] dark:bg-[var(--surface)]">
+      <label className="mobile-discover-search mt-5 flex h-11 items-center rounded-full border border-[#e6e2ea] bg-white px-3 text-[#87909e] shadow-[0_7px_22px_rgba(44,33,80,.08)] dark:bg-[var(--surface)]">
         <Search size={17} />
         <input
           id="mobile-discover-search"
@@ -171,9 +152,12 @@ export function MobileDiscoverExperience({
             <h2 className="text-[20px] font-bold text-[var(--text-primary)]">
               New Profiles
             </h2>
-            <span className="text-[15px] font-semibold text-[#8c45ff]">
-              See all
-            </span>
+            <Link
+              href="/matches"
+              className="text-[15px] font-semibold text-[#8c45ff]"
+            >
+              View All
+            </Link>
           </div>
           <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {profiles.slice(1, 6).map((profile, index) => (
