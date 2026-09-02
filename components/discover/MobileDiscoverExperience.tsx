@@ -57,13 +57,13 @@ export function MobileDiscoverExperience({
           <Link
             href="/matches?tab=shortlisted"
             aria-label="Shortlisted profiles"
-            className="grid size-9 place-items-center rounded-[13px] bg-white p-1 text-[#0f1419] shadow-[0_8px_24px_rgba(44,33,80,.1)] dark:bg-[var(--surface)] dark:text-[var(--text-primary)]"
+            className="grid size-9 place-items-center rounded-[13px] bg-white p-1 text-[#0f1419] shadow-[0_8px_24px_rgba(44,33,80,.1)]"
           >
             <Heart size={17} />
           </Link>
         </div>
       </header>
-      <label className="mobile-discover-search mt-5 flex h-11 items-center rounded-full border border-[#e6e2ea] bg-white px-3 text-[#87909e] shadow-[0_7px_22px_rgba(44,33,80,.08)] dark:bg-[var(--surface)]">
+      <label className="mobile-discover-search mt-5 flex h-11 items-center rounded-full border border-[#e6e2ea] bg-white px-3 text-[#87909e] shadow-[0_7px_22px_rgba(44,33,80,.08)]">
         <Search size={17} />
         <input
           id="mobile-discover-search"
@@ -208,7 +208,7 @@ function FilterPill({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419] dark:bg-[var(--surface)] dark:text-[var(--text-primary)]"}`}
+      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419]"}`}
     >
       {icon}
       {label}
@@ -226,7 +226,7 @@ function FeaturedProfile({
   onShortlist: () => void;
 }) {
   return (
-    <article className="mt-5 overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)] dark:bg-[var(--surface)]">
+    <article className="mt-5 overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)]">
       <div className="relative h-[440px] overflow-hidden">
         <Link href={`/profile/${profile.id}`} className="absolute inset-0">
           <ProfileImage
