@@ -198,11 +198,25 @@ export function RegisterForm() {
         return setMessage({ type: "error", text });
       }
       if (data.session && data.user?.email_confirmed_at) {
-        router.replace("/discover");
+        const { data: activation, error: activationError } =
+          await createClient().rpc("activate_verified_profile");
+        if (activationError) {
+          setRegistrationState("idle");
+          return setMessage({
+            type: "error",
+            text: "Your account was created, but we couldn't finish activation. Please sign in again.",
+          });
+        }
+        const profile = Array.isArray(activation) ? activation[0] : activation;
+        router.replace(
+          profile?.registration_status === "active"
+            ? "/discover"
+            : "/settings/edit-profile",
+        );
         router.refresh();
         return;
       }
-      sessionStorage.setItem(verificationEmailStorageKey, normalizedEmail);
+      localStorage.setItem(verificationEmailStorageKey, normalizedEmail);
       setRegistrationState("otp_required");
       router.push("/verify-email");
     } catch {
