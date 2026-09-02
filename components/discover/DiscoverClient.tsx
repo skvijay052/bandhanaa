@@ -374,7 +374,7 @@ function DiscoverSearch({
 }) {
   return (
     <div className="relative z-40 hidden border-b border-[var(--border)] pb-5 md:block">
-      <label className="flex h-12 w-full items-center gap-3 rounded-2xl bg-[#f7f9f9] px-5 text-[#536471] transition focus-within:ring-1 focus-within:ring-[#cfd9de] dark:bg-[var(--surface-hover)]">
+      <label className="flex h-12 w-full items-center gap-3 rounded-2xl bg-[#f7f9f9] px-5 text-[#536471] transition focus-within:ring-1 focus-within:ring-[#cfd9de]">
         <Search size={18} strokeWidth={2} aria-hidden="true" />
         <input
           type="search"
