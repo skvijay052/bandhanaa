@@ -36,7 +36,7 @@ export function SearchableSelect({ label, value, options, onChange, required, pl
         <ChevronDown size={18} className={`ml-3 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       {open ? (
-        <div className="absolute z-50 mt-2 w-full min-w-[240px] overflow-hidden rounded-xl border border-[var(--border-control)] bg-white shadow-lg dark:bg-[var(--surface)]">
+        <div className="absolute z-50 mt-2 w-full min-w-[240px] overflow-hidden rounded-xl border border-[var(--border-control)] bg-white shadow-lg">
           <div className="flex h-11 items-center gap-2 border-b border-[var(--border)] px-3">
             <Search size={17} className="text-[var(--text-muted)]" />
             <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === "Escape") setOpen(false); }} placeholder={`Search ${label.toLowerCase()}`} className="min-w-0 flex-1 bg-transparent text-[14px] font-normal outline-none" />
