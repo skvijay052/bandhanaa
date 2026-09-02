@@ -50,19 +50,8 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <SettingsNavigation active="Settings & Privacy" />
           <div className="privacy-page h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-0">
-            <MobilePageHeader
-              title="Settings"
-              description="Privacy, safety and account controls"
-            />
+            <MobilePageHeader />
             <div className="privacy-mobile-sheet mx-auto w-full max-w-[780px] py-6 md:py-8">
-              <header className="privacy-mobile-title flex items-center md:hidden">
-                <button onClick={() => router.back()} aria-label="Go back">
-                  <ArrowLeft size={20} />
-                </button>
-                <h1 className="mx-auto pr-5 text-[15px] font-bold">
-                  Settings &amp; Privacy
-                </h1>
-              </header>
               <header className="hidden md:block">
                 <h1 className="text-[24px] font-bold tracking-[-0.02em]">
                   Settings &amp; Privacy
@@ -165,13 +154,29 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                 />
                 <form action="/api/auth/signout" method="post">
                   <button type="submit" className="w-full text-left">
-                    <ValueRow icon={LogOut} title="Log Out" subtitle="Sign out of your Bandhanaa account" highlighted />
+                    <ValueRow
+                      icon={LogOut}
+                      title="Log Out"
+                      subtitle="Sign out of your Bandhanaa account"
+                      highlighted
+                    />
                   </button>
                 </form>
               </SettingsSection>
-              <Link href="/settings/help" className="privacy-control-banner md:hidden">
-                <span><Shield /></span>
-                <div><strong>You’re in control</strong><p>Manage your privacy and data to have a<br />safe and trusted experience.</p></div>
+              <Link
+                href="/settings/help"
+                className="privacy-control-banner md:hidden"
+              >
+                <span>
+                  <Shield />
+                </span>
+                <div>
+                  <strong>You’re in control</strong>
+                  <p>
+                    Manage your privacy and data to have a<br />
+                    safe and trusted experience.
+                  </p>
+                </div>
                 <ChevronRight />
               </Link>
               {error ? (
@@ -221,7 +226,9 @@ function ValueRow({
     <div
       className={`privacy-value-row flex min-h-[74px] items-center px-1 transition-colors hover:bg-[var(--app-hover)] ${highlighted ? "text-[var(--text-primary)]" : ""}`}
     >
-      <span className="privacy-row-icon"><Icon size={21} strokeWidth={1.8} /></span>
+      <span className="privacy-row-icon">
+        <Icon size={21} strokeWidth={1.8} />
+      </span>
       <div className="ml-4">
         <strong className="text-[15px] font-normal">{title}</strong>
         <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
@@ -259,7 +266,9 @@ function ToggleRow({
 }) {
   return (
     <div className="privacy-toggle-row flex min-h-[74px] items-center px-1">
-      <span className="privacy-row-icon"><Icon size={21} strokeWidth={1.8} /></span>
+      <span className="privacy-row-icon">
+        <Icon size={21} strokeWidth={1.8} />
+      </span>
       <div className="ml-4">
         <strong className="text-[15px] font-normal">{title}</strong>
         <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
