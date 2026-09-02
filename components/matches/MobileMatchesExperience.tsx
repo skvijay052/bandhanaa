@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   BadgeCheck,
-  Bell,
   Bookmark,
   BriefcaseBusiness,
   Eye,
@@ -11,7 +10,6 @@ import {
   Heart,
   MapPin,
   Ruler,
-  Search,
   Sparkles,
 } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
@@ -22,36 +20,35 @@ export function MobileMatchesExperience({
   profiles,
   shortlisted,
   sentIds,
+  followingIds,
   onShortlist,
   onInterest,
 }: {
   profiles: MatchProfile[];
   shortlisted: string[];
   sentIds: string[];
+  followingIds: string[];
   onShortlist: (profile: MatchProfile) => void;
   onInterest: (profile: MatchProfile) => void;
 }) {
   return (
     <div className="mobile-half-type mobile-matches-type relative z-10 px-4 pb-32 pt-5 md:hidden">
-      <header className="flex items-center justify-between">
-        <Link href="/discover" className="w-[170px]" aria-label="Bandhanaa">
+      <header className="grid grid-cols-[40px_1fr_40px] items-center">
+        <span aria-hidden="true" />
+        <Link
+          href="/discover"
+          className="justify-self-center"
+          aria-label="Bandhanaa"
+        >
           <Brand compact />
         </Link>
-        <div className="flex gap-2">
+        <div className="justify-self-end">
           <Link
-            href="/discover"
-            aria-label="Search profiles"
+            href="/matches?tab=shortlisted"
+            aria-label="Shortlisted profiles"
             className="grid size-9 place-items-center rounded-[13px] bg-white p-1 shadow-[0_8px_24px_rgba(44,33,80,.1)] dark:bg-[var(--surface)]"
           >
-            <Search size={16} />
-          </Link>
-          <Link
-            href="/notifications"
-            aria-label="Notifications"
-            className="relative grid size-9 place-items-center rounded-[13px] bg-white p-1 shadow-[0_8px_24px_rgba(44,33,80,.1)] dark:bg-[var(--surface)]"
-          >
-            <Bell size={16} />
-            <span className="absolute right-1 top-1 size-2 rounded-full border border-white bg-[#a53bff] dark:border-[var(--surface)]" />
+            <Heart size={17} />
           </Link>
         </div>
       </header>
@@ -119,6 +116,7 @@ export function MobileMatchesExperience({
             profile={profile}
             liked={shortlisted.includes(profile.id)}
             sent={sentIds.includes(profile.id)}
+            following={followingIds.includes(profile.id)}
             priority={index < 2}
             onShortlist={() => onShortlist(profile)}
             onInterest={() => onInterest(profile)}
@@ -160,6 +158,7 @@ function MobileMatchCard({
   profile,
   liked,
   sent,
+  following,
   priority,
   onShortlist,
   onInterest,
@@ -167,6 +166,7 @@ function MobileMatchCard({
   profile: MatchProfile;
   liked: boolean;
   sent: boolean;
+  following: boolean;
   priority: boolean;
   onShortlist: () => void;
   onInterest: () => void;
@@ -200,15 +200,17 @@ function MobileMatchCard({
           <Bookmark size={18} fill={liked ? "currentColor" : "none"} />
         </button>
         <div className="absolute inset-x-5 bottom-5 text-white">
-          <h2 className="flex items-center gap-1.5 text-[18px] font-semibold tracking-[-.02em]">
-            {profile.name}, {profile.age}
-            {profile.verified ? (
-              <BadgeCheck
-                size={16}
-                className="fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
-              />
-            ) : null}
-          </h2>
+          <Link href={`/profile/${profile.id}`} className="inline-flex">
+            <h2 className="flex items-center gap-1.5 text-[18px] font-semibold tracking-[-.02em]">
+              {profile.name}, {profile.age}
+              {profile.verified ? (
+                <BadgeCheck
+                  size={16}
+                  className="fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
+                />
+              ) : null}
+            </h2>
+          </Link>
           <p className="mt-2 text-[12px]">{profile.occupation}</p>
           <p className="mt-2 flex items-center gap-1.5 text-[12px]">
             <MapPin size={14} fill="white" />
@@ -221,8 +223,16 @@ function MobileMatchCard({
       </div>
 
       <div className="grid grid-cols-3 divide-x divide-[#eceaf0] border-b border-[#eceaf0] px-2 py-4">
-        <MatchDetail icon={GraduationCap} label="Education" value={profile.education} />
-        <MatchDetail icon={BriefcaseBusiness} label="Profession" value={profile.occupation} />
+        <MatchDetail
+          icon={GraduationCap}
+          label="Education"
+          value={profile.education}
+        />
+        <MatchDetail
+          icon={BriefcaseBusiness}
+          label="Profession"
+          value={profile.occupation}
+        />
         <MatchDetail icon={Ruler} label="Height" value={profile.height} />
       </div>
 
@@ -241,11 +251,11 @@ function MobileMatchCard({
         <button
           type="button"
           onClick={onInterest}
-          disabled={sent}
+          disabled={sent || following}
           className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#a34cef] to-[#f45ca9] text-[12px] font-semibold text-white disabled:opacity-80"
         >
           <Heart size={14} />
-          {sent ? "Requested" : "Send Interest"}
+          {following ? "Following" : sent ? "Requested" : "Send Request"}
         </button>
       </div>
     </article>
@@ -267,7 +277,9 @@ function MatchDetail({
         <Icon size={14} />
       </span>
       <span className="min-w-0">
-        <small className="block truncate text-[9px] text-[#8a91a1]">{label}</small>
+        <small className="block truncate text-[9px] text-[#8a91a1]">
+          {label}
+        </small>
         <strong className="mt-1 block truncate text-[10px] font-medium text-[#252936]">
           {value}
         </strong>
