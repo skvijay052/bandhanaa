@@ -230,7 +230,7 @@ export function MessagesClient({
   }
 
   return (
-    <div className="h-dvh overflow-hidden bg-white dark:bg-[var(--app-bg)]">
+    <div className="h-dvh overflow-hidden bg-white">
       <div className="app-shell">
         <AppSidebar active="Messages" hideMobileNavigation={mobileChatOpen} />
         <div className="grid min-w-0 flex-1 md:grid-cols-[390px_minmax(0,1fr)] xl:grid-cols-[430px_minmax(0,1fr)]">
@@ -301,13 +301,13 @@ function ConversationPanel({
 }) {
   return (
     <section
-      className={`relative min-w-0 overflow-hidden border-r border-[#dbdfe4] bg-white max-md:bg-[#fbfcff] dark:border-[var(--app-border)] dark:bg-[var(--app-surface)] ${mobileChatOpen ? "max-md:hidden" : ""}`}
+      className={`relative min-w-0 overflow-hidden border-r border-[#dbdfe4] bg-white max-md:bg-[#fbfcff] ${mobileChatOpen ? "max-md:hidden" : ""}`}
     >
       <div className="pointer-events-none absolute -left-28 -top-24 size-[420px] rounded-full bg-[#dff9f3]/80 blur-2xl md:hidden" />
       <div className="pointer-events-none absolute -right-40 top-12 size-[400px] rounded-full bg-[#eee7ff]/80 blur-2xl md:hidden" />
       <div className="relative px-7 pb-4 pt-7 max-md:px-4 max-md:pb-3 max-md:pt-5">
         <div className="hidden items-center justify-between md:flex">
-          <h1 className="truncate text-[20px] font-bold tracking-[-.02em] text-[#0f1419] dark:text-[var(--app-text)]">
+          <h1 className="truncate text-[20px] font-bold tracking-[-.02em] text-[#0f1419]">
             {viewerName}
           </h1>
           <button
@@ -343,7 +343,7 @@ function ConversationPanel({
           </h1>
           <p className="mt-1 text-[13px] text-[#687684]">Your conversations</p>
         </div>
-        <label className="mt-5 flex h-12 items-center gap-3 rounded-full bg-[#f1f3f5] px-5 text-[#667781] max-md:bg-white/95 max-md:shadow-[0_8px_28px_rgba(63,38,110,.07)] dark:bg-[var(--app-surface-2)]">
+        <label className="mt-5 flex h-12 items-center gap-3 rounded-full bg-[#f1f3f5] px-5 text-[#667781] max-md:bg-white/95 max-md:shadow-[0_8px_28px_rgba(63,38,110,.07)]">
           <Search size={18} />
           <input
             value={query}
@@ -422,7 +422,7 @@ function ConversationRow({
   return (
     <button
       onClick={onClick}
-      className={`relative mb-3 flex min-h-[92px] w-full items-center gap-3 rounded-[22px] px-4 py-3 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1d9bf0] max-md:bg-white/95 max-md:shadow-[0_9px_26px_rgba(63,38,110,.07)] ${active ? "md:bg-[#f1f3f5] dark:bg-[var(--app-selected)]" : "md:bg-white md:hover:bg-[#f7f9f9] dark:bg-[var(--app-surface)] dark:hover:bg-[var(--app-hover)]"}`}
+      className={`relative mb-3 flex min-h-[92px] w-full items-center gap-3 rounded-[22px] px-4 py-3 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1d9bf0] max-md:bg-white/95 max-md:shadow-[0_9px_26px_rgba(63,38,110,.07)] ${active ? "md:bg-[#f1f3f5]" : "md:bg-white md:hover:bg-[#f7f9f9]"}`}
     >
       <span className="relative size-[62px] shrink-0 overflow-hidden rounded-[18px] bg-slate-100 md:size-[64px] md:rounded-full">
         <ProfileImage
@@ -435,7 +435,7 @@ function ConversationRow({
       </span>
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-1.5">
-          <strong className="text-[15px] font-bold text-[#111b21] dark:text-[var(--app-text)]">
+          <strong className="text-[15px] font-bold text-[#111b21]">
             {item.name}
           </strong>
           {item.verified ? (
@@ -511,9 +511,9 @@ function ChatPanel({
 }) {
   return (
     <section
-      className={`${mobileOpen ? "fixed inset-0 z-[110] flex" : "hidden"} min-h-0 min-w-0 flex-col bg-[#fbfcff] md:relative md:inset-auto md:z-auto md:flex md:bg-white dark:bg-[#171418]`}
+      className={`${mobileOpen ? "fixed inset-0 z-[110] flex" : "hidden"} min-h-0 min-w-0 flex-col bg-[#fbfcff] md:relative md:inset-auto md:z-auto md:flex md:bg-white`}
     >
-      <header className="z-10 flex h-[86px] shrink-0 items-center bg-white/90 px-4 shadow-[0_5px_20px_rgba(63,38,110,.05)] dark:border-[var(--app-border)] dark:bg-[var(--app-surface)] md:h-20 md:border-b md:border-[#dbdfe4] md:px-6">
+      <header className="z-10 flex h-[86px] shrink-0 items-center bg-white/90 px-4 shadow-[0_5px_20px_rgba(63,38,110,.05)] md:h-20 md:border-b md:border-[#dbdfe4] md:px-6">
         <button
           type="button"
           onClick={onBack}
@@ -532,7 +532,7 @@ function ChatPanel({
           />
         </span>
         <div className="ml-3 min-w-0">
-          <h2 className="flex items-center gap-1.5 text-[16px] font-semibold text-[#111b21] dark:text-[var(--app-text)]">
+          <h2 className="flex items-center gap-1.5 text-[16px] font-semibold text-[#111b21]">
             {selected.name}
             <span className="max-md:hidden">, {selected.age}</span>
             {selected.verified ? (
@@ -592,8 +592,8 @@ function ChatPanel({
           </p>
         </div>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto bg-transparent px-4 py-5 md:bg-white md:px-[5%] md:py-6 dark:bg-[#171418]">
-        <div className="mx-auto mb-6 w-fit rounded-full bg-white/80 px-4 py-1.5 text-[11px] font-medium text-[#8a939b] dark:bg-[#211e23]">
+      <div className="min-h-0 flex-1 overflow-y-auto bg-transparent px-4 py-5 md:bg-white md:px-[5%] md:py-6">
+        <div className="mx-auto mb-6 w-fit rounded-full bg-white/80 px-4 py-1.5 text-[11px] font-medium text-[#8a939b]">
           Today
         </div>
         <div className="space-y-1.5">
@@ -620,7 +620,7 @@ function ChatPanel({
           </span>
         </div>
       </div>
-      <div className="mx-5 mb-[calc(.75rem+env(safe-area-inset-bottom))] mt-2 flex min-h-14 shrink-0 items-center gap-2 rounded-[20px] border border-white bg-white p-1.5 pl-3 shadow-[0_7px_24px_rgba(63,38,110,.10)] dark:border-[var(--app-border)] dark:bg-[var(--app-surface-2)] max-md:mx-3">
+      <div className="mx-5 mb-[calc(.75rem+env(safe-area-inset-bottom))] mt-2 flex min-h-14 shrink-0 items-center gap-2 rounded-[20px] border border-white bg-white p-1.5 pl-3 shadow-[0_7px_24px_rgba(63,38,110,.10)] max-md:mx-3">
         <button
           type="button"
           aria-label="Add attachment"
@@ -664,7 +664,7 @@ function ChatPanel({
 
 function EmptyChat() {
   return (
-    <section className="hidden place-items-center bg-[#efeae2] text-center md:grid dark:bg-[#171418]">
+    <section className="hidden place-items-center bg-[#efeae2] text-center md:grid">
       <div>
         <MessageSquareIcon />
         <h2 className="mt-4 text-[20px] font-semibold">
@@ -687,8 +687,8 @@ function ProfileDetails({
   onClose: () => void;
 }) {
   return (
-    <aside className="fixed inset-0 z-[70] overflow-y-auto bg-white dark:bg-[var(--app-surface)] md:absolute md:inset-y-0 md:right-0 md:left-auto md:w-[340px] md:border-l md:border-[#e9edef] md:shadow-[-8px_0_24px_rgba(17,27,33,.08)] dark:md:border-[var(--app-border)]">
-      <header className="flex h-16 items-center border-b border-[#e9edef] px-4 dark:border-[var(--app-border)]">
+    <aside className="fixed inset-0 z-[70] overflow-y-auto bg-white md:absolute md:inset-y-0 md:right-0 md:left-auto md:w-[340px] md:border-l md:border-[#e9edef] md:shadow-[-8px_0_24px_rgba(17,27,33,.08)]">
+      <header className="flex h-16 items-center border-b border-[#e9edef] px-4">
         <button
           onClick={onClose}
           aria-label="Close profile details"
@@ -722,16 +722,16 @@ function ProfileDetails({
           View Profile
         </Link>
       </div>
-      <div className="border-y border-[#e9edef] dark:border-[var(--app-border)]">
-        <button className="flex h-14 w-full items-center justify-between px-5 text-[14px] hover:bg-[#f5f6f6] dark:hover:bg-[var(--app-hover)]">
+      <div className="border-y border-[#e9edef]">
+        <button className="flex h-14 w-full items-center justify-between px-5 text-[14px] hover:bg-[#f5f6f6]">
           Shared media <ChevronRight size={18} />
         </button>
       </div>
-      <div className="mt-3 border-y border-[#e9edef] text-left dark:border-[var(--app-border)]">
-        <button className="h-14 w-full px-5 text-[14px] text-[#e45858] hover:bg-red-50 dark:hover:bg-[var(--app-hover)]">
+      <div className="mt-3 border-y border-[#e9edef] text-left">
+        <button className="h-14 w-full px-5 text-[14px] text-[#e45858] hover:bg-red-50">
           Block {conversation.name}
         </button>
-        <button className="h-14 w-full border-t border-[#e9edef] px-5 text-[14px] text-[#e45858] hover:bg-red-50 dark:border-[var(--app-border)] dark:hover:bg-[var(--app-hover)]">
+        <button className="h-14 w-full border-t border-[#e9edef] px-5 text-[14px] text-[#e45858] hover:bg-red-50">
           Report profile
         </button>
       </div>
@@ -778,7 +778,7 @@ function MessageBubble({
         </span>
       ) : null}
       <div
-        className={`max-w-[82%] whitespace-pre-line rounded-[20px] px-4 py-3 text-[14px] leading-[1.45] shadow-[0_5px_18px_rgba(63,38,110,.06)] md:max-w-[68%] ${mine ? "bg-[#f0e5ff] text-[#0f1419]" : "bg-white text-[#111b21] dark:bg-[#211e23] dark:text-[var(--app-text)]"}`}
+        className={`max-w-[82%] whitespace-pre-line rounded-[20px] px-4 py-3 text-[14px] leading-[1.45] shadow-[0_5px_18px_rgba(63,38,110,.06)] md:max-w-[68%] ${mine ? "bg-[#f0e5ff] text-[#0f1419]" : "bg-white text-[#111b21]"}`}
       >
         <p>{message.text}</p>
         <p
