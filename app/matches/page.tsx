@@ -17,7 +17,20 @@ type RecommendationRow = {
   city: string | null;
   match_score: number | null;
 };
-type ProfilePhotoRow = { id: string; avatar_url: string | null; photos: string[] | null; gender: string | null; company: string | null; height: string | null; religion: string | null; mother_tongue: string | null };
+type ProfilePhotoRow = {
+  id: string;
+  avatar_url: string | null;
+  photos: string[] | null;
+  gender: string | null;
+  company: string | null;
+  height: string | null;
+  religion: string | null;
+  mother_tongue: string | null;
+  education: string | null;
+  lifestyle: Record<string, string> | null;
+  family: Record<string, string> | null;
+  last_seen_at: string | null;
+};
 
 function splitLocation(location: string | null) {
   const [city = "Bengaluru", state = "Karnataka"] = (location ?? "")
@@ -27,9 +40,18 @@ function splitLocation(location: string | null) {
   return { city, state };
 }
 
-export default async function MatchesPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+export default async function MatchesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const requestedTab = (await searchParams).tab;
-  const initialTab: MatchTab = requestedTab === "shortlisted" || requestedTab === "sent" || requestedTab === "received" ? requestedTab : "all";
+  const initialTab: MatchTab =
+    requestedTab === "shortlisted" ||
+    requestedTab === "sent" ||
+    requestedTab === "received"
+      ? requestedTab
+      : "all";
   const supabase = await createClient();
   const {
     data: { user },
@@ -43,20 +65,35 @@ export default async function MatchesPage({ searchParams }: { searchParams: Prom
       .from("profile_likes")
       .select("liker_id, liked_id")
       .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
-    supabase.from("profile_shortlists").select("profile_id").eq("user_id", user.id),
+    supabase
+      .from("profile_shortlists")
+      .select("profile_id")
+      .eq("user_id", user.id),
   ]);
 
   if (recommendations.error) {
     console.error("Unable to load matches:", recommendations.error.message);
   }
 
-  const recommendationRows = (recommendations.data ?? []) as RecommendationRow[];
+  const recommendationRows = (recommendations.data ??
+    []) as RecommendationRow[];
   const recommendationIds = recommendationRows.map((profile) => profile.id);
   const photoResult = recommendationIds.length
-    ? await supabase.from("profiles").select("id, avatar_url, photos, gender, company, height, religion, mother_tongue").in("id", recommendationIds)
+    ? await supabase
+        .from("profiles")
+        .select(
+          "id, avatar_url, photos, gender, company, height, religion, mother_tongue, education, lifestyle, family, last_seen_at",
+        )
+        .in("id", recommendationIds)
     : { data: [] as ProfilePhotoRow[], error: null };
-  if (photoResult.error) console.error("Unable to load match photos:", photoResult.error.message);
-  const photosByProfile = new Map(((photoResult.data ?? []) as ProfilePhotoRow[]).map((profile) => [profile.id, profile]));
+  if (photoResult.error)
+    console.error("Unable to load match photos:", photoResult.error.message);
+  const photosByProfile = new Map(
+    ((photoResult.data ?? []) as ProfilePhotoRow[]).map((profile) => [
+      profile.id,
+      profile,
+    ]),
+  );
 
   const profiles: MatchProfile[] = recommendationRows.map((profile) => {
     const location = splitLocation(profile.city);
@@ -75,6 +112,23 @@ export default async function MatchesPage({ searchParams }: { searchParams: Prom
       compatibility: profile.match_score ?? 85,
       verified: true,
       image: resolveProfilePhoto(details ?? profile),
+      photoCount: Math.max(
+        details?.photos?.length ?? 0,
+        details?.avatar_url ? 1 : 0,
+      ),
+      education: details?.education ?? "Not added",
+      lifestyle:
+        details?.lifestyle && Object.keys(details.lifestyle).length
+          ? "Lifestyle"
+          : "Lifestyle",
+      familyValues:
+        details?.family && Object.keys(details.family).length
+          ? "Family Values"
+          : "Family Values",
+      online: Boolean(
+        details?.last_seen_at &&
+        Date.now() - new Date(details.last_seen_at).getTime() < 120_000,
+      ),
     };
   });
 
@@ -88,7 +142,9 @@ export default async function MatchesPage({ searchParams }: { searchParams: Prom
   return (
     <MatchesClient
       profiles={profiles}
-      initialShortlisted={shortlistResult.data?.map((item) => item.profile_id) ?? []}
+      initialShortlisted={
+        shortlistResult.data?.map((item) => item.profile_id) ?? []
+      }
       sentIds={sentIds}
       receivedIds={receivedIds}
       initialTab={initialTab}

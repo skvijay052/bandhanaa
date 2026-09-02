@@ -23,8 +23,10 @@ import {
   Menu,
   MessageSquare,
   MoreVertical,
+  MoreHorizontal,
   Plane,
   Search,
+  Send,
   ShieldCheck,
   Sparkles,
   UserRound,
@@ -61,6 +63,7 @@ export function ProfileDetailsClient({
   const [relation, setRelation] = useState(initialRelation);
   const [notice, setNotice] = useState("");
   const [aboutExpanded, setAboutExpanded] = useState(false);
+  const [shortlisted, setShortlisted] = useState(false);
 
   const relationFilter = `and(liker_id.eq.${currentUserId},liked_id.eq.${profile.id}),and(liker_id.eq.${profile.id},liked_id.eq.${currentUserId})`;
 
@@ -69,6 +72,33 @@ export function ProfileDetailsClient({
     const timeout = window.setTimeout(() => setNotice(""), 3500);
     return () => window.clearTimeout(timeout);
   }, [notice]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    void supabase
+      .from("profile_shortlists")
+      .select("profile_id")
+      .eq("user_id", currentUserId)
+      .eq("profile_id", profile.id)
+      .maybeSingle()
+      .then(({ data }) => setShortlisted(Boolean(data)));
+  }, [currentUserId, profile.id]);
+
+  async function toggleShortlist() {
+    const next = !shortlisted;
+    setShortlisted(next);
+    const supabase = createClient();
+    const { error } = next
+      ? await supabase
+          .from("profile_shortlists")
+          .insert({ user_id: currentUserId, profile_id: profile.id })
+      : await supabase
+          .from("profile_shortlists")
+          .delete()
+          .eq("user_id", currentUserId)
+          .eq("profile_id", profile.id);
+    if (error) setShortlisted(!next);
+  }
 
   async function follow() {
     setNotice("");
@@ -164,12 +194,31 @@ export function ProfileDetailsClient({
   return (
     <div className="h-dvh bg-[var(--app-bg)]">
       <div className="app-shell">
-        <AppSidebar active="Profile" />
+        <AppSidebar active="Profile" hideMobileNavigation />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-0">
           <DesktopTopBar avatarUrl={avatarUrl} name={viewerName} />
           <MobileHeader avatarUrl={avatarUrl} />
           <main className="mx-auto max-w-[1060px] px-5 pb-8 max-md:px-0">
-            <section className="grid grid-cols-[190px_minmax(0,1fr)] gap-8 px-4 py-8 max-md:block max-md:px-4 max-md:py-5">
+            <MobileProfileExperience
+              profile={profile}
+              relation={relation}
+              shortlisted={shortlisted}
+              expanded={aboutExpanded}
+              onExpand={() => setAboutExpanded((value) => !value)}
+              onShortlist={() => void toggleShortlist()}
+              onFollow={() => void follow()}
+              onCancel={() =>
+                void removeRelationship("Follow request cancelled.")
+              }
+              onConfirm={() => void confirmRequest()}
+              onDelete={() => void deleteIncomingRequest()}
+              onUnfollow={() =>
+                void removeRelationship(
+                  "You are no longer following this profile.",
+                )
+              }
+            />
+            <section className="grid grid-cols-[190px_minmax(0,1fr)] gap-8 px-4 py-8 max-md:hidden">
               <ProfilePhoto profile={profile} />
               <div className="min-w-0">
                 <div>
@@ -233,12 +282,14 @@ export function ProfileDetailsClient({
               </div>
             </section>
             <DesktopContent profile={profile} />
-            <MobileContent
-              profile={profile}
-              expanded={aboutExpanded}
-              onExpand={() => setAboutExpanded((value) => !value)}
-              moreProfiles={moreProfiles}
-            />
+            <div className="hidden">
+              <MobileContent
+                profile={profile}
+                expanded={aboutExpanded}
+                onExpand={() => setAboutExpanded((value) => !value)}
+                moreProfiles={moreProfiles}
+              />
+            </div>
             <InterestCta
               profile={profile}
               status={relation}
@@ -259,9 +310,397 @@ export function ProfileDetailsClient({
   );
 }
 
+function MobileProfileExperience({
+  profile,
+  relation,
+  shortlisted,
+  expanded,
+  onExpand,
+  onShortlist,
+  onFollow,
+  onCancel,
+  onConfirm,
+  onDelete,
+  onUnfollow,
+}: {
+  profile: ProfileDetail;
+  relation: RelationshipUIState;
+  shortlisted: boolean;
+  expanded: boolean;
+  onExpand: () => void;
+  onShortlist: () => void;
+  onFollow: () => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+  onDelete: () => void;
+  onUnfollow: () => void;
+}) {
+  const firstName = profile.name.split(" ")[0];
+  const relationLabel =
+    relation === "none"
+      ? "Send Request"
+      : relation === "outgoing_pending"
+        ? "Requested"
+        : relation === "incoming_pending"
+          ? "Accept Request"
+          : "Following";
+  const relationAction =
+    relation === "none"
+      ? onFollow
+      : relation === "outgoing_pending"
+        ? onCancel
+        : relation === "incoming_pending"
+          ? onConfirm
+          : onUnfollow;
+  const basics = [
+    [UserRound, "Age", String(profile.age)],
+    [CalendarDays, "Date of Birth", profile.birthDate || "Not added"],
+    [UserRound, "Gender", profile.gender || "Not added"],
+    [MapPin, "Current Location", profile.location],
+    [Sparkles, "Religion", profile.religion],
+    [GraduationCap, "Education", profile.education],
+    [Weight, "Height", profile.height],
+    [Weight, "Weight", profile.weight || "Not added"],
+    [Languages, "Mother Tongue", profile.motherTongue],
+    [BriefcaseBusiness, "Profession", profile.occupation],
+    [Heart, "Marital Status", profile.maritalStatus],
+    [BriefcaseBusiness, "Company", profile.company || "Not added"],
+    [CalendarDays, "Member Since", profile.memberSince],
+  ] as const;
+  const galleryPhotos = profile.photos.length
+    ? profile.photos
+    : [profile.image];
+  return (
+    <div className="relative pb-24 md:hidden">
+      <section className="relative h-[455px] overflow-hidden bg-[#eee]">
+        <ProfileImage
+          src={profile.image}
+          alt={profile.name}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/35 to-transparent" />
+        <Link
+          href="/discover"
+          aria-label="Back"
+          className="absolute left-5 top-5 grid size-11 place-items-center rounded-full bg-white/95 text-[#0f1419] shadow-lg"
+        >
+          <ChevronLeft size={24} />
+        </Link>
+        <button
+          type="button"
+          aria-label="More options"
+          className="absolute right-5 top-5 grid size-11 place-items-center rounded-full bg-white/95 text-[#0f1419] shadow-lg"
+        >
+          <MoreHorizontal size={23} />
+        </button>
+        <span
+          className={`absolute left-5 top-[100px] rounded-full px-3 py-1.5 text-[12px] ${profile.online ? "bg-black/60 text-white" : "bg-black/55 text-white"}`}
+        >
+          ● {profile.online ? "Online" : "Offline"}
+        </span>
+        <button
+          type="button"
+          onClick={onShortlist}
+          className="absolute right-5 top-[100px] flex h-11 items-center gap-2 rounded-full bg-white/95 px-4 text-[13px] font-semibold text-[#0f1419] shadow-lg"
+        >
+          <Heart
+            size={20}
+            fill={shortlisted ? "#ff3040" : "none"}
+            className="text-[#ff4d9b]"
+          />
+          {shortlisted ? "Shortlisted" : "Shortlist"}
+        </button>
+        <span className="absolute right-5 top-[158px] rounded-full bg-black/60 px-3 py-1.5 text-[12px] text-white">
+          <Camera size={14} className="mr-1 inline" />
+          1/{Math.max(profile.photos.length, 1)}
+        </span>
+      </section>
+      <section className="relative z-10 -mt-8 mx-4 rounded-[24px] bg-white p-5 shadow-[0_14px_40px_rgba(63,38,110,.14)] dark:bg-[var(--surface)]">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="flex items-center gap-2 text-[25px] font-bold leading-tight tracking-[-.04em]">
+              {profile.name}, {profile.age}
+              <BadgeCheck size={20} className="fill-[#8c45ff] text-white" />
+            </h1>
+            <p className="mt-3 flex items-center gap-2 text-[14px] text-[var(--text-secondary)]">
+              <BriefcaseBusiness size={16} />
+              {profile.occupation}
+            </p>
+            <p className="mt-2 flex items-center gap-2 text-[14px] text-[var(--text-secondary)]">
+              <MapPin size={16} />
+              {profile.location}
+            </p>
+            <p className="mt-2 flex items-center gap-2 text-[14px] text-[var(--text-secondary)]">
+              <Sparkles size={16} />
+              {profile.religion} · {profile.motherTongue}
+            </p>
+          </div>
+          <div className="grid size-[76px] shrink-0 place-items-center rounded-full border-[5px] border-[#8c45ff] border-l-[#f0eaff] text-center text-[#8c45ff]">
+            <span>
+              <strong className="block text-[21px] leading-none">
+                {profile.compatibility}%
+              </strong>
+              <small className="text-[10px]">Match</small>
+            </span>
+          </div>
+        </div>
+        <p className="mt-2 text-right text-[11px] font-semibold text-[#8c45ff]">
+          Highly compatible
+        </p>
+        <div className="mt-5 grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={relationAction}
+            className="flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#873df1] to-[#f547a2] px-3 text-[13px] font-semibold text-white"
+          >
+            <MessageSquare size={17} />
+            {relationLabel}
+          </button>
+          <Link
+            href="/messages"
+            className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#cfd9de] text-[13px] font-semibold"
+          >
+            <Send size={17} />
+            Message
+          </Link>
+        </div>
+        {relation === "incoming_pending" ? (
+          <button
+            type="button"
+            onClick={onDelete}
+            className="mx-auto mt-3 block text-[12px] text-[#f4212e]"
+          >
+            Delete request
+          </button>
+        ) : null}
+        <p className="mt-4 flex items-center justify-center gap-2 text-[12px] text-[var(--text-secondary)]">
+          <ShieldCheck size={18} className="text-[#8c45ff]" />
+          <strong className="text-[#8c45ff]">Verified</strong> Profile
+        </p>
+      </section>
+      <nav className="sticky top-0 z-[70] mx-4 mt-4 flex overflow-x-auto rounded-[20px] bg-white/95 px-2 py-3 shadow-[0_10px_30px_rgba(63,38,110,.08)] backdrop-blur-xl [scrollbar-color:#c8a6ff_transparent] [scrollbar-width:thin] dark:bg-[var(--surface)]">
+        {[
+          [UserRound, "About"],
+          [Camera, "Photos"],
+          [Dumbbell, "Lifestyle"],
+          [UsersRound, "Family"],
+          [Sparkles, "Horoscope"],
+          [Heart, "Preferences"],
+        ].map(([Icon, label], index) => {
+          const I = Icon as typeof Heart;
+          return (
+            <a
+              key={String(label)}
+              href={`#mobile-${String(label).toLowerCase()}`}
+              className={`flex min-w-[76px] shrink-0 flex-col items-center gap-1 text-[12px] ${index === 0 ? "text-[#8c45ff]" : "text-[var(--text-secondary)]"}`}
+            >
+              <I size={18} />
+              <span>{String(label)}</span>
+            </a>
+          );
+        })}
+      </nav>
+      <section
+        id="mobile-about"
+        className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]"
+      >
+        <h2 className="text-[18px] font-bold">About {firstName}</h2>
+        <p
+          className={`mt-4 text-[14px] leading-6 text-[var(--text-secondary)] ${expanded ? "" : "line-clamp-3"}`}
+        >
+          {profile.about}
+        </p>
+        <button
+          type="button"
+          onClick={onExpand}
+          className="mt-3 inline-flex items-center justify-center gap-1 text-[13px] font-semibold text-[#8c45ff]"
+        >
+          {expanded ? "Read Less" : "Read More"}
+          <ChevronDown
+            size={17}
+            className={`shrink-0 transition-transform ${expanded ? "rotate-180" : ""}`}
+          />
+        </button>
+        <div className="mt-4 rounded-[18px] bg-[#faf8ff] p-4 text-[13px]">
+          <p className="flex items-center gap-2 text-[#0ab86b]">
+            <Sparkles size={16} />
+            {profile.online ? "Active today" : "Recently active"}
+          </p>
+          <p className="mt-3 flex items-center gap-2 text-[var(--text-secondary)]">
+            <CalendarDays size={16} />
+            Joined {profile.memberSince}
+          </p>
+        </div>
+      </section>
+      <section className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]">
+        <h2 className="text-[18px] font-bold">
+          Why you match{" "}
+          <span className="ml-2 rounded-full bg-[#f3eaff] px-2 py-1 text-[11px] text-[#8c45ff]">
+            ♥ {profile.compatibility}%
+          </span>
+        </h2>
+        <div className="mt-6 grid grid-cols-5 gap-2 text-center text-[12px] text-[var(--text-secondary)]">
+          {[
+            [MapPin, "Location"],
+            [GraduationCap, "Education"],
+            [Dumbbell, "Lifestyle"],
+            [UsersRound, "Family Values"],
+            [Heart, "Partner Preferences"],
+          ].map(([Icon, label]) => {
+            const I = Icon as typeof Heart;
+            return (
+              <div key={String(label)}>
+                <span className="mx-auto grid size-10 place-items-center rounded-full bg-[#f7f1ff] text-[#8c45ff]">
+                  <I size={18} />
+                </span>
+                <span className="mt-2 block">{String(label)}</span>
+              </div>
+            );
+          })}
+        </div>
+        <button className="mt-6 text-[12px] font-semibold text-[#8c45ff]">
+          See compatibility details ›
+        </button>
+      </section>
+      <section className="mx-4 mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]">
+        <h2 className="text-[18px] font-bold">Basic Details</h2>
+        <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-5">
+          {basics.map(([Icon, label, value]) => (
+            <div key={label} className="flex min-w-0 gap-2">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#f7f1ff] text-[#8c45ff]">
+                <Icon size={16} />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[11px] text-[var(--text-secondary)]">
+                  {label}
+                </span>
+                <strong className="mt-1 block truncate text-[12px]">
+                  {value}
+                </strong>
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+      <section
+        id="mobile-photos"
+        className="mx-4 mt-4 scroll-mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]"
+      >
+        <h2 className="text-[18px] font-bold">Photos</h2>
+        <div className="mt-4 grid grid-cols-3 gap-2">
+          {galleryPhotos.map((photo, index) => (
+            <div
+              key={`${photo}-${index}`}
+              className="relative aspect-square overflow-hidden rounded-[14px] bg-[#eee]"
+            >
+              <ProfileImage
+                src={photo}
+                alt={`${profile.name} photo ${index + 1}`}
+                fill
+                sizes="30vw"
+                className="object-cover"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+      <MobileProfileFieldSection
+        id="mobile-lifestyle"
+        title="Lifestyle"
+        items={profile.lifestyle}
+        emptyText="Lifestyle details have not been added."
+      />
+      <MobileProfileFieldSection
+        id="mobile-family"
+        title="Family"
+        items={profile.family}
+        emptyText="Family details have not been added."
+      />
+      <MobileProfileFieldSection
+        id="mobile-horoscope"
+        title="Horoscope"
+        items={profile.horoscope}
+        emptyText="Horoscope details have not been added."
+      />
+      <MobileProfileFieldSection
+        id="mobile-preferences"
+        title="Partner Preferences"
+        items={profile.preferences}
+        emptyText="Partner preferences have not been added."
+      />
+      <div className="fixed inset-x-3 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[110] grid grid-cols-2 gap-3 rounded-[24px] bg-white/95 p-3 shadow-[0_14px_45px_rgba(63,38,110,.2)] backdrop-blur-xl md:hidden">
+        <button
+          type="button"
+          onClick={onShortlist}
+          className="flex h-12 items-center justify-center gap-2 rounded-full border border-[#cfd9de] text-[13px] font-semibold text-[#ff4d9b]"
+        >
+          <Heart
+            size={20}
+            fill={shortlisted ? "#ff3040" : "none"}
+            className="shrink-0"
+          />
+          {shortlisted ? "Shortlisted" : "Shortlist"}
+        </button>
+        <button
+          type="button"
+          onClick={relationAction}
+          className="h-12 rounded-full bg-gradient-to-r from-[#873df1] to-[#f547a2] text-[13px] font-semibold text-white"
+        >
+          {relationLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function MobileProfileFieldSection({
+  id,
+  title,
+  items,
+  emptyText,
+}: {
+  id: string;
+  title: string;
+  items: Array<{ label: string; value: string }>;
+  emptyText: string;
+}) {
+  return (
+    <section
+      id={id}
+      className="mx-4 mt-4 scroll-mt-4 rounded-[22px] bg-white p-5 shadow-[0_10px_30px_rgba(63,38,110,.07)] dark:bg-[var(--surface)]"
+    >
+      <h2 className="text-[18px] font-bold">{title}</h2>
+      {items.length ? (
+        <div className="mt-4 grid grid-cols-2 gap-3">
+          {items.map((item) => (
+            <div
+              key={`${title}-${item.label}`}
+              className="rounded-[15px] bg-[#faf8ff] p-3"
+            >
+              <span className="block text-[12px] text-[var(--text-secondary)]">
+                {item.label}
+              </span>
+              <strong className="mt-1 block text-[12px] text-[var(--text-primary)]">
+                {item.value || "Not added"}
+              </strong>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-3 text-[12px] text-[var(--text-secondary)]">
+          {emptyText}
+        </p>
+      )}
+    </section>
+  );
+}
+
 function MobileHeader({ avatarUrl }: { avatarUrl: string }) {
   return (
-    <header className="flex h-[62px] items-center justify-between border-b border-[#eeeef2] px-3 md:hidden">
+    <header className="hidden">
       <button aria-label="Open menu">
         <Menu size={21} />
       </button>

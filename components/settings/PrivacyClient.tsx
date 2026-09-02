@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ChevronRight,
+  Circle,
   Clock3,
   Download,
   Eye,
   FileClock,
+  LockKeyhole,
   MessageSquare,
   Shield,
+  ShieldCheck,
 } from "lucide-react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
@@ -45,14 +48,14 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
         <AppSidebar active="Settings" />
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <SettingsNavigation active="Settings & Privacy" />
-          <div className="h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-4">
+          <div className="privacy-page h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-0">
             <MobilePageHeader
               title="Settings"
               description="Privacy, safety and account controls"
             />
-            <div className="mx-auto w-full max-w-[780px] py-6 md:py-8">
-              <header className="flex items-center md:hidden">
-                <button onClick={() => router.back()}>
+            <div className="privacy-mobile-sheet mx-auto w-full max-w-[780px] py-6 md:py-8">
+              <header className="privacy-mobile-title flex items-center md:hidden">
+                <button onClick={() => router.back()} aria-label="Go back">
                   <ArrowLeft size={20} />
                 </button>
                 <h1 className="mx-auto pr-5 text-[15px] font-bold">
@@ -112,14 +115,14 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   onChange={(value) => void update("readReceipts", value)}
                 />
                 <ToggleRow
-                  icon={Eye}
+                  icon={Circle}
                   title="Show Online Status"
                   subtitle="Let others know when you are online"
                   checked={settings.showOnlineStatus}
                   onChange={(value) => void update("showOnlineStatus", value)}
                 />
                 <ToggleRow
-                  icon={Shield}
+                  icon={LockKeyhole}
                   title="Hide My Age"
                   subtitle="Do not show my age on my profile"
                   checked={settings.hideAge}
@@ -148,7 +151,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   />
                 </Link>
                 <ValueRow
-                  icon={Shield}
+                  icon={ShieldCheck}
                   title="Two-Step Verification"
                   subtitle="Add an extra layer of security"
                   value={settings.twoStepVerification ? "On" : "Off"}
@@ -160,6 +163,11 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   }
                 />
               </SettingsSection>
+              <Link href="/settings/help" className="privacy-control-banner md:hidden">
+                <span><Shield /></span>
+                <div><strong>You’re in control</strong><p>Manage your privacy and data to have a<br />safe and trusted experience.</p></div>
+                <ChevronRight />
+              </Link>
               {error ? (
                 <p role="alert" className="mt-4 text-[11px] text-red-600">
                   {error}
@@ -180,9 +188,9 @@ function SettingsSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-9">
+    <section className="privacy-section mt-9">
       <h2 className="mb-3 text-[17px] font-semibold">{title}</h2>
-      <div className="divide-y divide-[var(--border)] border-y border-[var(--border)] bg-white">
+      <div className="privacy-section-card divide-y divide-[var(--border)] border-y border-[var(--border)] bg-white">
         {children}
       </div>
     </section>
@@ -205,9 +213,9 @@ function ValueRow({
 }) {
   const content = (
     <div
-      className={`flex min-h-[74px] items-center px-1 transition-colors hover:bg-[#f7f9f9] ${highlighted ? "text-[#0f1419]" : ""}`}
+      className={`privacy-value-row flex min-h-[74px] items-center px-1 transition-colors hover:bg-[var(--app-hover)] ${highlighted ? "text-[var(--text-primary)]" : ""}`}
     >
-      <Icon size={21} strokeWidth={1.8} />
+      <span className="privacy-row-icon"><Icon size={21} strokeWidth={1.8} /></span>
       <div className="ml-4">
         <strong className="text-[15px] font-normal">{title}</strong>
         <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
@@ -244,8 +252,8 @@ function ToggleRow({
   onChange: (x: boolean) => void;
 }) {
   return (
-    <div className="flex min-h-[74px] items-center px-1">
-      <Icon size={21} strokeWidth={1.8} />
+    <div className="privacy-toggle-row flex min-h-[74px] items-center px-1">
+      <span className="privacy-row-icon"><Icon size={21} strokeWidth={1.8} /></span>
       <div className="ml-4">
         <strong className="text-[15px] font-normal">{title}</strong>
         <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
@@ -258,7 +266,7 @@ function ToggleRow({
         aria-checked={checked}
         aria-label={title}
         onClick={() => onChange(!checked)}
-        className={`relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1d9bf0] ${checked ? "bg-[#0f1419]" : "bg-[#8b949e]"}`}
+        className={`privacy-switch relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b3ff1] ${checked ? "bg-[#8737f2]" : "bg-[#cbd2df]"}`}
       >
         <span
           className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${checked ? "translate-x-[23px]" : "translate-x-[3px]"}`}

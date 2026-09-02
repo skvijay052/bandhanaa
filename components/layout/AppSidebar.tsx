@@ -19,6 +19,7 @@ import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { SidebarNavItem } from "@/components/navigation/SidebarNavItem";
 import { createClient } from "@/lib/supabase/client";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const items = [
   { label: "Discover", href: "/discover", icon: UserRoundSearch },
@@ -255,6 +256,7 @@ export function AppSidebar({
               <UserRound size={20} strokeWidth={1.8} />
               My Profile
             </Link>
+            <ThemeToggle variant="menu" />
             <form action="/api/auth/signout" method="post">
               <button
                 type="submit"
@@ -267,7 +269,9 @@ export function AppSidebar({
           </div>
         </details>
       </aside>
-      {hideMobileNavigation ? null : <MobileBottomNavigation />}
+      {hideMobileNavigation ? null : (
+        <MobileBottomNavigation requestCount={badgeCounts.Requests} />
+      )}
     </>
   );
 }

@@ -5,6 +5,12 @@ import { profileDefaults, type MyProfileData } from "@/data/my-profile";
 import { createClient } from "@/lib/supabase/server";
 import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { generatedHoroscopeItems } from "@/lib/horoscope";
+import {
+  familyLabels,
+  horoscopeLabels,
+  lifestyleLabels,
+  preferenceLabels,
+} from "@/data/edit-profile";
 export const metadata: Metadata = { title: "My Profile" };
 type ProfileRow = {
   id: string;
@@ -36,16 +42,24 @@ type ProfileRow = {
   is_discoverable: boolean | null;
   created_at: string;
 };
-function detailItems(value: unknown, fallback: MyProfileData["lifestyle"]) {
-  if (!Array.isArray(value)) return fallback;
-  const items = value.flatMap((item) => {
+function detailItems(
+  value: unknown,
+  labels: string[],
+  fallback: MyProfileData["lifestyle"] = [],
+) {
+  const source = Array.isArray(value) ? value : fallback;
+  const items = source.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const record = item as Record<string, unknown>;
     return typeof record.label === "string" && typeof record.value === "string"
       ? [{ label: record.label, value: record.value }]
       : [];
   });
-  return items.length ? items : fallback;
+  const values = new Map(items.map((item) => [item.label, item.value]));
+  return labels.map((label) => ({
+    label,
+    value: values.get(label)?.trim() || "Not added",
+  }));
 }
 export default async function MyProfilePage() {
   const supabase = await createClient();
@@ -53,7 +67,7 @@ export default async function MyProfilePage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/my-profile");
-  const [{ data, error }, { count: acceptedInterestCount, error: acceptedInterestError }] = await Promise.all([
+  const [{ data, error }, { count: acceptedInterestCount, error: acceptedInterestError }, sentResult, shortlistResult] = await Promise.all([
     supabase
       .from("profiles")
       .select(
@@ -66,6 +80,8 @@ export default async function MyProfilePage() {
       .select("liker_id", { count: "exact", head: true })
       .eq("status", "accepted")
       .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
+    supabase.from("profile_likes").select("liked_id", { count: "exact", head: true }).eq("liker_id", user.id),
+    supabase.from("profile_shortlists").select("profile_id", { count: "exact", head: true }).eq("user_id", user.id),
   ]);
   if (error) console.error("Unable to load your profile:", error.message);
   if (acceptedInterestError) console.error("Unable to load accepted interests:", acceptedInterestError.message);
@@ -107,16 +123,16 @@ export default async function MyProfilePage() {
     photos,
     memberSince,
     visibility: row?.profile_visibility ?? "everyone",
-    lifestyle: detailItems(row?.lifestyle, []),
-    family: detailItems(row?.family, []),
+    lifestyle: detailItems(row?.lifestyle, lifestyleLabels),
+    family: detailItems(row?.family, familyLabels),
     preferences: detailItems(
       row?.partner_preferences,
-      [],
+      preferenceLabels,
     ),
     horoscope: generatedHoroscopeItems(
       row?.birth_date,
-      detailItems(row?.horoscope, []),
+      detailItems(row?.horoscope, horoscopeLabels),
     ),
   };
-  return <MyProfileClient profile={profile} acceptedInterestCount={acceptedInterestCount ?? 0} />;
+  return <MyProfileClient profile={profile} acceptedInterestCount={acceptedInterestCount ?? 0} sentInterestCount={sentResult.count ?? 0} shortlistedCount={shortlistResult.count ?? 0} />;
 }

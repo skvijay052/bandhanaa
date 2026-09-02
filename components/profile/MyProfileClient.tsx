@@ -16,12 +16,17 @@ import { PhotoCropModal } from "./PhotoCropModal";
 import { DetailCard } from "./ProfileDetailCards";
 import { ProfileProgress } from "./ProfileProgress";
 import { ProfileTabs } from "./ProfileTabs";
+import { MobileMyProfileExperience } from "./MobileMyProfileExperience";
 export function MyProfileClient({
   profile,
   acceptedInterestCount,
+  sentInterestCount,
+  shortlistedCount,
 }: {
   profile: MyProfileData;
   acceptedInterestCount: number;
+  sentInterestCount: number;
+  shortlistedCount: number;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -147,6 +152,8 @@ export function MyProfileClient({
       <div className="app-shell">
         <AppSidebar active="Profile" />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-0">
+          <MobileMyProfileExperience profile={viewProfile} stats={{ interested: acceptedInterestCount, sent: sentInterestCount, shortlisted: shortlistedCount }} onEdit={edit} onAvatar={() => choosePhoto("avatar")} onAddPhoto={() => choosePhoto("gallery")} />
+          <div className="hidden md:block">
           <MobilePageHeader
             title="My Profile"
             description="Your details and preferences"
@@ -248,6 +255,7 @@ export function MyProfileClient({
                   title="What I'm Looking For"
                   items={viewProfile.preferences}
                   columns={4}
+                  editSection="Partner Preferences"
                 />
               </div>
               <div
@@ -298,6 +306,7 @@ export function MyProfileClient({
                   title="What I'm Looking For"
                   items={viewProfile.preferences}
                   columns={4}
+                  editSection="Partner Preferences"
                 />
               </div>
               <div id="profile-horoscope-mobile" className="scroll-mt-[76px]">
@@ -306,6 +315,7 @@ export function MyProfileClient({
               <MobileVisibility visibility={viewProfile.visibility} />
               <CompleteProfileCTA mobile />
             </div>
+          </div>
           </div>
         </div>
         {cropSource ? (

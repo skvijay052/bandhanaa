@@ -33,6 +33,7 @@ type ProfilePhotoRow = {
   height: string | null;
   religion: string | null;
   mother_tongue: string | null;
+  education: string | null;
 };
 
 type OnlineStatusRow = { id: string; last_seen_at: string | null };
@@ -44,17 +45,23 @@ export default async function Page() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/discover");
 
-  const [recommendations, savedShortlists, relationships] = await Promise.all([
-    supabase.rpc("get_recommended_profiles", { result_limit: 24 }),
-    supabase
-      .from("profile_shortlists")
-      .select("profile_id")
-      .eq("user_id", user.id),
-    supabase
-      .from("profile_likes")
-      .select("liker_id,liked_id,status")
-      .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
-  ]);
+  const [recommendations, savedShortlists, relationships, viewerProfile] =
+    await Promise.all([
+      supabase.rpc("get_recommended_profiles", { result_limit: 24 }),
+      supabase
+        .from("profile_shortlists")
+        .select("profile_id")
+        .eq("user_id", user.id),
+      supabase
+        .from("profile_likes")
+        .select("liker_id,liked_id,status")
+        .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
+      supabase
+        .from("profiles")
+        .select("profile_completion")
+        .eq("id", user.id)
+        .maybeSingle(),
+    ]);
 
   if (recommendations.error) {
     console.error(
@@ -71,7 +78,7 @@ export default async function Page() {
         supabase
           .from("profiles")
           .select(
-            "id, avatar_url, photos, gender, city, state, country, marital_status, height, religion, mother_tongue",
+            "id, avatar_url, photos, gender, city, state, country, marital_status, height, religion, mother_tongue, education",
           )
           .in("id", recommendationIds),
         supabase
@@ -123,10 +130,15 @@ export default async function Page() {
       height: storedPhotos?.height ?? "Not added",
       religion: storedPhotos?.religion ?? "Not added",
       motherTongue: storedPhotos?.mother_tongue ?? "Not added",
+      education: storedPhotos?.education ?? "Not added",
       bio: profile.bio ?? "Looking for a meaningful connection.",
       image: resolveProfilePhoto(
         storedPhotos ?? profile,
         genderDiscoverPhoto(storedPhotos?.gender),
+      ),
+      photoCount: Math.max(
+        storedPhotos?.photos?.length ?? 0,
+        storedPhotos?.avatar_url ? 1 : 0,
       ),
       match: profile.match_score ?? 85,
       online: Boolean(
@@ -159,6 +171,7 @@ export default async function Page() {
       initialShortlisted={
         savedShortlists.data?.map((item) => item.profile_id) ?? []
       }
+      profileCompletion={Number(viewerProfile.data?.profile_completion ?? 0)}
     />
   );
 }

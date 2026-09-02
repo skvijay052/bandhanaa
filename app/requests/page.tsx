@@ -30,6 +30,7 @@ type ProfileRow = {
   religion: string | null;
   mother_tongue: string | null;
   last_seen_at: string | null;
+  compatibility: number | null;
 };
 
 export default async function RequestsPage({
@@ -68,7 +69,7 @@ export default async function RequestsPage({
     ? await supabase
         .from("profiles")
         .select(
-          "id,display_name,avatar_url,photos,gender,age,profession,city,state,country,height,religion,mother_tongue,last_seen_at",
+          "id,display_name,avatar_url,photos,gender,age,profession,city,state,country,height,religion,mother_tongue,last_seen_at,compatibility",
         )
         .in("id", profileIds)
     : { data: [] as ProfileRow[] };
@@ -94,7 +95,7 @@ export default async function RequestsPage({
       status: row.status,
       verified: true,
       image: resolveProfilePhoto(profile),
-      compatibility: 85,
+      compatibility: profile?.compatibility ?? 0,
       height: profile?.height ?? "Not added",
       religion: profile?.religion ?? "Not added",
       motherTongue: profile?.mother_tongue ?? "Not added",

@@ -1,16 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   BadgeCheck,
   Bell,
+  BriefcaseBusiness,
+  Bookmark,
   Check,
   Clock3,
   Heart,
   MapPin,
   MessageSquare,
   Send,
+  Search,
+  ShieldCheck,
   Sparkles,
   X,
 } from "lucide-react";
@@ -46,12 +51,34 @@ export function RequestsClient({
   viewerName: string;
   avatarUrl: string;
 }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [received, setReceived] = useState(initialReceived);
   const [sent, setSent] = useState(initialSent);
   const [following, setFollowing] = useState(initialFollowing);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
+
+  useEffect(() => setReceived(initialReceived), [initialReceived]);
+  useEffect(() => setSent(initialSent), [initialSent]);
+  useEffect(() => setFollowing(initialFollowing), [initialFollowing]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel(`profile-requests:${currentUserId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profile_likes" },
+        () => router.refresh(),
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [currentUserId, router]);
+
   const profiles =
     activeTab === "received"
       ? received
@@ -244,37 +271,40 @@ function MobileRequestsPage({
     <main className="relative min-h-dvh overflow-hidden bg-[#fbfcff] px-4 pb-32 md:hidden">
       <div className="pointer-events-none absolute -left-28 -top-28 size-[430px] rounded-full bg-[#dff9f3]/80 blur-2xl" />
       <div className="pointer-events-none absolute -right-36 top-10 size-[420px] rounded-full bg-[#eee7ff]/80 blur-2xl" />
-      <header className="relative flex items-center justify-between pb-5 pt-5">
+      <header className="relative flex items-center justify-between pb-4 pt-5">
         <Brand compact />
-        <div className="flex gap-2.5">
+        <div className="flex gap-2">
           <Link
-            href="/matches?tab=shortlisted"
-            aria-label="Shortlist"
-            className="grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+            href="/discover"
+            aria-label="Search profiles"
+            className="grid size-9 place-items-center rounded-[13px] bg-white/90 p-1 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
           >
-            <Heart size={22} strokeWidth={1.8} />
+            <Search size={16} strokeWidth={1.8} />
           </Link>
           <Link
             href="/notifications"
             aria-label="Notifications"
-            className="relative grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+            className="relative grid size-9 place-items-center rounded-[13px] bg-white/90 p-1 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
           >
-            <Bell size={22} strokeWidth={1.8} />
-            <span className="absolute right-2 top-2 size-2 rounded-full bg-[#8b3de8] ring-2 ring-white" />
+            <Bell size={16} strokeWidth={1.8} />
+            <span className="absolute right-1 top-1 size-2 rounded-full bg-[#8b3de8] ring-1 ring-white" />
           </Link>
         </div>
       </header>
       <section className="relative">
-        <h1 className="text-[27px] font-bold tracking-[-.035em] text-[#0f1419]">
+        <h1 className="flex items-center gap-2 text-[24px] font-extrabold tracking-[-.04em] text-[var(--text-primary)]">
           Requests
+          <span className="grid size-7 place-items-center rounded-lg bg-[#eee6ff]">
+            <Heart size={13} className="fill-[#9348ee] text-[#9348ee]" />
+          </span>
         </h1>
-        <p className="mt-1 text-[13px] text-[#687684]">
-          Manage your follow requests and connections
+        <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
+          Manage your connections 💗
         </p>
       </section>
       <div
         role="tablist"
-        className="relative mt-5 grid h-[56px] grid-cols-3 rounded-[19px] bg-white/95 p-1 shadow-[0_8px_28px_rgba(63,38,110,.08)]"
+        className="relative mt-6 grid h-[62px] grid-cols-3 rounded-[19px] border border-[#eee9f2] bg-white/90 shadow-[0_8px_28px_rgba(63,38,110,.06)] dark:bg-[var(--surface)]"
       >
         {tabs.map((tab) => {
           const active = activeTab === tab.id;
@@ -285,18 +315,18 @@ function MobileRequestsPage({
               role="tab"
               aria-selected={active}
               onClick={() => onTab(tab.id)}
-              className={`relative flex items-center justify-center gap-1.5 rounded-[15px] text-[12px] font-semibold ${active ? "bg-white text-[#8b3de8] shadow-[0_4px_16px_rgba(63,38,110,.08)]" : "text-[#536471]"}`}
+              className={`relative flex items-center justify-center gap-2 text-[14px] font-semibold ${active ? "text-[#8b3de8]" : "text-[var(--text-secondary)]"}`}
             >
               {tab.label}
               {counts[tab.id] ? (
                 <span
-                  className={`grid size-6 place-items-center rounded-full text-[10px] ${active ? "bg-[#8b3de8] text-white" : "border border-[#536471] text-[#536471]"}`}
+                  className={`grid size-6 place-items-center rounded-full text-[10px] ${active ? "bg-gradient-to-r from-[#8b3de8] to-[#f547a2] text-white" : "bg-[#d8b8ff] text-white"}`}
                 >
                   {counts[tab.id]}
                 </span>
               ) : null}
               {active ? (
-                <span className="absolute inset-x-4 bottom-0 h-[3px] rounded-full bg-[#8b3de8]" />
+                <span className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#8b3de8]" />
               ) : null}
             </button>
           );
@@ -310,10 +340,37 @@ function MobileRequestsPage({
           {notice}
         </p>
       ) : null}
+      {activeTab === "received" && received.length ? (
+        <div className="relative mt-5 flex min-h-[104px] items-center rounded-[22px] bg-gradient-to-r from-[#faf8ff] to-[#f8eefd] px-4 shadow-[0_8px_25px_rgba(72,45,112,.09)]">
+          <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-white/80 text-[#8b3de8]">
+            <ShieldCheck size={29} />
+          </span>
+          <span className="ml-4 min-w-0 flex-1">
+            <strong className="block text-[17px] text-[#8b3de8]">
+              You have {received.length} new requests
+            </strong>
+            <span className="mt-1 block text-[14px] leading-5 text-[var(--text-secondary)]">
+              Review and connect with people who are interested in you.
+            </span>
+          </span>
+          <span className="ml-2 shrink-0 text-[13px] font-semibold text-[#8b3de8]">
+            View All ›
+          </span>
+        </div>
+      ) : null}
       <section
         aria-label={`${activeTab} requests`}
-        className="relative mt-4 space-y-3"
+        className="relative mt-7 space-y-4"
       >
+        {profiles.length ? (
+          <h2 className="text-[21px] font-bold text-[var(--text-primary)]">
+            {activeTab === "received"
+              ? "New Requests"
+              : activeTab === "sent"
+                ? "Sent Requests"
+                : "Following"}
+          </h2>
+        ) : null}
         {profiles.map((profile) => (
           <MobileRequestCard
             key={profile.id}
@@ -328,12 +385,159 @@ function MobileRequestsPage({
           kind={activeTab}
           hasProfiles={profiles.length > 0}
         />
+        {profiles.length > 2 ? (
+          <div className="pt-4">
+            <h2 className="text-[20px] font-bold text-[var(--text-primary)]">
+              More Requests
+            </h2>
+            <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {profiles.slice(0, 5).map((profile) => (
+                <Link
+                  key={`more-${profile.id}`}
+                  href={`/profile/${profile.profileId}`}
+                  className="relative h-[135px] w-[122px] shrink-0 overflow-hidden rounded-[18px] bg-[#eee]"
+                >
+                  <ProfileImage
+                    src={profile.image}
+                    alt={profile.name}
+                    fill
+                    sizes="122px"
+                    className="object-cover"
+                  />
+                  <span
+                    className={`absolute left-2 top-2 size-2.5 rounded-full ${profile.online ? "bg-[#25d86d]" : "bg-[#aab2bc]"}`}
+                  />
+                  <span className="absolute right-2 top-2 grid size-8 place-items-center rounded-xl bg-white text-[#0f1419]">
+                    <Bookmark size={16} />
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </section>
     </main>
   );
 }
 
 function MobileRequestCard({
+  profile,
+  kind,
+  busy,
+  onAccept,
+  onRemove,
+}: {
+  profile: InterestProfile;
+  kind: RequestTab;
+  busy: boolean;
+  onAccept: () => void;
+  onRemove: () => void;
+}) {
+  return (
+    <article className="grid min-h-[230px] grid-cols-[31%_minmax(0,1fr)] gap-4 rounded-[24px] border border-white/90 bg-white/95 p-3 shadow-[0_12px_32px_rgba(63,38,110,.08)] dark:bg-[var(--surface)]">
+      <Link
+        href={`/profile/${profile.profileId}`}
+        className="relative min-h-[205px] overflow-hidden rounded-[18px] bg-[#eff3f4]"
+      >
+        <ProfileImage
+          src={profile.image}
+          alt={profile.name}
+          fill
+          sizes="31vw"
+          className="object-cover"
+        />
+        <span
+          className={`absolute bottom-3 left-3 size-3 rounded-full ring-2 ring-white ${profile.online ? "bg-[#25d86d]" : "bg-[#9aa5af]"}`}
+        />
+      </Link>
+      <div className="flex min-w-0 flex-col py-1">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <Link
+              href={`/profile/${profile.profileId}`}
+              className="flex items-center gap-1.5 truncate text-[19px] font-bold tracking-[-.03em] text-[var(--text-primary)]"
+            >
+              {profile.name}, {profile.age}
+              {profile.verified ? (
+                <BadgeCheck
+                  size={16}
+                  className="shrink-0 fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"
+                />
+              ) : null}
+            </Link>
+            <p className="mt-2 flex items-center gap-2 truncate text-[12px] text-[var(--text-secondary)]">
+              <BriefcaseBusiness size={14} />
+              {profile.occupation}
+            </p>
+            <p className="mt-2 flex items-center gap-2 truncate text-[12px] text-[var(--text-secondary)]">
+              <MapPin size={14} />
+              {profile.location}
+            </p>
+          </div>
+          <span className="shrink-0 text-[11px] text-[var(--text-secondary)]">
+            {profile.time}
+          </span>
+        </div>
+        <span className="mt-3 inline-flex w-fit items-center gap-1 rounded-full bg-[#f3eaff] px-3 py-1.5 text-[11px] font-semibold text-[#8b3de8]">
+          <Sparkles size={14} />
+          {profile.compatibility ?? 85}% Match
+        </span>
+        <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
+          {kind === "received" ? (
+            <>
+              <button
+                disabled={busy}
+                onClick={onRemove}
+                className="h-11 rounded-full border border-[#cfd9de] bg-white px-2 text-[12px] font-semibold text-[#0f1419] disabled:opacity-50"
+              >
+                Decline
+              </button>
+              <button
+                disabled={busy}
+                onClick={onAccept}
+                className="h-11 rounded-full bg-gradient-to-r from-[#873df1] to-[#f547a2] px-2 text-[12px] font-semibold text-white disabled:opacity-50"
+              >
+                Accept
+              </button>
+            </>
+          ) : kind === "sent" ? (
+            <>
+              <span className="flex h-10 items-center justify-center gap-1 rounded-full bg-[#fff6df] text-[10px] font-semibold text-[#df9000]">
+                <Clock3 size={12} />
+                Requested
+              </span>
+              <button
+                disabled={busy}
+                onClick={onRemove}
+                className="h-10 rounded-full border border-[#8b3de8] px-1 text-[10px] font-semibold text-[#8b3de8] disabled:opacity-50"
+              >
+                Cancel Request
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                disabled={busy}
+                onClick={onRemove}
+                className="h-10 rounded-full border border-[#cfd9de] px-3 text-[11px] font-semibold"
+              >
+                Following
+              </button>
+              <Link
+                href="/messages"
+                className="grid h-10 place-items-center rounded-full bg-gradient-to-r from-[#873df1] to-[#f547a2] text-white"
+              >
+                <MessageSquare size={15} />
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function MobileRequestCardLegacy({
   profile,
   kind,
   busy,

@@ -12,6 +12,11 @@ export interface MatchProfile {
   compatibility: number;
   verified: boolean;
   image: string;
+  photoCount: number;
+  education: string;
+  lifestyle: string;
+  familyValues: string;
+  online: boolean;
 }
 
 export type MatchTab = "all" | "shortlisted" | "sent" | "received";

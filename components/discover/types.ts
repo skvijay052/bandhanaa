@@ -8,8 +8,10 @@ export type DiscoverProfile = {
   height: string;
   religion: string;
   motherTongue: string;
+  education: string;
   bio: string;
   image: string;
+  photoCount: number;
   match: number;
   online: boolean;
   relationship: "none" | "outgoing_pending" | "incoming_pending" | "following";

@@ -28,6 +28,7 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { MobileProfileCard } from "./MobileProfileCard";
+import { MobileDiscoverExperience } from "./MobileDiscoverExperience";
 import { ProfileCard } from "./ProfileCard";
 import type { DiscoverProfile } from "./types";
 export type { DiscoverProfile } from "./types";
@@ -35,11 +36,13 @@ export type { DiscoverProfile } from "./types";
 export function DiscoverClient({
   profiles,
   initialShortlisted,
+  profileCompletion,
 }: {
   firstName: string;
   avatarUrl: string;
   profiles: DiscoverProfile[];
   initialShortlisted: string[];
+  profileCompletion: number;
 }) {
   const [shortlisted, setShortlisted] = useState(initialShortlisted);
   const [relationshipStates, setRelationshipStates] = useState(() =>
@@ -150,15 +153,26 @@ export function DiscoverClient({
       <div className="app-shell">
         <AppSidebar active="Discover" />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-20 md:pb-8">
-          <MobileHeader />
           <main className="relative px-8 py-7 max-md:px-0 max-md:py-0">
-            <MobileDiscoverControls
+            <MobileDiscoverExperience
+              profiles={mobileProfiles.map((profile) => ({
+                ...profile,
+                relationship:
+                  relationshipStates[profile.id] ?? profile.relationship,
+              }))}
               query={query}
               onQuery={setQuery}
               filtersOpen={showFilters}
               onFilters={() => setShowFilters(true)}
               mode={mobileMode}
               onMode={setMobileMode}
+              completion={profileCompletion}
+              shortlisted={shortlisted}
+              onShortlist={(id) => void toggleShortlist(id)}
+              onRelationship={(profile) => void updateRelationship(profile)}
+              onDismiss={(id) =>
+                setHiddenProfiles((current) => [...current, id])
+              }
             />
             <DiscoverSearch
               query={query}
@@ -226,7 +240,7 @@ export function DiscoverClient({
                     />
                   ))}
                 </div>
-                <div className="space-y-4 px-4 pb-32 pt-5 md:hidden">
+                <div className="hidden">
                   {mobileProfiles.length ? (
                     mobileProfiles.map((profile) => {
                       const currentProfile = {
