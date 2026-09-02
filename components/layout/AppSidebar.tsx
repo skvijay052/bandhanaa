@@ -19,7 +19,6 @@ import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { SidebarNavItem } from "@/components/navigation/SidebarNavItem";
 import { createClient } from "@/lib/supabase/client";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 const items = [
   { label: "Discover", href: "/discover", icon: UserRoundSearch },
@@ -228,7 +227,7 @@ export function AppSidebar({
         </nav>
         <details className="group relative">
           <summary
-            className={`flex cursor-pointer list-none items-center gap-2 rounded-full p-2 transition-colors hover:bg-[var(--surface-hover)] [&::-webkit-details-marker]:hidden ${active === "Profile" ? "bg-[#f2f2f2] dark:bg-[var(--surface-hover)]" : ""}`}
+            className={`flex cursor-pointer list-none items-center gap-2 rounded-full p-2 transition-colors hover:bg-[var(--surface-hover)] [&::-webkit-details-marker]:hidden ${active === "Profile" ? "bg-[#f2f2f2]" : ""}`}
           >
             <span className="relative size-10 shrink-0 overflow-hidden rounded-full">
               <ProfileImage
@@ -256,7 +255,6 @@ export function AppSidebar({
               <UserRound size={20} strokeWidth={1.8} />
               My Profile
             </Link>
-            <ThemeToggle variant="menu" />
             <form action="/api/auth/signout" method="post">
               <button
                 type="submit"
