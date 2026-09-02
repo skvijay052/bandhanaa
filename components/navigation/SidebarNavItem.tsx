@@ -21,7 +21,7 @@ export function SidebarNavItem({
       aria-current={active ? "page" : undefined}
       aria-label={badge > 0 ? `${label}, ${badge} unread` : label}
       title={label}
-      className={`group flex h-[56px] w-full items-center gap-[18px] rounded-xl px-[14px] text-[#0f1419] outline-none transition-colors duration-150 ease-in-out hover:bg-[#f7f9f9] focus-visible:ring-2 focus-visible:ring-[var(--brand-secondary)] dark:text-[var(--text-primary)] dark:hover:bg-[var(--surface-hover)] ${active ? "bg-[#f2f2f2] font-bold dark:bg-[var(--surface-hover)]" : "font-normal"}`}
+      className={`group flex h-[56px] w-full items-center gap-[18px] rounded-xl px-[14px] text-[#0f1419] outline-none transition-colors duration-150 ease-in-out hover:bg-[#f7f9f9] focus-visible:ring-2 focus-visible:ring-[var(--brand-secondary)] ${active ? "bg-[#f2f2f2] font-bold" : "font-normal"}`}
     >
       <span className="relative grid size-[26px] shrink-0 place-items-center">
         <Icon className={label === "Shortlist" && active ? "text-[#ff3040]" : undefined} size={26} strokeWidth={active ? 2 : 1.8} fill={active ? "currentColor" : "none"} aria-hidden="true" />
