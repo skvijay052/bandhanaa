@@ -7,7 +7,9 @@ import {
   Heart,
   Menu,
   MessageCircle,
+  MessageSquare,
   UserRound,
+  UserRoundSearch,
   UsersRound,
 } from "lucide-react";
 
@@ -20,10 +22,10 @@ const defaultItems = [
 ] as const;
 
 const settingsItems = [
-  { label: "Discover", href: "/discover", icon: Compass },
+  { label: "Discover", href: "/discover", icon: UserRoundSearch },
   { label: "Matches", href: "/matches", icon: Heart },
-  { label: "", href: "/requests", icon: MessageCircle, raised: true },
-  { label: "Messages", href: "/messages", icon: MessageCircle },
+  { label: "Requests", href: "/requests", icon: MessageCircle, raised: true },
+  { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "More", href: "/settings", icon: Menu },
 ] as const;
 
@@ -39,7 +41,7 @@ export function MobileBottomNavigation({
     return (
       <nav
         aria-label="Mobile navigation"
-        className="settings-bottom-nav fixed inset-x-6 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[100] grid h-[76px] grid-cols-5 rounded-[30px] border border-[#f0edf5] bg-white/95 px-2 shadow-[0_12px_35px_rgba(43,31,77,.12)] backdrop-blur-xl md:hidden"
+        className="settings-bottom-nav fixed inset-x-4 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[100] grid h-[82px] grid-cols-5 rounded-[28px] border border-white/90 bg-white/95 px-2 shadow-[0_12px_36px_rgba(63,38,110,.15)] backdrop-blur-xl md:hidden"
       >
         {settingsItems.map(({ label, href, icon: Icon, ...item }, index) => {
           const active =
@@ -47,25 +49,25 @@ export function MobileBottomNavigation({
             pathname.startsWith(`${href}/`) ||
             (label === "More" && pathname.startsWith("/settings"));
           const raised = "raised" in item && item.raised;
-          const badge = label === "Messages" ? requestCount : 0;
+          const badge = label === "Requests" ? requestCount : 0;
           return (
             <Link
               key={`${href}-${index}`}
               href={href}
               aria-label={label || "Requests"}
               aria-current={active ? "page" : undefined}
-              className={`relative flex flex-col items-center justify-end gap-1 pb-2.5 text-[10px] font-medium ${active ? "text-[#7e35ef]" : "text-[#78849b]"}`}
+              className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#8b3de8]" : "text-[#536471]"}`}
             >
               {raised ? (
-                <span className="absolute -top-5 grid size-[62px] place-items-center rounded-full border-4 border-white bg-[linear-gradient(145deg,#8b3ff5,#6f2ce9)] text-white shadow-[0_8px_24px_rgba(126,53,239,.38)]">
-                  <Icon size={27} strokeWidth={1.7} />
+                <span className="absolute -top-5 grid size-[58px] place-items-center rounded-full border-[3px] border-white bg-[#8b3de8] text-white shadow-[0_7px_20px_rgba(139,61,232,.38)]">
+                  <Icon size={25} strokeWidth={1.8} />
                 </span>
               ) : (
                 <span className="relative grid place-items-center">
                   <Icon
-                    size={23}
+                    size={22}
                     strokeWidth={1.8}
-                    fill={active && label === "Matches" ? "currentColor" : "none"}
+                    fill={active ? "currentColor" : "none"}
                   />
                   {badge ? (
                     <span className="absolute -right-3 -top-3 grid size-5 place-items-center rounded-full bg-[#f53586] text-[10px] font-bold text-white">
@@ -75,6 +77,9 @@ export function MobileBottomNavigation({
                 </span>
               )}
               {label ? <span>{label}</span> : null}
+              {active ? (
+                <span className="absolute bottom-1.5 h-[3px] w-8 rounded-full bg-[#8b3de8]" />
+              ) : null}
             </Link>
           );
         })}

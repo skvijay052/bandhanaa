@@ -11,7 +11,7 @@ export function MobileMyProfileExperience({ profile, stats, onEdit, onAvatar, on
   const chips = profile.lifestyle.slice(0, 4).map((item) => item.value).filter((v) => v && v !== "Not added");
   const photos = Array.from(new Set([profile.avatar, ...profile.photos].filter(Boolean))).slice(0, 4);
   return <div className="my-profile-mobile md:hidden">
-    <header className="my-profile-mobile__header"><Link href="/discover" aria-label="Back"><ArrowLeft /></Link><h1>My Profile</h1><Link href="/settings" aria-label="Settings"><Settings /></Link></header>
+    <header className="my-profile-mobile__header"><Link href="/discover" aria-label="Back"><ArrowLeft /></Link><span aria-hidden="true" /><Link href="/settings" aria-label="Settings"><Settings /></Link></header>
     <section className="my-profile-mobile__hero">
       <button className="my-profile-mobile__avatar" onClick={onAvatar} aria-label="Change profile photo"><ProfileImage src={profile.avatar} alt={profile.name} fill priority sizes="112px" className="object-cover" /><span><Camera /></span></button>
       <div className="min-w-0 flex-1"><h2>{profile.name}{profile.verified && <BadgeCheck />}</h2><p className="my-profile-mobile__role">{profile.age || "—"} · {profile.profession}</p><p className="my-profile-mobile__location"><MapPin />{location}</p><p className="my-profile-mobile__complete"><i />Profile is <b>{profile.completion}%</b> complete</p><div className="my-profile-mobile__progress"><span style={{ width: `${profile.completion}%` }} /><b>{profile.completion}%</b></div></div>

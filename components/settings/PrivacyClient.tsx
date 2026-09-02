@@ -11,6 +11,7 @@ import {
   Eye,
   FileClock,
   LockKeyhole,
+  LogOut,
   MessageSquare,
   Shield,
   ShieldCheck,
@@ -162,6 +163,11 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                     )
                   }
                 />
+                <form action="/api/auth/signout" method="post">
+                  <button type="submit" className="w-full text-left">
+                    <ValueRow icon={LogOut} title="Log Out" subtitle="Sign out of your Bandhanaa account" highlighted />
+                  </button>
+                </form>
               </SettingsSection>
               <Link href="/settings/help" className="privacy-control-banner md:hidden">
                 <span><Shield /></span>
@@ -269,7 +275,7 @@ function ToggleRow({
         className={`privacy-switch relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b3ff1] ${checked ? "bg-[#8737f2]" : "bg-[#cbd2df]"}`}
       >
         <span
-          className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${checked ? "translate-x-[23px]" : "translate-x-[3px]"}`}
+          className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${checked ? "translate-x-[18px]" : "translate-x-[2px]"}`}
         />
       </button>
     </div>
