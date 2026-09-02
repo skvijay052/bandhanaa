@@ -81,10 +81,7 @@ export function NotificationsClient({
           <PremiumCard />
         </AppSidebar>
         <div className="min-w-0 flex-1 pb-[72px] md:pb-0">
-          <MobilePageHeader
-            title="Notifications"
-            description="Your latest activity and updates"
-          />
+          <MobilePageHeader />
           <div className="hidden md:block">
             <NotificationFilters
               active={active}

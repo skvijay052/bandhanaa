@@ -11,16 +11,12 @@ import {
   ArrowLeft,
   ChevronRight,
   Info,
-  ImageIcon,
   Heart,
   Mic,
-  MoreVertical,
-  Phone,
   Search,
   Send,
   ShieldCheck,
   SlidersHorizontal,
-  Smile,
   Sparkles,
   SquarePen,
 } from "lucide-react";
@@ -552,16 +548,12 @@ function ChatPanel({
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2 text-[#0f1419]">
-          <button aria-label="Call" className="app-icon-button md:hidden">
-            <Phone size={22} />
-          </button>
           <button
             aria-label="View profile details"
             onClick={onDetails}
-            className="app-icon-button"
+            className="app-icon-button max-md:hidden"
           >
-            <MoreVertical size={24} className="md:hidden" />
-            <Info size={24} className="max-md:hidden" />
+            <Info size={24} />
           </button>
         </div>
       </header>
@@ -632,7 +624,7 @@ function ChatPanel({
         <button
           type="button"
           aria-label="Add attachment"
-          className="grid size-9 shrink-0 place-items-center rounded-full text-[#8b3de8]"
+          className="grid size-9 shrink-0 place-items-center rounded-full text-[#8b3de8] max-md:hidden"
         >
           <span className="text-[28px] font-light leading-none">+</span>
         </button>
@@ -645,8 +637,6 @@ function ChatPanel({
           placeholder="Type a message..."
           className="min-h-10 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-[#8696a0]"
         />
-        <Smile size={20} className="shrink-0 text-[#687684] md:hidden" />
-        <ImageIcon size={20} className="shrink-0 text-[#687684] md:hidden" />
         <button
           onClick={() => void sendMessage()}
           disabled={!draft.trim()}

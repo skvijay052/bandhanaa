@@ -23,7 +23,6 @@ import {
   Menu,
   MessageSquare,
   MoreVertical,
-  MoreHorizontal,
   Plane,
   Search,
   Send,
@@ -335,6 +334,20 @@ function MobileProfileExperience({
   onDelete: () => void;
   onUnfollow: () => void;
 }) {
+  const [mainPhotoOpen, setMainPhotoOpen] = useState(false);
+  useEffect(() => {
+    if (!mainPhotoOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMainPhotoOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [mainPhotoOpen]);
   const firstName = profile.name.split(" ")[0];
   const relationLabel =
     relation === "none"
@@ -373,14 +386,21 @@ function MobileProfileExperience({
   return (
     <div className="relative pb-24 md:hidden">
       <section className="relative h-[455px] overflow-hidden bg-[#eee]">
-        <ProfileImage
-          src={profile.image}
-          alt={profile.name}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        <button
+          type="button"
+          onClick={() => setMainPhotoOpen(true)}
+          aria-label={`Open ${profile.name} photo`}
+          className="absolute inset-0"
+        >
+          <ProfileImage
+            src={profile.image}
+            alt={profile.name}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        </button>
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/35 to-transparent" />
         <Link
           href="/discover"
@@ -389,13 +409,6 @@ function MobileProfileExperience({
         >
           <ChevronLeft size={24} />
         </Link>
-        <button
-          type="button"
-          aria-label="More options"
-          className="absolute right-5 top-5 grid size-11 place-items-center rounded-full bg-white/95 text-[#0f1419] shadow-lg"
-        >
-          <MoreHorizontal size={23} />
-        </button>
         <span
           className={`absolute left-5 top-[100px] rounded-full px-3 py-1.5 text-[12px] ${profile.online ? "bg-black/60 text-white" : "bg-black/55 text-white"}`}
         >
@@ -476,10 +489,6 @@ function MobileProfileExperience({
             Delete request
           </button>
         ) : null}
-        <p className="mt-4 flex items-center justify-center gap-2 text-[12px] text-[var(--text-secondary)]">
-          <ShieldCheck size={18} className="text-[#8c45ff]" />
-          <strong className="text-[#8c45ff]">Verified</strong> Profile
-        </p>
       </section>
       <nav className="sticky top-0 z-[70] mx-4 mt-4 flex overflow-x-auto rounded-[20px] bg-white/95 px-2 py-3 shadow-[0_10px_30px_rgba(63,38,110,.08)] backdrop-blur-xl [scrollbar-color:#c8a6ff_transparent] [scrollbar-width:thin] dark:bg-[var(--surface)]">
         {[
@@ -652,6 +661,36 @@ function MobileProfileExperience({
           {relationLabel}
         </button>
       </div>
+      {mainPhotoOpen ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${profile.name} photo viewer`}
+          onMouseDown={(event) =>
+            event.target === event.currentTarget && setMainPhotoOpen(false)
+          }
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+        >
+          <button
+            type="button"
+            onClick={() => setMainPhotoOpen(false)}
+            aria-label="Close photo viewer"
+            className="absolute right-5 top-5 z-10 grid size-11 place-items-center rounded-full bg-white/15 text-white"
+          >
+            <X size={24} />
+          </button>
+          <div className="relative h-[82dvh] w-full max-w-xl overflow-hidden rounded-[24px]">
+            <ProfileImage
+              src={profile.image}
+              alt={profile.name}
+              fill
+              priority
+              sizes="100vw"
+              className="object-contain"
+            />
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   BadgeCheck,
-  Bell,
   BriefcaseBusiness,
   Bookmark,
   Check,
@@ -14,7 +13,6 @@ import {
   MapPin,
   MessageSquare,
   Send,
-  Search,
   ShieldCheck,
   Sparkles,
   X,
@@ -58,6 +56,10 @@ export function RequestsClient({
   const [following, setFollowing] = useState(initialFollowing);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
+  const [pendingRemoval, setPendingRemoval] = useState<{
+    profile: InterestProfile;
+    kind: "sent" | "following";
+  } | null>(null);
 
   useEffect(() => setReceived(initialReceived), [initialReceived]);
   useEffect(() => setSent(initialSent), [initialSent]);
@@ -106,18 +108,10 @@ export function RequestsClient({
     profile: InterestProfile,
     kind: "received" | "sent" | "following",
   ) {
-    if (
-      kind === "sent" &&
-      !window.confirm(`Cancel follow request to ${profile.name}?`)
-    )
+    if ((kind === "sent" || kind === "following") && !pendingRemoval) {
+      setPendingRemoval({ profile, kind });
       return;
-    if (
-      kind === "following" &&
-      !window.confirm(
-        `Unfollow ${profile.name}?\n\nYou'll stop following this profile.`,
-      )
-    )
-      return;
+    }
     setBusyId(profile.id);
     const { error } = await createClient()
       .from("profile_likes")
@@ -142,6 +136,7 @@ export function RequestsClient({
       );
     }
     setBusyId(null);
+    setPendingRemoval(null);
   }
 
   return (
@@ -165,6 +160,17 @@ export function RequestsClient({
             onAccept={(profile) => void accept(profile)}
             onRemove={(profile) => void remove(profile, activeTab)}
           />
+          {pendingRemoval ? (
+            <ConfirmRemovalModal
+              profile={pendingRemoval.profile}
+              kind={pendingRemoval.kind}
+              busy={busyId === pendingRemoval.profile.id}
+              onClose={() => setPendingRemoval(null)}
+              onConfirm={() =>
+                void remove(pendingRemoval.profile, pendingRemoval.kind)
+              }
+            />
+          ) : null}
           <main className="hidden w-full md:block">
             <header className="border-b border-[#eff3f4] px-5 py-5 md:px-8">
               <h1 className="text-[24px] font-bold tracking-[-.02em] text-[#0f1419]">
@@ -268,40 +274,28 @@ function MobileRequestsPage({
     following: following.length,
   };
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-[#fbfcff] px-4 pb-32 md:hidden">
+    <main className="relative min-h-dvh overflow-x-hidden bg-[var(--app-bg)] px-4 pb-32 md:hidden">
       <div className="pointer-events-none absolute -left-28 -top-28 size-[430px] rounded-full bg-[#dff9f3]/80 blur-2xl" />
       <div className="pointer-events-none absolute -right-36 top-10 size-[420px] rounded-full bg-[#eee7ff]/80 blur-2xl" />
-      <header className="relative flex items-center justify-between pb-4 pt-5">
-        <Brand compact />
-        <div className="flex gap-2">
+      <header className="relative grid grid-cols-[40px_1fr_40px] items-center pb-4 pt-5">
+        <span aria-hidden="true" />
+        <Link
+          href="/discover"
+          className="justify-self-center"
+          aria-label="Bandhanaa"
+        >
+          <Brand compact />
+        </Link>
+        <div className="justify-self-end">
           <Link
-            href="/discover"
-            aria-label="Search profiles"
+            href="/matches?tab=shortlisted"
+            aria-label="Shortlisted profiles"
             className="grid size-9 place-items-center rounded-[13px] bg-white/90 p-1 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
           >
-            <Search size={16} strokeWidth={1.8} />
-          </Link>
-          <Link
-            href="/notifications"
-            aria-label="Notifications"
-            className="relative grid size-9 place-items-center rounded-[13px] bg-white/90 p-1 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
-          >
-            <Bell size={16} strokeWidth={1.8} />
-            <span className="absolute right-1 top-1 size-2 rounded-full bg-[#8b3de8] ring-1 ring-white" />
+            <Heart size={17} strokeWidth={1.8} />
           </Link>
         </div>
       </header>
-      <section className="relative">
-        <h1 className="flex items-center gap-2 text-[24px] font-extrabold tracking-[-.04em] text-[var(--text-primary)]">
-          Requests
-          <span className="grid size-7 place-items-center rounded-lg bg-[#eee6ff]">
-            <Heart size={13} className="fill-[#9348ee] text-[#9348ee]" />
-          </span>
-        </h1>
-        <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
-          Manage your connections 💗
-        </p>
-      </section>
       <div
         role="tablist"
         className="relative mt-6 grid h-[62px] grid-cols-3 rounded-[19px] border border-[#eee9f2] bg-white/90 shadow-[0_8px_28px_rgba(63,38,110,.06)] dark:bg-[var(--surface)]"
@@ -676,10 +670,9 @@ function MobileRequestEmpty({
   kind: RequestTab;
   hasProfiles: boolean;
 }) {
+  if (hasProfiles) return null;
   return (
-    <div
-      className={`rounded-[24px] bg-white/80 px-6 text-center shadow-[0_10px_30px_rgba(63,38,110,.06)] ${hasProfiles ? "py-8" : "mt-8 py-14"}`}
-    >
+    <div className="mt-8 rounded-[24px] bg-white/80 px-6 py-14 text-center shadow-[0_10px_30px_rgba(63,38,110,.06)]">
       <div className="mx-auto grid size-20 place-items-center rounded-full bg-[#f3eaff] text-[#8b3de8]">
         {kind === "received" ? <Heart size={36} /> : <Send size={36} />}
       </div>
@@ -697,6 +690,66 @@ function MobileRequestEmpty({
             ? "We’ll notify you when someone responds."
             : "Accepted connections will appear here."}
       </p>
+    </div>
+  );
+}
+
+function ConfirmRemovalModal({
+  profile,
+  kind,
+  busy,
+  onClose,
+  onConfirm,
+}: {
+  profile: InterestProfile;
+  kind: "sent" | "following";
+  busy: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  const cancelling = kind === "sent";
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="request-confirm-title"
+      className="fixed inset-0 z-[200] grid place-items-end bg-black/45 p-4 backdrop-blur-[2px] md:place-items-center"
+      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+    >
+      <div className="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-2xl dark:bg-[var(--surface)]">
+        <div className="mx-auto grid size-12 place-items-center rounded-full bg-[#fff0f5] text-[#e72c6c]">
+          <X size={22} />
+        </div>
+        <h2
+          id="request-confirm-title"
+          className="mt-4 text-center text-[20px] font-bold"
+        >
+          {cancelling ? "Cancel request?" : `Unfollow ${profile.name}?`}
+        </h2>
+        <p className="mt-2 text-center text-[14px] leading-5 text-[var(--text-secondary)]">
+          {cancelling
+            ? "Are you sure you want to cancel this request?"
+            : "You’ll stop following this profile."}
+        </p>
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={busy}
+            className="h-12 rounded-full border border-[#d8d4dc] font-semibold"
+          >
+            {cancelling ? "Keep Request" : "Keep Following"}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={busy}
+            className="h-12 rounded-full bg-[#e72c6c] font-semibold text-white disabled:opacity-60"
+          >
+            {busy ? "Updating…" : cancelling ? "Cancel Request" : "Unfollow"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
