@@ -161,8 +161,22 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
       setNotice(error.message);
       return;
     }
+    const { data: registration } = await supabase.rpc(
+      "complete_profile_onboarding",
+    );
     setDraft((current) => ({ ...current, completion }));
     setNotice("Changes saved.");
+    const registrationRow = Array.isArray(registration)
+      ? registration[0]
+      : registration;
+    if (
+      initial.registrationStatus !== "active" &&
+      registrationRow?.registration_status === "active"
+    ) {
+      router.replace("/discover");
+      router.refresh();
+      return;
+    }
     const index = editSections.indexOf(section);
     if (index < editSections.length - 1) setSection(editSections[index + 1]);
     router.refresh();
