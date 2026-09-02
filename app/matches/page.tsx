@@ -64,7 +64,7 @@ export default async function MatchesPage({
     supabase.rpc("get_recommended_profiles", { result_limit: 24 }),
     supabase
       .from("profile_likes")
-      .select("liker_id, liked_id")
+      .select("liker_id, liked_id, status")
       .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
     supabase
       .from("profile_shortlists")
@@ -136,11 +136,14 @@ export default async function MatchesPage({
 
   const rows = interactions.data ?? [];
   const sentIds = rows
-    .filter((row) => row.liker_id === user.id)
+    .filter((row) => row.liker_id === user.id && row.status === "pending")
     .map((row) => row.liked_id);
   const receivedIds = rows
-    .filter((row) => row.liked_id === user.id)
+    .filter((row) => row.liked_id === user.id && row.status === "pending")
     .map((row) => row.liker_id);
+  const followingIds = rows
+    .filter((row) => row.status === "accepted")
+    .map((row) => (row.liker_id === user.id ? row.liked_id : row.liker_id));
   return (
     <MatchesClient
       profiles={profiles}
@@ -149,6 +152,7 @@ export default async function MatchesPage({
       }
       sentIds={sentIds}
       receivedIds={receivedIds}
+      followingIds={followingIds}
       initialTab={initialTab}
     />
   );
