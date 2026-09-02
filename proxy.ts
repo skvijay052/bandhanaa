@@ -1,5 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import type { RegistrationProfileState } from "@/lib/registration-state";
+import { registrationDestination } from "@/lib/registration-state";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -29,6 +31,11 @@ export async function proxy(request: NextRequest) {
     "/matches",
     "/interests",
     "/messages",
+    "/requests",
+    "/connections",
+    "/notifications",
+    "/my-profile",
+    "/settings",
     "/profile",
   ].some((route) => path.startsWith(route));
 
@@ -38,11 +45,44 @@ export async function proxy(request: NextRequest) {
     target.searchParams.set("next", path);
     return NextResponse.redirect(target);
   }
-  if (user && (path === "/login" || path === "/register")) {
-    const target = request.nextUrl.clone();
-    target.pathname = "/discover";
-    target.search = "";
-    return NextResponse.redirect(target);
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("registration_status,onboarding_completed,is_verified")
+      .eq("id", user.id)
+      .maybeSingle();
+    const destination = registrationDestination(
+      user,
+      profile as RegistrationProfileState | null,
+    );
+    const authEntry = path === "/login" || path === "/register";
+    const verificationPage = path === "/verify-email";
+    const onboardingPage = path.startsWith("/settings/edit-profile");
+
+    if (!user.email_confirmed_at && !verificationPage) {
+      const target = request.nextUrl.clone();
+      target.pathname = "/verify-email";
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
+    if (user.email_confirmed_at && verificationPage) {
+      const target = request.nextUrl.clone();
+      target.pathname = destination;
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
+    if (destination === "/settings/edit-profile" && !onboardingPage) {
+      const target = request.nextUrl.clone();
+      target.pathname = destination;
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
+    if (authEntry && destination === "/discover") {
+      const target = request.nextUrl.clone();
+      target.pathname = destination;
+      target.search = "";
+      return NextResponse.redirect(target);
+    }
   }
   return response;
 }
@@ -54,7 +94,13 @@ export const config = {
     "/matches/:path*",
     "/interests/:path*",
     "/messages/:path*",
+    "/requests/:path*",
+    "/connections/:path*",
+    "/notifications/:path*",
+    "/my-profile/:path*",
+    "/settings/:path*",
     "/profile/:path*",
+    "/verify-email",
     "/login",
     "/register",
   ],
