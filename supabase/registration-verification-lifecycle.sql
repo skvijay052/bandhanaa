@@ -212,6 +212,47 @@ $$;
 revoke execute on function public.complete_profile_onboarding() from public, anon;
 grant execute on function public.complete_profile_onboarding() to authenticated;
 
+-- RLS-safe membership helpers. These are security-definer functions so policies
+-- can check registration/match state without recursively evaluating each other.
+create or replace function public.is_active_profile(profile_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+    from public.profiles p
+    join auth.users u on u.id = p.id
+    where p.id = profile_id
+      and p.registration_status = 'active'
+      and p.is_verified = true
+      and p.onboarding_completed = true
+      and u.email_confirmed_at is not null
+  );
+$$;
+
+create or replace function public.are_profiles_matched(first_id uuid, second_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.profile_likes likes
+    where likes.status = 'accepted'
+      and ((likes.liker_id = first_id and likes.liked_id = second_id)
+        or (likes.liker_id = second_id and likes.liked_id = first_id))
+  );
+$$;
+
+revoke execute on function public.is_active_profile(uuid) from public, anon;
+revoke execute on function public.are_profiles_matched(uuid, uuid) from public, anon;
+grant execute on function public.is_active_profile(uuid) to authenticated;
+grant execute on function public.are_profiles_matched(uuid, uuid) to authenticated;
+
 -- A browser client may edit normal profile fields, but never verification state.
 revoke update on table public.profiles from authenticated;
 grant update (
@@ -239,12 +280,7 @@ using (
   registration_status = 'active'
   and is_verified = true
   and onboarding_completed = true
-  and exists (
-    select 1 from public.profile_likes likes
-    where likes.status = 'accepted'
-      and ((likes.liker_id = auth.uid() and likes.liked_id = profiles.id)
-        or (likes.liked_id = auth.uid() and likes.liker_id = profiles.id))
-  )
+  and public.are_profiles_matched(auth.uid(), profiles.id)
 );
 
 drop policy if exists "Users can create likes" on public.profile_likes;
@@ -253,8 +289,8 @@ on public.profile_likes for insert to authenticated
 with check (
   auth.uid() = liker_id
   and status = 'pending'
-  and exists (select 1 from public.profiles me where me.id = auth.uid() and me.registration_status = 'active' and me.is_verified and me.onboarding_completed)
-  and exists (select 1 from public.profiles them where them.id = liked_id and them.registration_status = 'active' and them.is_verified and them.onboarding_completed and them.is_discoverable)
+  and public.is_active_profile(auth.uid())
+  and public.is_active_profile(liked_id)
 );
 
 drop policy if exists "Recipients can respond to likes" on public.profile_likes;
@@ -264,7 +300,7 @@ using (auth.uid() = liked_id)
 with check (
   auth.uid() = liked_id
   and status in ('accepted', 'declined')
-  and exists (select 1 from public.profiles me where me.id = auth.uid() and me.registration_status = 'active' and me.is_verified and me.onboarding_completed)
+  and public.is_active_profile(auth.uid())
 );
 
 drop policy if exists "Users can read their likes" on public.profile_likes;
@@ -272,9 +308,9 @@ create policy "Active users can read active likes"
 on public.profile_likes for select to authenticated
 using (
   (auth.uid() = liker_id or auth.uid() = liked_id)
-  and exists (select 1 from public.profiles me where me.id = auth.uid() and me.registration_status = 'active' and me.is_verified and me.onboarding_completed)
-  and exists (select 1 from public.profiles a where a.id = liker_id and a.registration_status = 'active' and a.is_verified and a.onboarding_completed)
-  and exists (select 1 from public.profiles b where b.id = liked_id and b.registration_status = 'active' and b.is_verified and b.onboarding_completed)
+  and public.is_active_profile(auth.uid())
+  and public.is_active_profile(liker_id)
+  and public.is_active_profile(liked_id)
 );
 
 drop policy if exists "Users manage their shortlist" on public.profile_shortlists;
@@ -283,8 +319,8 @@ on public.profile_shortlists for all to authenticated
 using (auth.uid() = user_id)
 with check (
   auth.uid() = user_id
-  and exists (select 1 from public.profiles me where me.id = auth.uid() and me.registration_status = 'active' and me.is_verified and me.onboarding_completed)
-  and exists (select 1 from public.profiles them where them.id = profile_id and them.registration_status = 'active' and them.is_verified and them.onboarding_completed and them.is_discoverable)
+  and public.is_active_profile(auth.uid())
+  and public.is_active_profile(profile_id)
 );
 
 drop policy if exists "Accepted matches can read messages" on public.messages;
@@ -292,8 +328,8 @@ create policy "Active accepted matches can read messages"
 on public.messages for select to authenticated
 using (
   (auth.uid() = interest_liker_id or auth.uid() = interest_liked_id)
-  and exists (select 1 from public.profile_likes likes where likes.liker_id = messages.interest_liker_id and likes.liked_id = messages.interest_liked_id and likes.status = 'accepted')
-  and exists (select 1 from public.profiles me where me.id = auth.uid() and me.registration_status = 'active' and me.is_verified and me.onboarding_completed)
+  and public.are_profiles_matched(messages.interest_liker_id, messages.interest_liked_id)
+  and public.is_active_profile(auth.uid())
 );
 
 drop policy if exists "Accepted matches can send messages" on public.messages;
@@ -302,8 +338,8 @@ on public.messages for insert to authenticated
 with check (
   auth.uid() = sender_id
   and (auth.uid() = interest_liker_id or auth.uid() = interest_liked_id)
-  and exists (select 1 from public.profile_likes likes where likes.liker_id = messages.interest_liker_id and likes.liked_id = messages.interest_liked_id and likes.status = 'accepted')
-  and exists (select 1 from public.profiles me where me.id = auth.uid() and me.registration_status = 'active' and me.is_verified and me.onboarding_completed)
+  and public.are_profiles_matched(messages.interest_liker_id, messages.interest_liked_id)
+  and public.is_active_profile(auth.uid())
 );
 
 create or replace function public.get_recommended_profiles(result_limit integer default 24)
