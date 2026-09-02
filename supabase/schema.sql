@@ -33,6 +33,10 @@ create table if not exists public.profiles (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
+-- After applying this base schema, also run
+-- supabase/registration-verification-lifecycle.sql. It adds the authoritative
+-- email-verification lifecycle and replaces discovery/interaction policies.
+
 alter table public.profiles add column if not exists age integer check (age between 18 and 100);
 alter table public.profiles add column if not exists birth_date date;
 alter table public.profiles add column if not exists weight text;
