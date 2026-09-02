@@ -11,6 +11,8 @@ import {
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { verificationEmailStorageKey } from "@/lib/auth-verification";
+import type { RegistrationProfileState } from "@/lib/registration-state";
+import { registrationDestination } from "@/lib/registration-state";
 
 const OTP_LENGTH = 6;
 type VerificationState = "idle" | "verifying" | "verified" | "resending";
@@ -43,9 +45,30 @@ export function VerifyEmailForm() {
   const [countdown, setCountdown] = useState(60);
 
   useEffect(() => {
-    setEmail(sessionStorage.getItem(verificationEmailStorageKey) ?? "");
-    setRestored(true);
-  }, []);
+    const supabase = createClient();
+    const storedEmail = localStorage.getItem(verificationEmailStorageKey) ?? "";
+    setEmail(storedEmail);
+    void supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (user?.email_confirmed_at) {
+        await supabase.rpc("activate_verified_profile");
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("registration_status,onboarding_completed,is_verified")
+          .eq("id", user.id)
+          .maybeSingle();
+        localStorage.removeItem(verificationEmailStorageKey);
+        router.replace(
+          registrationDestination(
+            user,
+            profile as RegistrationProfileState | null,
+          ),
+        );
+        router.refresh();
+        return;
+      }
+      setRestored(true);
+    });
+  }, [router]);
 
   useEffect(() => {
     if (!email || countdown <= 0) return;
@@ -99,6 +122,12 @@ export function VerifyEmailForm() {
 
   async function verify() {
     if (state !== "idle") return;
+    if (!email) {
+      setError(
+        "Your verification email is missing. Please return to registration.",
+      );
+      return;
+    }
     if (otp.length !== OTP_LENGTH) {
       setError(`Enter the complete ${OTP_LENGTH}-digit verification code.`);
       return;
@@ -125,9 +154,31 @@ export function VerifyEmailForm() {
         setState("idle");
         return;
       }
+      const verifiedUser =
+        data.user ?? (await supabase.auth.getUser()).data.user;
+      if (!verifiedUser?.email_confirmed_at) {
+        setError(
+          "Supabase has not confirmed this email yet. Please try again.",
+        );
+        setState("idle");
+        return;
+      }
+      const { data: activation, error: activationError } = await supabase.rpc(
+        "activate_verified_profile",
+      );
+      if (activationError) {
+        setError(
+          "Your email is verified, but profile activation could not finish. Please refresh and try again.",
+        );
+        setState("idle");
+        return;
+      }
+      const profile = (
+        Array.isArray(activation) ? activation[0] : activation
+      ) as RegistrationProfileState | null;
       setState("verified");
-      sessionStorage.removeItem(verificationEmailStorageKey);
-      router.replace("/discover");
+      localStorage.removeItem(verificationEmailStorageKey);
+      router.replace(registrationDestination(verifiedUser, profile));
       router.refresh();
     } catch {
       setError(
