@@ -13,7 +13,7 @@ import {
 const defaultItems = [
   { label: "Discover", href: "/discover", icon: Compass },
   { label: "Matches", href: "/matches", icon: Heart },
-  { label: "Messages", href: "/messages", icon: MessageCircle, raised: true },
+  { label: "Messages", href: "/messages", icon: MessageCircle, },
   { label: "Requests", href: "/requests", icon: UsersRound },
   { label: "Profile", href: "/my-profile", icon: UserRound },
 ] as const;
@@ -21,7 +21,7 @@ const defaultItems = [
 const settingsItems = [
   { label: "Discover", href: "/discover", icon: Compass },
   { label: "Matches", href: "/matches", icon: Heart },
-  { label: "Messages", href: "/messages", icon: MessageCircle, raised: true },
+  { label: "Messages", href: "/messages", icon: MessageCircle, },
   { label: "Requests", href: "/requests", icon: UsersRound },
   { label: "Profile", href: "/my-profile", icon: UserRound },
 ] as const;
@@ -38,7 +38,7 @@ export function MobileBottomNavigation({
     return (
       <nav
         aria-label="Mobile navigation"
-        className="settings-bottom-nav fixed inset-x-4 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[100] grid h-[80px] grid-cols-5 rounded-[28px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
+        className="settings-bottom-nav fixed inset-x-4 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
       >
         {settingsItems.map(({ label, href, icon: Icon, ...item }, index) => {
           const active =
@@ -52,12 +52,12 @@ export function MobileBottomNavigation({
               href={href}
               aria-label={label || "Requests"}
               aria-current={active ? "page" : undefined}
-              className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#b96cff]" : "text-[#737885]"}`}
+              className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#ffffff]" : "text-[#737885]"}`}
             >
               {raised ? (
-                <span className="absolute -top-5 grid size-[58px] place-items-center rounded-full border-[3px] border-[#f3eaff] bg-[linear-gradient(145deg,#b62cff,#7a2cf0)] text-white shadow-[0_7px_22px_rgba(160,45,255,.52)]">
-                  <Icon size={25} strokeWidth={1.8} />
-                </span>
+                  <span className="relative grid place-items-center">
+                    <Icon size={23} strokeWidth={1.8} fill={active && label === "Matches" ? "currentColor" : "none"}/>
+                  </span>
               ) : (
                 <Icon
                   size={22}
@@ -65,10 +65,7 @@ export function MobileBottomNavigation({
                   fill={active && label === "Matches" ? "currentColor" : "none"}
                 />
               )}
-              <span>{label}</span>
-              {active ? (
-                <span className="absolute bottom-1.5 h-[3px] w-8 rounded-full bg-[#c46cff] shadow-[0_0_8px_rgba(196,108,255,.7)]" />
-              ) : null}
+              <span>{label}</span> 
             </Link>
           );
         })}
@@ -79,7 +76,7 @@ export function MobileBottomNavigation({
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-4 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[100] grid h-[80px] grid-cols-5 rounded-[28px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
+      className="fixed inset-x-4 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
     >
       {defaultItems.map(({ label, href, icon: Icon, ...item }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -90,11 +87,11 @@ export function MobileBottomNavigation({
             key={label}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#b96cff]" : "text-[#737885]"}`}
+            className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#ffffff]" : "text-[#737885]"}`}
           >
             {raised ? (
-              <span className="absolute -top-5 grid size-[58px] place-items-center rounded-full border-[3px] border-[#f3eaff] bg-[linear-gradient(145deg,#b62cff,#7a2cf0)] text-white shadow-[0_7px_22px_rgba(160,45,255,.52)]">
-                <Icon size={28} strokeWidth={1.8} />
+              <span className="relative grid place-items-center">
+                <Icon size={23} strokeWidth={1.8} fill={active && label === "Matches" ? "currentColor" : "none"}/>
               </span>
             ) : (
               <span className="relative grid place-items-center">
@@ -110,10 +107,7 @@ export function MobileBottomNavigation({
                 ) : null}
               </span>
             )}
-            <span>{label}</span>
-            {active ? (
-              <span className="absolute bottom-1.5 h-[3px] w-8 rounded-full bg-[#c46cff] shadow-[0_0_8px_rgba(196,108,255,.7)]" />
-            ) : null}
+            <span>{label}</span> 
           </Link>
         );
       })}

@@ -34,14 +34,15 @@ export function MobileMatchesExperience({
   return (
     <div className="mobile-half-type mobile-matches-type relative z-10 px-4 pb-32 pt-5 md:hidden">
       <header className="grid grid-cols-[40px_1fr_40px] items-center">
-        <span aria-hidden="true" />
+        
         <Link
           href="/discover"
-          className="justify-self-center"
+          className=""
           aria-label="Bandhanaa"
         >
           <Brand compact />
         </Link>
+        <span aria-hidden="true" />
         <div className="justify-self-end">
           <Link
             href="/matches?tab=shortlisted"
@@ -51,55 +52,8 @@ export function MobileMatchesExperience({
             <Heart size={17} />
           </Link>
         </div>
-      </header>
-      <div className="mt-8">
-        <h1 className="flex items-center gap-2 text-[34px] font-extrabold tracking-[-.04em] text-[var(--text-primary)]">
-          Matches{" "}
-          <span className="grid size-7 place-items-center rounded-lg bg-[#eee6ff]">
-            <Heart
-              size={13}
-              className="mobile-matches-title-icon fill-[#9348ee] text-[#9348ee]"
-            />
-          </span>
-        </h1>
-        <p className="mt-2 text-[16px] text-[var(--text-secondary)]">
-          Profiles that are highly compatible with you 💗
-        </p>
-      </div>
-      <div className="mt-6 flex min-h-[60px] items-center rounded-[18px] bg-gradient-to-r from-[#faf8ff] to-[#f8eefd] px-2.5 py-2 shadow-[0_8px_25px_rgba(72,45,112,.1)]">
-        <span className="grid size-7 shrink-0 place-items-center rounded-lg bg-white text-[#8b3de8]">
-          <Sparkles size={12} fill="currentColor" />
-        </span>
-        <span className="ml-2.5 min-w-0 flex-1">
-          <strong className="block text-[16px] text-[var(--text-primary)]">
-            You have {profiles.length} new matches!
-          </strong>
-          <span className="mt-1 block text-[13px] text-[var(--text-secondary)]">
-            Check them out and find your perfect match.
-          </span>
-        </span>
-        <span className="flex -space-x-2">
-          {profiles.slice(0, 4).map((profile) => (
-            <span
-              key={profile.id}
-              className="relative size-7 overflow-hidden rounded-full border-2 border-white"
-            >
-              <ProfileImage
-                src={profile.image}
-                alt=""
-                fill
-                sizes="32px"
-                className="object-cover"
-              />
-            </span>
-          ))}
-          {profiles.length > 4 ? (
-            <span className="grid size-7 place-items-center rounded-full border-2 border-white bg-[#f2e7ff] text-[11px] font-bold text-[#9146ee]">
-              +{profiles.length - 4}
-            </span>
-          ) : null}
-        </span>
-      </div>
+      </header> 
+       
       <div className="-mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <Pill active label="Best Matches" />
         <Pill label="New Matches" badge />
@@ -243,7 +197,7 @@ function MobileMatchCard({
       <div className="grid grid-cols-2 gap-3 border-t border-[#eceaf0] p-3">
         <Link
           href={`/profile/${profile.id}`}
-          className="flex h-10 items-center justify-center gap-1.5 rounded-full border border-[#9b4cf2] text-[12px] font-semibold text-[#8b3de8]"
+          className="flex h-10 items-center justify-center gap-1.5 rounded-full border border-[#8b3de8] text-[12px] font-semibold text-[#8b3de8]"
         >
           <Eye size={14} />
           View Profile

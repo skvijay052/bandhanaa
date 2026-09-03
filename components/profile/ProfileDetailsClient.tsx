@@ -453,7 +453,7 @@ function MobileProfileExperience({
           </div>
           <div className="grid size-[76px] shrink-0 place-items-center rounded-full border-[5px] border-[#8c45ff] border-l-[#f0eaff] text-center text-[#8c45ff]">
             <span>
-              <strong className="block text-[21px] leading-none">
+              <strong className="block text-[18px] leading-none">
                 {profile.compatibility}%
               </strong>
               <small className="text-[10px]">Match</small>
@@ -640,7 +640,7 @@ function MobileProfileExperience({
         items={profile.preferences}
         emptyText="Partner preferences have not been added."
       />
-      <div className="fixed inset-x-3 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[110] grid grid-cols-2 gap-3 rounded-[24px] bg-white/95 p-3 shadow-[0_14px_45px_rgba(63,38,110,.2)] backdrop-blur-xl md:hidden">
+      <div className="fixed inset-x-3 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[110] grid grid-cols-2 gap-3 rounded-[0px] bg-white/95 p-3 shadow-[0_14px_45px_rgba(63,38,110,.2)] backdrop-blur-xl md:hidden">
         <button
           type="button"
           onClick={onShortlist}

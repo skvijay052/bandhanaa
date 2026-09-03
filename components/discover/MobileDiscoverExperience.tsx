@@ -45,14 +45,15 @@ export function MobileDiscoverExperience({
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
       <header className="grid grid-cols-[40px_1fr_40px] items-center">
-        <span aria-hidden="true" />
+        
         <Link
           href="/discover"
-          className="justify-self-center"
+          className=""
           aria-label="Bandhanaa"
         >
           <Brand compact />
         </Link>
+        <span aria-hidden="true" />
         <div className="justify-self-end">
           <Link
             href="/matches?tab=shortlisted"

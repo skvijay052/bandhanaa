@@ -95,14 +95,7 @@ export function MatchesClient({
 
   return (
     <div className="h-dvh bg-[var(--app-bg)]">
-      <div
-        className="pointer-events-none fixed inset-0 overflow-hidden md:hidden"
-        aria-hidden="true"
-      >
-        <span className="absolute -left-28 -top-20 size-80 rounded-full bg-[#eef7ff]/80 blur-3xl" />
-        <span className="absolute -right-28 -top-16 size-80 rounded-full bg-[#eee7ff]/80 blur-3xl" />
-        <span className="absolute -right-36 top-48 size-72 rounded-full bg-[#e2fbf8]/75 blur-3xl" />
-      </div>
+    
       <div className="app-shell">
         <AppSidebar active="Matches" />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-8">

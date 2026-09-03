@@ -194,11 +194,7 @@
   .my-profile-mobile {
     min-height: 100%;
     padding: 14px 14px 108px;
-    color: var(--text-primary);
-    background:
-      radial-gradient(circle at 5% 3%, #e9ffff 0 13%, transparent 31%),
-      radial-gradient(circle at 100% 7%, #faedff 0 13%, transparent 29%),
-      var(--app-bg);
+    color: var(--text-primary); 
   }
   .my-profile-mobile__header {
     display: grid;
@@ -311,7 +307,7 @@
     position: absolute;
   }
   .my-profile-mobile__progress {
-    height: 8px;
+    height: 15px;
     border-radius: 999px;
     background: #eeeefa;
   }

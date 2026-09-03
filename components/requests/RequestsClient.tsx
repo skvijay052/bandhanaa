@@ -278,14 +278,15 @@ function MobileRequestsPage({
       <div className="pointer-events-none absolute -left-28 -top-28 size-[430px] rounded-full bg-[#dff9f3]/80 blur-2xl" />
       <div className="pointer-events-none absolute -right-36 top-10 size-[420px] rounded-full bg-[#eee7ff]/80 blur-2xl" />
       <header className="relative grid grid-cols-[40px_1fr_40px] items-center pb-4 pt-5">
-        <span aria-hidden="true" />
+        
         <Link
           href="/discover"
-          className="justify-self-center"
+          className=""
           aria-label="Bandhanaa"
         >
           <Brand compact />
         </Link>
+        <span aria-hidden="true" />
         <div className="justify-self-end">
           <Link
             href="/matches?tab=shortlisted"

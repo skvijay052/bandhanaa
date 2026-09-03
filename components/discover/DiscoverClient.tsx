@@ -142,14 +142,7 @@ export function DiscoverClient({
   }
   return (
     <div className="h-dvh bg-[var(--app-bg)] max-md:bg-[#f8fafc]">
-      <div
-        className="pointer-events-none fixed inset-0 overflow-hidden md:hidden"
-        aria-hidden="true"
-      >
-        <span className="absolute -left-24 -top-20 size-72 rounded-full bg-[#dff8ef]/70 blur-3xl" />
-        <span className="absolute -right-28 top-8 size-72 rounded-full bg-[#e7e4ff]/70 blur-3xl" />
-        <span className="absolute bottom-20 left-1/3 size-64 rounded-full bg-[#dff3ff]/60 blur-3xl" />
-      </div>
+    
       <div className="app-shell">
         <AppSidebar active="Discover" />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-20 md:pb-8">
@@ -738,112 +731,5 @@ function SafetyBanner() {
         Learn more →
       </button>
     </section>
-  );
-}
-function MobileNav() {
-  const [moreOpen, setMoreOpen] = useState(false);
-  const items = [
-    [UserRoundSearch, "Discover", "/discover"],
-    [Heart, "Matches", "/matches"],
-    [MessageCircle, "Requests", "/requests"],
-    [MessageSquare, "Messages", "/messages"],
-  ] as const;
-  return (
-    <>
-      {moreOpen ? (
-        <button
-          type="button"
-          aria-label="Close more menu"
-          onClick={() => setMoreOpen(false)}
-          className="fixed inset-0 z-[80] bg-[#0f1419]/25 md:hidden"
-        />
-      ) : null}
-      {moreOpen ? (
-        <section
-          className="fixed inset-x-4 bottom-[calc(100px+env(safe-area-inset-bottom))] z-[90] rounded-[24px] border border-[#eff3f4] bg-white p-3 shadow-[0_16px_48px_rgba(15,20,25,.18)] md:hidden"
-          aria-label="More navigation"
-        >
-          <Link
-            href="/matches?tab=shortlisted"
-            className="flex h-12 items-center gap-3 rounded-xl px-3 text-[14px] font-semibold hover:bg-[#f7f9f9]"
-          >
-            <Heart size={20} />
-            Shortlist
-          </Link>
-          <Link
-            href="/notifications"
-            className="flex h-12 items-center gap-3 rounded-xl px-3 text-[14px] font-semibold hover:bg-[#f7f9f9]"
-          >
-            <Bell size={20} />
-            Notifications
-          </Link>
-          <Link
-            href="/my-profile"
-            className="flex h-12 items-center gap-3 rounded-xl px-3 text-[14px] font-semibold hover:bg-[#f7f9f9]"
-          >
-            <UserRound size={20} />
-            Profile
-          </Link>
-          <Link
-            href="/settings"
-            className="flex h-12 items-center gap-3 rounded-xl px-3 text-[14px] font-semibold hover:bg-[#f7f9f9]"
-          >
-            <Settings size={20} />
-            Settings
-          </Link>
-          <form action="/api/auth/signout" method="post">
-            <button
-              type="submit"
-              className="flex h-12 w-full items-center gap-3 rounded-xl px-3 text-left text-[14px] font-semibold text-[#f4212e] hover:bg-[#fff1f2]"
-            >
-              <LogOut size={20} />
-              Log out
-            </button>
-          </form>
-        </section>
-      ) : null}
-      <nav
-        className="fixed inset-x-4 bottom-[calc(10px+env(safe-area-inset-bottom))] z-[100] grid h-[82px] grid-cols-5 rounded-[28px] border border-white/90 bg-white/95 px-2 shadow-[0_12px_36px_rgba(63,38,110,.15)] backdrop-blur-xl md:hidden"
-        aria-label="Mobile navigation"
-      >
-        {items.map(([Icon, label, href]) => {
-          const active = label === "Discover";
-          const raised = label === "Requests";
-          return (
-            <Link
-              key={label}
-              href={href}
-              aria-current={active ? "page" : undefined}
-              className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#8b3de8]" : "text-[#536471]"}`}
-            >
-              {raised ? (
-                <span className="absolute -top-5 grid size-[58px] place-items-center rounded-full border-[3px] border-white bg-[#8b3de8] text-white shadow-[0_7px_20px_rgba(139,61,232,.38)]">
-                  <Icon size={25} strokeWidth={1.8} />
-                </span>
-              ) : (
-                <Icon
-                  size={22}
-                  strokeWidth={1.8}
-                  fill={active ? "currentColor" : "none"}
-                />
-              )}
-              <span>{label}</span>
-              {active ? (
-                <span className="absolute bottom-1.5 h-[3px] w-8 rounded-full bg-[#8b3de8]" />
-              ) : null}
-            </Link>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => setMoreOpen((value) => !value)}
-          aria-expanded={moreOpen}
-          className={`flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${moreOpen ? "text-[#8b3de8]" : "text-[#536471]"}`}
-        >
-          <Menu size={22} />
-          More
-        </button>
-      </nav>
-    </>
   );
 }
