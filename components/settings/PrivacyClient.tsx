@@ -177,7 +177,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                     safe and trusted experience.
                   </p>
                 </div>
-                <ChevronRight />
+                <ChevronRight className="ml-auto"/>
               </Link>
               {error ? (
                 <p role="alert" className="mt-4 text-[11px] text-red-600">
@@ -240,7 +240,7 @@ function ValueRow({
           {value}
         </span>
       ) : null}
-      <ChevronRight size={18} className="ml-2" />
+      <ChevronRight size={18} className="ml-auto" />
     </div>
   );
   return onClick ? (

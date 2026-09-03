@@ -187,8 +187,9 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
         <AppSidebar active="Profile" />
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <DesktopSectionNav active={section} onChange={setSection} />
+          <MobilePageHeader />
           <div className="h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-3">
-            <MobilePageHeader />
+            
             <header className="mx-auto flex max-w-[780px] items-start py-6 md:py-8">
               <button
                 onClick={() => router.push("/my-profile")}
@@ -231,9 +232,9 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
                 </div>
                 <button
                   onClick={() => setSection("Photos")}
-                  className="ml-auto h-10 rounded-lg bg-[#1d9bf0] px-5 text-[14px] font-semibold text-white hover:bg-[#1689df]"
+                  className="ml-auto h-8 rounded-lg bg-[#1d9bf0] px-5 text-[12px] font-semibold text-white hover:bg-[#1689df]"
                 >
-                  Change photo
+                  Change
                 </button>
               </section>
               <MobileSectionNav active={section} onChange={setSection} />
@@ -264,7 +265,7 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
                   <button
                     onClick={() => void save()}
                     disabled={saving}
-                    className="h-10 rounded-lg bg-[#1d9bf0] px-5 text-[14px] font-semibold text-white hover:bg-[#1689df] disabled:opacity-60"
+                    className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#a34cef] to-[#f45ca9] text-[12px] font-semibold text-white disabled:opacity-80"
                   >
                     {saving ? "Saving…" : "Save & Continue"}
                   </button>
@@ -336,7 +337,7 @@ function MobileSectionNav({
           <button
             key={label}
             onClick={() => onChange(label)}
-            className={`relative flex min-w-[74px] flex-col items-center gap-1 pb-3 text-[8px] ${active === label ? "text-[#1d9bf0]" : ""}`}
+            className={`relative flex min-w-[74px] flex-col items-center gap-1 pb-3 text-[12px] ${active === label ? "text-[#1d9bf0]" : ""}`}
           >
             <span className="grid size-9 place-items-center rounded-full border border-[#e4e6ed]">
               <Icon size={15} />

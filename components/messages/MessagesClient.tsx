@@ -457,7 +457,7 @@ function ConversationRow({
         </span>
       </span>
       <span className="flex shrink-0 flex-col items-end justify-center text-[11px] text-[#667781] max-md:absolute max-md:right-4 max-md:top-4 max-md:gap-5">
-        <span className="md:hidden">{item.time}</span>
+    
         {item.unread ? (
           <span className="grid size-5 place-items-center rounded-full bg-[#ed2082] font-bold text-white">
             {item.unread}

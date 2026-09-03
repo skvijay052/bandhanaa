@@ -11,17 +11,15 @@ export function MobilePageHeader({
 }) {
   return (
     <header className="mobile-page-header relative overflow-hidden px-4 pb-5 pt-5 md:hidden">
-      <span className="pointer-events-none absolute -left-24 -top-28 size-72 rounded-full bg-[#dff9f3]/80 blur-2xl" />
-      <span className="pointer-events-none absolute -right-28 -top-16 size-72 rounded-full bg-[#eee7ff]/80 blur-2xl" />
       <div className="relative grid grid-cols-[44px_1fr_44px] items-center">
-        <span aria-hidden="true" />
+       
         <Link
           href="/discover"
-          aria-label="Bandhanaa"
-          className="justify-self-center"
+          aria-label="Bandhanaa" 
         >
           <Brand compact />
         </Link>
+         <span aria-hidden="true" />
         <div className="justify-self-end">
           <Link
             href="/matches?tab=shortlisted"
