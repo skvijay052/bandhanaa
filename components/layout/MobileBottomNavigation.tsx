@@ -38,7 +38,7 @@ export function MobileBottomNavigation({
     return (
       <nav
         aria-label="Mobile navigation"
-        className="settings-bottom-nav fixed inset-x-4 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
+        className="settings-bottom-nav fixed inset-x-0 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
       >
         {settingsItems.map(({ label, href, icon: Icon, ...item }, index) => {
           const active =
@@ -76,7 +76,7 @@ export function MobileBottomNavigation({
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-4 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
+      className="fixed inset-x-0 bottom-[calc(0px+env(safe-area-inset-bottom))] z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
     >
       {defaultItems.map(({ label, href, icon: Icon, ...item }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`);

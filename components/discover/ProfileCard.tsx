@@ -31,7 +31,7 @@ export function ProfileCard({
         <button
           onClick={onLike}
           aria-label={`${liked ? "Remove from shortlist" : "Add to shortlist"} ${profile.name}`}
-          className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/20 backdrop-blur-sm transition-colors ${liked ? "text-[#ff3040]" : "text-white"}`}
+          className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/20 backdrop-blur-sm transition-colors ${liked ? "text-[#fb1c8d]" : "text-white"}`}
         >
           <Heart size={19} fill={liked ? "currentColor" : "none"} strokeWidth={2} />
         </button>

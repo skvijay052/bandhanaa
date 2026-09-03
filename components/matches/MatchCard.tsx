@@ -17,7 +17,7 @@ export function MatchCard({ profile, shortlisted, onShortlist, priority = false 
           <ProfileImage src={profile.image} alt={`${profile.name}'s match profile`} fill priority={priority} sizes="(max-width:767px) 100vw, (max-width:1535px) 33vw, 25vw" className="object-cover" />
         </Link>
         <span className="absolute left-3 top-3 rounded-full bg-[#1d9bf0] px-3 py-1 text-[11px] font-semibold text-white">New</span>
-        <button type="button" onClick={onShortlist} aria-label={`${shortlisted ? "Remove from" : "Add to"} shortlist`} className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/20 backdrop-blur-sm ${shortlisted ? "text-[#ff3040]" : "text-white"}`}>
+        <button type="button" onClick={onShortlist} aria-label={`${shortlisted ? "Remove from" : "Add to"} shortlist`} className={`absolute right-3 top-3 grid size-9 place-items-center rounded-full bg-black/20 backdrop-blur-sm ${shortlisted ? "text-[#fb1c8d]" : "text-white"}`}>
           <Heart size={22} fill={shortlisted ? "currentColor" : "none"} strokeWidth={2} />
         </button>
         <span className="absolute bottom-3 left-3 rounded-full border border-[#7dd3a6] bg-[#e7f8ef] px-3 py-1 text-[12px] font-semibold text-[#197044]">{profile.compatibility}% Match</span>
