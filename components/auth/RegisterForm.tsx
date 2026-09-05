@@ -1,17 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm, type UseFormRegisterReturn } from "react-hook-form";
+import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { getSiteUrl } from "@/lib/site-url";
 import { verificationEmailStorageKey } from "@/lib/auth-verification";
 import { profileFieldOptions } from "@/data/profile-field-options";
 import { cityOptions, countries, stateOptions } from "@/data/location-options";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { GoogleButton } from "./GoogleButton";
 import { PasswordField } from "./PasswordField";
+
+const OTP_LENGTH = 6;
+const inputClass = "auth-input !h-11 !px-3 !py-1";
+const ageOptions = Array.from({ length: 53 }, (_, index) => String(index + 18));
 
 type OnboardingValues = {
   name: string;
@@ -19,59 +24,79 @@ type OnboardingValues = {
   password: string;
   confirmPassword: string;
   birthDate: string;
+  birthTime: string;
   gender: string;
   religion: string;
   motherTongue: string;
   caste: string;
   maritalStatus: string;
   height: string;
-  heightUnit: "cm" | "ft";
+  weight: string;
   country: string;
   state: string;
   city: string;
+  education: string;
+  profession: string;
+  company: string;
+  lookingFor: string;
   ageMin: string;
   ageMax: string;
   preferredHeightMin: string;
   preferredHeightMax: string;
-  education: string;
+  preferredMaritalStatus: string;
   preferredCountry: string;
   preferredState: string;
   preferredCity: string;
-  lifestyle: string;
+  preferredReligion: string;
+  preferredCaste: string;
+  preferredEducation: string;
+  preferredProfession: string;
+  preferredAnnualIncome: string;
+  preferredDiet: string;
+  preferredSmoking: string;
+  preferredDrinking: string;
+  preferredFamilyType: string;
+  preferredFamilyValues: string;
+  relocation: string;
   aboutPartner: string;
 };
 
-const stepFields: Record<number, (keyof OnboardingValues)[]> = {
+type RegistrationState =
+  "idle" | "checking" | "submitting" | "verifying" | "resending";
+
+const stepFields: Partial<Record<number, (keyof OnboardingValues)[]>> = {
   1: ["name", "email", "password", "confirmPassword"],
   2: [
     "birthDate",
+    "birthTime",
     "gender",
     "religion",
     "motherTongue",
-    "caste",
     "maritalStatus",
     "height",
+    "weight",
     "country",
     "state",
     "city",
-  ],
-  3: [
-    "ageMin",
-    "ageMax",
     "education",
-    "preferredCountry",
-    "preferredState",
-    "preferredCity",
-    "lifestyle",
+    "profession",
+    "company",
   ],
 };
 
-const inputClass = "auth-input !h-[52px] !px-4";
-type RegistrationState = "idle" | "submitting" | "otp_required";
+function friendlyOtpError(message: string) {
+  if (/expired/i.test(message))
+    return "This code has expired. Request a new one.";
+  if (/invalid|token|otp/i.test(message))
+    return "The verification code is incorrect.";
+  return "We couldn't verify this code. Please try again.";
+}
 
 export function RegisterForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  const [otp, setOtp] = useState("");
+  const [countdown, setCountdown] = useState(60);
   const [registrationState, setRegistrationState] =
     useState<RegistrationState>("idle");
   const [message, setMessage] = useState<{
@@ -92,552 +117,1013 @@ export function RegisterForm() {
       password: "",
       confirmPassword: "",
       birthDate: "",
+      birthTime: "",
       gender: "",
       religion: "",
       motherTongue: "",
       caste: "",
       maritalStatus: "",
       height: "",
-      heightUnit: "cm",
+      weight: "",
       country: "India",
       state: "",
       city: "",
-      ageMin: "22",
-      ageMax: "32",
+      education: "",
+      profession: "",
+      company: "",
+      lookingFor: "",
+      ageMin: "",
+      ageMax: "",
       preferredHeightMin: "",
       preferredHeightMax: "",
-      education: "",
-      preferredCountry: "India",
+      preferredMaritalStatus: "",
+      preferredCountry: "",
       preferredState: "",
       preferredCity: "",
-      lifestyle: "",
+      preferredReligion: "",
+      preferredCaste: "",
+      preferredEducation: "",
+      preferredProfession: "",
+      preferredAnnualIncome: "",
+      preferredDiet: "",
+      preferredSmoking: "",
+      preferredDrinking: "",
+      preferredFamilyType: "",
+      preferredFamilyValues: "",
+      relocation: "",
       aboutPartner: "",
     },
   });
+
   const password = watch("password");
+  const email = watch("email").trim().toLowerCase();
   const religion = watch("religion");
   const country = watch("country");
   const state = watch("state");
   const preferredCountry = watch("preferredCountry");
   const preferredState = watch("preferredState");
+  const preferredReligion = watch("preferredReligion");
   const aboutLength = watch("aboutPartner")?.length || 0;
+  const busy = isSubmitting || registrationState !== "idle";
   const requirements = useMemo(
     () =>
       [
         [password.length >= 8, "At least 8 characters"],
-        [/[0-9]/.test(password), "One number"],
         [/[A-Z]/.test(password), "One uppercase letter"],
+        [/[a-z]/.test(password), "One lowercase letter"],
+        [/[0-9]/.test(password), "One number"],
         [/[^A-Za-z0-9]/.test(password), "One special character"],
       ] as const,
     [password],
   );
 
-  async function nextStep() {
+  useEffect(() => {
+    if (step !== 4 || countdown <= 0) return;
+    const timer = window.setInterval(
+      () => setCountdown((value) => Math.max(0, value - 1)),
+      1000,
+    );
+    return () => window.clearInterval(timer);
+  }, [step, countdown]);
+
+  async function continueFromAccount() {
     setMessage(null);
-    if (await trigger(stepFields[step]))
-      setStep((value) => Math.min(3, value + 1));
+    if (!(await trigger(stepFields[1]))) return;
+    setRegistrationState("checking");
+    try {
+      const { data, error } = await createClient().rpc(
+        "registration_email_status",
+        { candidate_email: email },
+      );
+      if (error) {
+        setMessage({
+          type: "error",
+          text: "We couldn't check this email. Please try again.",
+        });
+        return;
+      }
+      if (data === "verified") {
+        setMessage({
+          type: "error",
+          text: "An account already exists with this email. Please sign in.",
+        });
+        return;
+      }
+      if (data === "unverified") {
+        setMessage({
+          type: "success",
+          text: "This email has already started registration. Continue to resend verification after completing your details.",
+        });
+      }
+      setStep(2);
+    } catch {
+      setMessage({
+        type: "error",
+        text: "Unable to check this email. Check your connection and try again.",
+      });
+    } finally {
+      setRegistrationState("idle");
+    }
   }
 
-  async function submit(values: OnboardingValues) {
-    if (step < 3) return nextStep();
+  async function continueFromPersonal() {
+    setMessage(null);
+    if (await trigger(stepFields[2])) setStep(3);
+  }
+
+  async function createAccount() {
     setMessage(null);
     setRegistrationState("submitting");
     try {
-      const normalizedEmail = values.email.trim().toLowerCase();
-      const { data, error } = await createClient().auth.signUp({
-        email: normalizedEmail,
-        password: values.password,
-        options: {
-          emailRedirectTo: `${getSiteUrl()}/auth/callback`,
-          data: {
-            display_name: values.name.trim(),
-            birth_date: values.birthDate,
-            gender: values.gender,
-            religion: values.religion,
-            mother_tongue: values.motherTongue,
-            caste: values.caste,
-            marital_status: values.maritalStatus,
-            height: values.height,
-            height_unit: values.heightUnit,
-            country: values.country,
-            state: values.state,
-            city: values.city,
-            current_location: [values.city, values.state, values.country]
-              .filter(Boolean)
-              .join(", "),
-            preferences: {
-              age_min: values.ageMin,
-              age_max: values.ageMax,
-              height_min: values.preferredHeightMin,
-              height_max: values.preferredHeightMax,
-              education: values.education,
-              country: values.preferredCountry,
-              state: values.preferredState,
-              city: values.preferredCity,
-              location: [
-                values.preferredCity,
-                values.preferredState,
-                values.preferredCountry,
-              ]
-                .filter(Boolean)
-                .join(", "),
-              lifestyle: values.lifestyle,
-              about_partner: values.aboutPartner,
-            },
-          },
-        },
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { full_name: watch("name").trim() } },
       });
-      if (error) {
-        setRegistrationState("idle");
-        const text =
-          error.code === "email_address_invalid"
-            ? "Please use a valid email address that can receive messages."
-            : error.code === "email_not_confirmed"
-              ? "Please verify your email before continuing."
-              : "We couldn't create your account. Please check your details or try signing in.";
-        return setMessage({ type: "error", text });
-      }
-      if (data.session && data.user?.email_confirmed_at) {
-        const { data: activation, error: activationError } =
-          await createClient().rpc("activate_verified_profile");
-        if (activationError) {
-          setRegistrationState("idle");
-          return setMessage({
+      const existingRegistration =
+        error?.code === "user_already_exists" ||
+        error?.code === "email_exists" ||
+        /already registered|already exists/i.test(error?.message ?? "") ||
+        Boolean(data.user && data.user.identities?.length === 0);
+
+      if (existingRegistration) {
+        const { error: resendError } = await supabase.auth.resend({
+          type: "signup",
+          email,
+        });
+        if (resendError) {
+          setMessage({
             type: "error",
-            text: "Your account was created, but we couldn't finish activation. Please sign in again.",
+            text: /already confirmed/i.test(resendError.message)
+              ? "This email is already verified. Please sign in."
+              : "This email has already started registration. We couldn't resend the verification code yet; please wait a moment and try again.",
           });
+          return;
         }
-        const profile = Array.isArray(activation) ? activation[0] : activation;
-        router.replace(
-          profile?.registration_status === "active"
-            ? "/discover"
-            : "/settings/edit-profile",
-        );
-        router.refresh();
+        localStorage.setItem(verificationEmailStorageKey, email);
+        setOtp("");
+        setCountdown(60);
+        setStep(4);
+        setMessage({
+          type: "success",
+          text: "This email has already started registration. A new verification code was sent.",
+        });
         return;
       }
-      localStorage.setItem(verificationEmailStorageKey, normalizedEmail);
-      setRegistrationState("otp_required");
-      router.push("/verify-email");
+
+      if (error) {
+        setMessage({
+          type: "error",
+          text:
+            error.code === "email_address_invalid"
+              ? "Please use a valid email address."
+              : "We couldn't start verification. Please try again.",
+        });
+        return;
+      }
+
+      if (data.session && data.user?.email_confirmed_at) {
+        await completeRegistration(watch());
+        return;
+      }
+
+      localStorage.setItem(verificationEmailStorageKey, email);
+      setOtp("");
+      setCountdown(60);
+      setStep(4);
     } catch {
-      setRegistrationState("idle");
       setMessage({
         type: "error",
         text: "Unable to connect. Check your internet connection and try again.",
       });
+    } finally {
+      setRegistrationState("idle");
     }
   }
 
+  async function verifyOtp(values: OnboardingValues) {
+    if (otp.length !== OTP_LENGTH) {
+      setMessage({
+        type: "error",
+        text: `Enter the complete ${OTP_LENGTH}-digit verification code.`,
+      });
+      return;
+    }
+    setMessage(null);
+    setRegistrationState("verifying");
+    try {
+      const { data, error } = await createClient().auth.verifyOtp({
+        email,
+        token: otp,
+        type: "email",
+      });
+      if (error) {
+        setMessage({ type: "error", text: friendlyOtpError(error.message) });
+        return;
+      }
+      if (!data.session || !data.user?.email_confirmed_at) {
+        setMessage({
+          type: "error",
+          text: "Verification succeeded, but your session could not be started.",
+        });
+        return;
+      }
+      await completeRegistration(values);
+    } catch {
+      setMessage({
+        type: "error",
+        text: "Unable to connect. Please try again.",
+      });
+    } finally {
+      setRegistrationState("idle");
+    }
+  }
+
+  async function completeRegistration(values: OnboardingValues) {
+    const partnerPreferences = [
+      { label: "Looking For", value: values.lookingFor },
+      {
+        label: "Age Range",
+        value: [values.ageMin, values.ageMax].filter(Boolean).join(" - "),
+      },
+      {
+        label: "Height",
+        value: [values.preferredHeightMin, values.preferredHeightMax]
+          .filter(Boolean)
+          .join(" - "),
+      },
+      { label: "Marital Status", value: values.preferredMaritalStatus },
+      { label: "Preferred Country", value: values.preferredCountry },
+      { label: "Preferred State", value: values.preferredState },
+      { label: "Preferred City", value: values.preferredCity },
+      { label: "Religion", value: values.preferredReligion },
+      { label: "Caste (Optional)", value: values.preferredCaste },
+      { label: "Education", value: values.preferredEducation },
+      { label: "Profession", value: values.preferredProfession },
+      { label: "Annual Income", value: values.preferredAnnualIncome },
+      { label: "Diet", value: values.preferredDiet },
+      { label: "Smoking", value: values.preferredSmoking },
+      { label: "Drinking", value: values.preferredDrinking },
+      { label: "Family Type", value: values.preferredFamilyType },
+      { label: "Family Values", value: values.preferredFamilyValues },
+      { label: "Relocation", value: values.relocation },
+      { label: "About My Ideal Partner", value: values.aboutPartner.trim() },
+    ];
+    const { data: completion, error } = await createClient().rpc(
+      "complete_verified_registration",
+      {
+        profile_data: {
+          display_name: values.name.trim(),
+          birth_date: values.birthDate,
+          gender: values.gender,
+          religion: values.religion,
+          mother_tongue: values.motherTongue,
+          marital_status: values.maritalStatus,
+          height: values.height,
+          weight: values.weight,
+          country: values.country,
+          state: values.state,
+          city: values.city,
+          education: values.education,
+          profession: values.profession,
+          company: values.company.trim(),
+          horoscope: [
+            { label: "Date of Birth", value: values.birthDate },
+            { label: "Time of Birth", value: values.birthTime },
+          ],
+        },
+        preferences: partnerPreferences,
+      },
+    );
+    const row = Array.isArray(completion) ? completion[0] : completion;
+    if (
+      error ||
+      !row?.onboarding_completed ||
+      row.registration_status !== "active"
+    ) {
+      setMessage({
+        type: "error",
+        text: "Your email is verified, but we couldn't save your profile. Please try again.",
+      });
+      return;
+    }
+    localStorage.removeItem(verificationEmailStorageKey);
+    router.replace("/discover");
+    router.refresh();
+  }
+
+  async function resendOtp() {
+    if (countdown > 0) return;
+    setMessage(null);
+    setRegistrationState("resending");
+    try {
+      const { error } = await createClient().auth.resend({
+        type: "signup",
+        email,
+      });
+      if (error) {
+        setMessage({
+          type: "error",
+          text: "We couldn't resend the code. Please try again.",
+        });
+        return;
+      }
+      setOtp("");
+      setCountdown(60);
+      setMessage({
+        type: "success",
+        text: "A new verification code was sent.",
+      });
+    } finally {
+      setRegistrationState("idle");
+    }
+  }
+
+  const titles = [
+    "",
+    "Create your account",
+    "Tell us about you",
+    "Partner preferences",
+    "Confirm your email",
+  ];
+  const subtitles = [
+    "",
+    "Let's begin your Bandhanaa journey",
+    "Help us build your profile",
+    "Tell us what matters to you",
+    `We sent a 6-digit code to ${email}`,
+  ];
+
   return (
-    <div className="w-full pb-4">
+    <div className="w-full pb-2">
+      <Progress step={step} />
       <header className="mb-5">
-        <h1 className="text-[28px] font-bold tracking-[-.035em] md:text-[32px]">
-          {step === 1
-            ? "Create your account"
-            : step === 2
-              ? "Personal details"
-              : "Your preferences"}
+        <h1 className="text-[28px] font-bold tracking-[-.035em] text-[#111827] lg:text-[32px]">
+          {titles[step]}
         </h1>
-        <p className="mt-1 text-[14px] text-muted">
-          {step === 1
-            ? "Join Bandhanaa and start your journey."
-            : step === 2
-              ? "Tell us a little more about yourself."
-              : "Help us understand your partner preferences."}
-        </p>
+        <p className="mt-1 text-[14px] text-[#68718b]">{subtitles[step]}</p>
       </header>
 
-      <Progress step={step} />
-      {message && (
+      {message ? (
         <div
           role={message.type === "error" ? "alert" : "status"}
           className={`mb-4 rounded-xl border px-4 py-3 text-sm ${message.type === "error" ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}
         >
           {message.text}
         </div>
-      )}
+      ) : null}
 
-      <form noValidate onSubmit={handleSubmit(submit)}>
-        {step === 1 && (
-          <div className="space-y-3.5">
-            <Field label="Full Name" error={errors.name?.message}>
-              <input
-                className={inputClass}
-                placeholder="Enter your full name"
-                {...register("name", {
-                  required: "Enter your full name.",
-                  minLength: {
-                    value: 2,
-                    message: "Name must be at least 2 characters.",
-                  },
-                })}
-              />
-            </Field>
-            <Field label="Email Address" error={errors.email?.message}>
-              <input
-                type="email"
-                className={inputClass}
-                placeholder="Enter your email address"
-                {...register("email", {
-                  required: "Enter your email address.",
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: "Enter a valid email address.",
-                  },
-                })}
-              />
-            </Field>
-            <Field label="Password" error={errors.password?.message}>
-              <PasswordField
-                className="!h-[52px]"
-                placeholder="Create a password"
-                autoComplete="new-password"
-                {...register("password", {
-                  required: "Create a password.",
-                  validate: (value) =>
-                    (value.length >= 8 &&
-                      /[A-Z]/.test(value) &&
-                      /[0-9]/.test(value) &&
-                      /[^A-Za-z0-9]/.test(value)) ||
-                    "Meet all password requirements.",
-                })}
-              />
-            </Field>
-            <Field
-              label="Confirm Password"
-              error={errors.confirmPassword?.message}
-            >
-              <PasswordField
-                className="!h-[52px]"
-                placeholder="Confirm your password"
-                autoComplete="new-password"
-                {...register("confirmPassword", {
-                  required: "Confirm your password.",
-                  validate: (value) =>
-                    value === watch("password") || "Passwords do not match.",
-                })}
-              />
-            </Field>
-            <div>
-              <p className="mb-2 text-[12px] font-medium">
-                Password must contain:
-              </p>
-              <div className="grid grid-cols-1 gap-x-6 gap-y-2 text-[12px] text-muted sm:grid-cols-2">
-                {requirements.map(([met, label]) => (
-                  <span key={label} className="flex items-center gap-2">
-                    <span
-                      className={`flex size-3.5 items-center justify-center rounded-full border ${met ? "border-accent bg-accent text-white" : "border-[#aeb0b8]"}`}
-                    >
-                      {met ? "✓" : ""}
-                    </span>
-                    {label}
-                  </span>
-                ))}
-              </div>
+      <form noValidate onSubmit={(event) => event.preventDefault()}>
+        {step === 1 ? (
+          <AccountStep
+            register={register}
+            errors={errors}
+            password={password}
+            requirements={requirements}
+            watchPassword={watch("password")}
+          />
+        ) : null}
+        {step === 4 ? (
+          <div className="py-6">
+            <label className="form-label mb-3 block" htmlFor="registration-otp">
+              Verification code
+            </label>
+            <input
+              id="registration-otp"
+              value={otp}
+              onChange={(event) => {
+                setOtp(
+                  event.target.value.replace(/\D/g, "").slice(0, OTP_LENGTH),
+                );
+                setMessage(null);
+              }}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              className="h-16 w-full rounded-2xl border border-[#d8dce8] bg-white px-5 text-center text-2xl font-bold tracking-[.55em] outline-none focus:border-black focus:ring-4 focus:ring-black/5"
+              placeholder="000000"
+            />
+            <div className="mt-4 flex items-center justify-between text-sm text-muted">
+              <span>Didn&apos;t receive the code?</span>
+              <button
+                type="button"
+                disabled={countdown > 0 || busy}
+                onClick={() => void resendOtp()}
+                className="font-semibold text-black disabled:text-muted"
+              >
+                {countdown > 0 ? `Resend in ${countdown}s` : "Resend code"}
+              </button>
             </div>
           </div>
-        )}
-
-        {step === 2 && (
-          <div className="grid grid-cols-1 gap-x-5 gap-y-3.5 sm:grid-cols-2">
-            <Field label="Date of Birth" error={errors.birthDate?.message}>
-              <input
-                type="date"
-                className={inputClass}
-                {...register("birthDate", {
-                  required: "Select your date of birth.",
-                })}
-              />
-            </Field>
-            <Field label="Gender" error={errors.gender?.message}>
-              <Select
-                value={watch("gender")}
-                placeholder="Select your gender"
-                options={profileFieldOptions("Gender")}
-                registration={register("gender", {
-                  required: "Select your gender.",
-                })}
-              />
-            </Field>
-            <Field label="Religion" error={errors.religion?.message}>
-              <Select
-                value={religion}
-                placeholder="Select your religion"
-                options={profileFieldOptions("Religion")}
-                registration={register("religion", {
-                  required: "Select your religion.",
-                  onChange: () => setValue("caste", ""),
-                })}
-              />
-            </Field>
-            <Field label="Mother Tongue" error={errors.motherTongue?.message}>
-              <Select
-                value={watch("motherTongue")}
-                placeholder="Select your mother tongue"
-                options={profileFieldOptions("Mother Tongue")}
-                registration={register("motherTongue", {
-                  required: "Select your mother tongue.",
-                })}
-              />
-            </Field>
-            <Field label="Caste" error={errors.caste?.message}>
-              <Select
-                value={watch("caste")}
-                placeholder="Select your caste"
-                options={profileFieldOptions("Caste", religion)}
-                registration={register("caste", {
-                  required: "Select your caste.",
-                })}
-              />
-            </Field>
-            <Field label="Marital Status" error={errors.maritalStatus?.message}>
-              <Select
-                value={watch("maritalStatus")}
-                placeholder="Select your marital status"
-                options={profileFieldOptions("Marital Status")}
-                registration={register("maritalStatus", {
-                  required: "Select your marital status.",
-                })}
-              />
-            </Field>
-            <Field
-              label="Height"
-              error={errors.height?.message}
-              className="sm:col-span-2"
-            >
-              <Select
-                value={watch("height")}
-                placeholder="Select your height"
-                options={profileFieldOptions("Height")}
-                registration={register("height", {
-                  required: "Select your height.",
-                })}
-              />
-            </Field>
-            <div className="sm:col-span-2">
-              <p className="form-label mb-2">Current Location</p>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <Field label="Country" error={errors.country?.message}>
-                  <Select
-                    value={country}
-                    placeholder="Select country"
-                    options={countries}
-                    registration={register("country", {
-                      required: "Select your country.",
-                      onChange: () => {
-                        setValue("state", "");
-                        setValue("city", "");
-                      },
-                    })}
-                  />
-                </Field>
-                <Field label="State" error={errors.state?.message}>
-                  <Select
-                    value={state}
-                    placeholder="Select state"
-                    options={stateOptions(country)}
-                    registration={register("state", {
-                      required: "Select your state.",
-                      onChange: () => setValue("city", ""),
-                    })}
-                  />
-                </Field>
-                <Field label="City" error={errors.city?.message}>
-                  <Select
-                    value={watch("city")}
-                    placeholder="Select city"
-                    options={cityOptions(state)}
-                    registration={register("city", {
-                      required: "Select your city.",
-                    })}
-                  />
-                </Field>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {step === 3 && (
-          <div className="space-y-3.5">
-            <Field
-              label="Age Range"
-              error={errors.ageMin?.message || errors.ageMax?.message}
-            >
-              <div className="flex items-center gap-3">
-                <Select
-                  value={watch("ageMin")}
-                  placeholder="Min"
-                  options={ageOptions}
-                  registration={register("ageMin", { required: true })}
-                />
-                <span className="text-sm text-muted">to</span>
-                <Select
-                  value={watch("ageMax")}
-                  placeholder="Max"
-                  options={ageOptions}
-                  registration={register("ageMax", { required: true })}
-                />
-              </div>
-            </Field>
-            <Field label="Height">
-              <div className="flex items-center gap-3">
-                <Select
-                  value={watch("preferredHeightMin")}
-                  placeholder="Minimum"
-                  options={profileFieldOptions("Height")}
-                  registration={register("preferredHeightMin")}
-                />
-                <span className="text-sm text-muted">to</span>
-                <Select
-                  value={watch("preferredHeightMax")}
-                  placeholder="Maximum"
-                  options={profileFieldOptions("Height")}
-                  registration={register("preferredHeightMax")}
-                />
-              </div>
-            </Field>
-            <Field label="Education" error={errors.education?.message}>
-              <Select
-                value={watch("education")}
-                placeholder="Select education level"
-                options={profileFieldOptions("Education")}
-                registration={register("education", {
-                  required: "Select an education level.",
-                })}
-              />
-            </Field>
-            <div>
-              <p className="form-label mb-2">Preferred Location</p>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <Field label="Country" error={errors.preferredCountry?.message}>
-                  <Select
-                    value={preferredCountry}
-                    placeholder="Select preferred country"
-                    options={countries}
-                    registration={register("preferredCountry", {
-                      required: "Select a preferred country.",
-                      onChange: () => {
-                        setValue("preferredState", "");
-                        setValue("preferredCity", "");
-                      },
-                    })}
-                  />
-                </Field>
-                <Field label="State" error={errors.preferredState?.message}>
-                  <Select
-                    value={preferredState}
-                    placeholder="Select preferred state"
-                    options={stateOptions(preferredCountry)}
-                    registration={register("preferredState", {
-                      required: "Select a preferred state.",
-                      onChange: () => setValue("preferredCity", ""),
-                    })}
-                  />
-                </Field>
-                <Field label="City" error={errors.preferredCity?.message}>
-                  <Select
-                    value={watch("preferredCity")}
-                    placeholder="Select preferred city"
-                    options={cityOptions(preferredState)}
-                    registration={register("preferredCity", {
-                      required: "Select a preferred city.",
-                    })}
-                  />
-                </Field>
-              </div>
-            </div>
-            <Field label="Lifestyle" error={errors.lifestyle?.message}>
-              <Select
-                value={watch("lifestyle")}
-                placeholder="Select lifestyle"
-                options={profileFieldOptions("Lifestyle")}
-                registration={register("lifestyle", {
-                  required: "Select a lifestyle.",
-                })}
-              />
-            </Field>
-            <Field label="About">
-              <div className="relative">
-                <textarea
-                  maxLength={200}
-                  rows={3}
-                  className="w-full resize-none rounded-xl border border-line bg-white px-4 py-3 text-sm outline-none focus:border-accent focus:ring-[3px] focus:ring-accent/10"
-                  placeholder="Share a few words about your ideal partner..."
-                  {...register("aboutPartner")}
-                />
-                <span className="absolute bottom-2.5 right-3 text-xs text-muted">
-                  {aboutLength}/200
-                </span>
-              </div>
-            </Field>
-          </div>
-        )}
+        ) : null}
+        {step === 2 ? (
+          <PersonalStep
+            register={register}
+            errors={errors}
+            watch={watch}
+            setValue={setValue}
+            religion={religion}
+            country={country}
+            state={state}
+          />
+        ) : null}
+        {step === 3 ? (
+          <PreferencesStep
+            register={register}
+            errors={errors}
+            watch={watch}
+            setValue={setValue}
+            preferredCountry={preferredCountry}
+            preferredState={preferredState}
+            preferredReligion={preferredReligion}
+            aboutLength={aboutLength}
+          />
+        ) : null}
 
         <div
-          className={`mt-5 grid gap-4 ${step > 1 ? "grid-cols-[136px_1fr]" : "grid-cols-1"}`}
+          className={`mt-6 grid gap-3 ${step === 3 ? "grid-cols-1 sm:grid-cols-[100px_120px_1fr]" : step > 1 && step < 4 ? "grid-cols-[120px_1fr]" : "grid-cols-1"}`}
         >
-          {step > 1 && (
+          {step > 1 && step < 4 ? (
             <button
               type="button"
-              onClick={() => setStep((value) => value - 1)}
+              disabled={busy}
+              onClick={() => {
+                setMessage(null);
+                setStep((value) => Math.max(1, value - 1));
+              }}
               className="auth-button auth-button-social"
             >
-              ← <span className="ml-3">Back</span>
+              <ArrowLeft size={17} />
+              <span className="ml-2">Back</span>
             </button>
-          )}
+          ) : null}
+          {step === 3 ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void createAccount()}
+              className="auth-button auth-button-social"
+            >
+              Skip for now
+            </button>
+          ) : null}
           <button
-            type={step === 3 ? "submit" : "button"}
-            onClick={step < 3 ? nextStep : undefined}
-            disabled={isSubmitting || registrationState !== "idle"}
-            className="auth-button auth-button-primary"
+            type="button"
+            disabled={busy}
+            onClick={
+              step === 1
+                ? () => void continueFromAccount()
+                : step === 2
+                  ? () => void continueFromPersonal()
+                  : step === 3
+                    ? () => void createAccount()
+                    : handleSubmit(verifyOtp)
+            }
+            className="auth-button auth-button-primary !bg-black !text-white hover:!bg-[#222] focus:!ring-black/20"
           >
-            {registrationState === "submitting"
-              ? "Creating account…"
-              : step === 3
-                ? "Complete & Continue"
-                : "Continue"}
+            {registrationState === "checking"
+              ? "Checking email…"
+              : registrationState === "submitting"
+                ? "Starting verification…"
+                : registrationState === "verifying"
+                  ? "Verifying…"
+                  : step === 3
+                    ? "Continue to Verification"
+                    : step === 4
+                      ? "Verify & Complete"
+                      : "Continue"}
+            {!busy ? <ArrowRight className="ml-2" size={19} /> : null}
           </button>
         </div>
       </form>
 
-      <div className="my-4 flex items-center gap-5 text-xs text-muted">
-        <span className="h-px flex-1 bg-line" />
-        <span>or</span>
-        <span className="h-px flex-1 bg-line" />
-      </div>
-      <GoogleButton
-        disabled={isSubmitting}
-        onError={(text) => setMessage({ type: "error", text })}
-      />
-      <p className="mt-4 text-center text-[12px] text-muted">
-        By creating an account, you agree to our{" "}
-        <Link href="/terms" className="text-accent">
-          Terms of Use
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy" className="text-accent">
-          Privacy Policy
-        </Link>
-        .
-      </p>
+      {step === 1 ? (
+        <>
+          <div className="my-4 flex items-center gap-5 text-xs text-muted">
+            <span className="h-px flex-1 bg-line" />
+            <span>or</span>
+            <span className="h-px flex-1 bg-line" />
+          </div>
+          <GoogleButton
+            disabled={busy}
+            onError={(text) =>
+              setMessage(text ? { type: "error", text } : null)
+            }
+          />
+          <p className="mt-4 text-center text-[12px] text-muted">
+            By creating an account, you agree to our{" "}
+            <Link href="/terms" className="text-black underline">
+              Terms of Use
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-black underline">
+              Privacy Policy
+            </Link>
+            .
+          </p>
+        </>
+      ) : null}
     </div>
   );
 }
 
-const ageOptions = Array.from({ length: 53 }, (_, index) => String(index + 18));
-
-function Progress({ step }: { step: number }) {
+function AccountStep({
+  register,
+  errors,
+  requirements,
+}: {
+  register: ReturnType<typeof useForm<OnboardingValues>>["register"];
+  errors: ReturnType<typeof useForm<OnboardingValues>>["formState"]["errors"];
+  password: string;
+  requirements: readonly (readonly [boolean, string])[];
+  watchPassword: string;
+}) {
   return (
-    <div className="mb-6 grid grid-cols-3">
-      <Step number={1} label="Account" active={step >= 1} done={step > 1} />
-      <Step number={2} label="Personal" active={step >= 2} done={step > 2} />
-      <Step
-        number={3}
-        label="Preferences"
-        active={step >= 3}
-        done={false}
-        last
-      />
+    <div className="space-y-3.5">
+      <Field label="Full Name" error={errors.name?.message}>
+        <input
+          className={inputClass}
+          placeholder="Enter your full name"
+          {...register("name", {
+            required: "Enter your full name.",
+            minLength: {
+              value: 2,
+              message: "Name must be at least 2 characters.",
+            },
+          })}
+        />
+      </Field>
+      <Field label="Email Address" error={errors.email?.message}>
+        <input
+          type="email"
+          className={inputClass}
+          placeholder="Enter your email address"
+          {...register("email", {
+            required: "Enter your email address.",
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: "Enter a valid email address.",
+            },
+          })}
+        />
+      </Field>
+      <div className="grid gap-3.5 md:grid-cols-2">
+        <Field label="Password" error={errors.password?.message}>
+          <PasswordField
+            className="!h-11 !py-1"
+            placeholder="Create a password"
+            autoComplete="new-password"
+            {...register("password", {
+              required: "Create a password.",
+              validate: (value) =>
+                (value.length >= 8 &&
+                  /[A-Z]/.test(value) &&
+                  /[a-z]/.test(value) &&
+                  /[0-9]/.test(value) &&
+                  /[^A-Za-z0-9]/.test(value)) ||
+                "Meet all password requirements.",
+            })}
+          />
+        </Field>
+        <Field label="Confirm Password" error={errors.confirmPassword?.message}>
+          <PasswordField
+            className="!h-11 !py-1"
+            placeholder="Confirm your password"
+            autoComplete="new-password"
+            {...register("confirmPassword", {
+              required: "Confirm your password.",
+              validate: (value, values) =>
+                value === values.password || "Passwords do not match.",
+            })}
+          />
+        </Field>
+      </div>
+      <div className="rounded-2xl bg-[#faf2fb] px-4 py-3">
+        <p className="mb-2 flex items-center gap-2 text-[12px] font-semibold">
+          <ShieldCheck size={18} className="text-fuchsia-500" />
+          Password must contain:
+        </p>
+        <div className="grid gap-x-5 gap-y-1 text-[11px] text-muted sm:grid-cols-2">
+          {requirements.map(([met, label]) => (
+            <span key={label} className="flex items-center gap-2">
+              <span
+                className={`grid size-3.5 place-items-center rounded-full border ${met ? "border-black bg-black text-white" : "border-[#aeb0b8]"}`}
+              >
+                {met ? <Check size={9} /> : null}
+              </span>
+              {label}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PersonalStep({
+  register,
+  errors,
+  watch,
+  setValue,
+  religion,
+  country,
+  state,
+}: FormStepProps & { religion: string; country: string; state: string }) {
+  return (
+    <div className="grid grid-cols-1 gap-x-5 gap-y-3.5 sm:grid-cols-2">
+      <Field
+        label="Date & Time of Birth"
+        error={errors.birthDate?.message || errors.birthTime?.message}
+        className="sm:col-span-2"
+      >
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div>
+            <span className="mb-1.5 block text-xs text-muted">Date</span>
+            <DatePicker
+              hideLabel
+              compact
+              required
+              label="Date of Birth"
+              value={watch("birthDate")}
+              onChange={(value) =>
+                setValue("birthDate", value, {
+                  shouldDirty: true,
+                  shouldValidate: true,
+                })
+              }
+            />
+            <input
+              type="hidden"
+              {...register("birthDate", {
+                required: "Select your date of birth.",
+              })}
+            />
+          </div>
+          <label className="block">
+            <span className="mb-1.5 block text-xs text-muted">Time</span>
+            <input
+              type="time"
+              step={300}
+              className={`${inputClass} cursor-pointer [color-scheme:light]`}
+              {...register("birthTime", {
+                required: "Select your time of birth.",
+              })}
+            />
+          </label>
+        </div>
+      </Field>
+      <Field label="Gender" error={errors.gender?.message}>
+        <Select
+          value={watch("gender")}
+          placeholder="Select your gender"
+          options={profileFieldOptions("Gender")}
+          registration={register("gender", { required: "Select your gender." })}
+        />
+      </Field>
+      <Field label="Religion" error={errors.religion?.message}>
+        <Select
+          value={religion}
+          placeholder="Select your religion"
+          options={profileFieldOptions("Religion")}
+          registration={register("religion", {
+            required: "Select your religion.",
+            onChange: () => setValue("caste", ""),
+          })}
+        />
+      </Field>
+      <Field label="Mother Tongue" error={errors.motherTongue?.message}>
+        <Select
+          value={watch("motherTongue")}
+          placeholder="Select mother tongue"
+          options={profileFieldOptions("Mother Tongue")}
+          registration={register("motherTongue", {
+            required: "Select your mother tongue.",
+          })}
+        />
+      </Field>
+      <Field label="Marital Status" error={errors.maritalStatus?.message}>
+        <Select
+          value={watch("maritalStatus")}
+          placeholder="Select marital status"
+          options={profileFieldOptions("Marital Status")}
+          registration={register("maritalStatus", {
+            required: "Select your marital status.",
+          })}
+        />
+      </Field>
+      <Field label="Height" error={errors.height?.message}>
+        <Select
+          value={watch("height")}
+          placeholder="Select height"
+          options={profileFieldOptions("Height")}
+          registration={register("height", { required: "Select your height." })}
+        />
+      </Field>
+      <Field label="Weight" error={errors.weight?.message}>
+        <Select
+          value={watch("weight")}
+          placeholder="Select weight"
+          options={profileFieldOptions("Weight")}
+          registration={register("weight", { required: "Select your weight." })}
+        />
+      </Field>
+      <Field label="Education" error={errors.education?.message}>
+        <Select
+          value={watch("education")}
+          placeholder="Select education"
+          options={profileFieldOptions("Education")}
+          registration={register("education", {
+            required: "Select your education.",
+          })}
+        />
+      </Field>
+      <Field label="Profession" error={errors.profession?.message}>
+        <Select
+          value={watch("profession")}
+          placeholder="Select profession"
+          options={profileFieldOptions("Profession")}
+          registration={register("profession", {
+            required: "Select your profession.",
+          })}
+        />
+      </Field>
+      <Field label="Company" error={errors.company?.message}>
+        <input
+          className={inputClass}
+          placeholder="Enter your company"
+          {...register("company", {
+            required: "Enter your company.",
+            validate: (value) =>
+              value.trim().length >= 2 || "Enter a valid company name.",
+          })}
+        />
+      </Field>
+      <div className="sm:col-span-2">
+        <p className="form-label mb-2">Current Location</p>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <Field label="Country" error={errors.country?.message}>
+            <Select
+              value={country}
+              placeholder="Country"
+              options={countries}
+              registration={register("country", {
+                required: "Select your country.",
+                onChange: () => {
+                  setValue("state", "");
+                  setValue("city", "");
+                },
+              })}
+            />
+          </Field>
+          <Field label="State" error={errors.state?.message}>
+            <Select
+              value={state}
+              placeholder="State"
+              options={stateOptions(country)}
+              registration={register("state", {
+                required: "Select your state.",
+                onChange: () => setValue("city", ""),
+              })}
+            />
+          </Field>
+          <Field label="City" error={errors.city?.message}>
+            <Select
+              value={watch("city")}
+              placeholder="City"
+              options={cityOptions(state)}
+              registration={register("city", { required: "Select your city." })}
+            />
+          </Field>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type FormStepProps = {
+  register: ReturnType<typeof useForm<OnboardingValues>>["register"];
+  errors: ReturnType<typeof useForm<OnboardingValues>>["formState"]["errors"];
+  watch: ReturnType<typeof useForm<OnboardingValues>>["watch"];
+  setValue: ReturnType<typeof useForm<OnboardingValues>>["setValue"];
+};
+function PreferencesStep({
+  register,
+  watch,
+  setValue,
+  preferredCountry,
+  preferredState,
+  preferredReligion,
+  aboutLength,
+}: FormStepProps & {
+  preferredCountry: string;
+  preferredState: string;
+  preferredReligion: string;
+  aboutLength: number;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-x-5 gap-y-3.5 sm:grid-cols-2">
+      <Field label="Looking For" optional>
+        <Select
+          value={watch("lookingFor")}
+          placeholder="Any"
+          options={profileFieldOptions("Looking For")}
+          registration={register("lookingFor")}
+        />
+      </Field>
+      <Field label="Age Range" optional>
+        <div className="flex items-center gap-3">
+          <Select
+            value={watch("ageMin")}
+            placeholder="Min"
+            options={ageOptions}
+            registration={register("ageMin")}
+          />
+          <span className="text-sm text-muted">to</span>
+          <Select
+            value={watch("ageMax")}
+            placeholder="Max"
+            options={ageOptions}
+            registration={register("ageMax")}
+          />
+        </div>
+      </Field>
+      <Field label="Height" optional>
+        <div className="flex items-center gap-3">
+          <Select
+            value={watch("preferredHeightMin")}
+            placeholder="Minimum"
+            options={profileFieldOptions("Height")}
+            registration={register("preferredHeightMin")}
+          />
+          <span className="text-sm text-muted">to</span>
+          <Select
+            value={watch("preferredHeightMax")}
+            placeholder="Maximum"
+            options={profileFieldOptions("Height")}
+            registration={register("preferredHeightMax")}
+          />
+        </div>
+      </Field>
+      <Field label="Marital Status" optional>
+        <Select
+          value={watch("preferredMaritalStatus")}
+          placeholder="Any"
+          options={profileFieldOptions("Marital Status")}
+          registration={register("preferredMaritalStatus")}
+        />
+      </Field>
+      <Field label="Preferred Country" optional>
+        <Select
+          value={preferredCountry}
+          placeholder="Any country"
+          options={countries}
+          registration={register("preferredCountry", {
+            onChange: () => {
+              setValue("preferredState", "");
+              setValue("preferredCity", "");
+            },
+          })}
+        />
+      </Field>
+      <Field label="Preferred State" optional>
+        <Select
+          value={preferredState}
+          placeholder="Any state"
+          options={stateOptions(preferredCountry)}
+          registration={register("preferredState", {
+            onChange: () => setValue("preferredCity", ""),
+          })}
+        />
+      </Field>
+      <Field label="Preferred City" optional>
+        <Select
+          value={watch("preferredCity")}
+          placeholder="Any city"
+          options={cityOptions(preferredState)}
+          registration={register("preferredCity")}
+        />
+      </Field>
+      <Field label="Religion" optional>
+        <Select
+          value={preferredReligion}
+          placeholder="Any"
+          options={profileFieldOptions("Religion")}
+          registration={register("preferredReligion", {
+            onChange: () => setValue("preferredCaste", ""),
+          })}
+        />
+      </Field>
+      <Field label="Caste (Optional)" optional>
+        <Select
+          value={watch("preferredCaste")}
+          placeholder="Any"
+          options={profileFieldOptions("Caste (Optional)", preferredReligion)}
+          registration={register("preferredCaste")}
+        />
+      </Field>
+      <Field label="Education" optional>
+        <Select
+          value={watch("preferredEducation")}
+          placeholder="Any"
+          options={profileFieldOptions("Education")}
+          registration={register("preferredEducation")}
+        />
+      </Field>
+      <Field label="Profession" optional>
+        <Select
+          value={watch("preferredProfession")}
+          placeholder="Any"
+          options={profileFieldOptions("Profession")}
+          registration={register("preferredProfession")}
+        />
+      </Field>
+      <Field label="Annual Income" optional>
+        <Select
+          value={watch("preferredAnnualIncome")}
+          placeholder="Any"
+          options={profileFieldOptions("Annual Income")}
+          registration={register("preferredAnnualIncome")}
+        />
+      </Field>
+      <Field label="Diet" optional>
+        <Select
+          value={watch("preferredDiet")}
+          placeholder="Any"
+          options={profileFieldOptions("Diet")}
+          registration={register("preferredDiet")}
+        />
+      </Field>
+      <Field label="Smoking" optional>
+        <Select
+          value={watch("preferredSmoking")}
+          placeholder="Any"
+          options={profileFieldOptions("Smoking")}
+          registration={register("preferredSmoking")}
+        />
+      </Field>
+      <Field label="Drinking" optional>
+        <Select
+          value={watch("preferredDrinking")}
+          placeholder="Any"
+          options={profileFieldOptions("Drinking")}
+          registration={register("preferredDrinking")}
+        />
+      </Field>
+      <Field label="Family Type" optional>
+        <Select
+          value={watch("preferredFamilyType")}
+          placeholder="Any"
+          options={profileFieldOptions("Family Type")}
+          registration={register("preferredFamilyType")}
+        />
+      </Field>
+      <Field label="Family Values" optional>
+        <Select
+          value={watch("preferredFamilyValues")}
+          placeholder="Any"
+          options={profileFieldOptions("Family Values")}
+          registration={register("preferredFamilyValues")}
+        />
+      </Field>
+      <Field label="Relocation" optional>
+        <Select
+          value={watch("relocation")}
+          placeholder="Any"
+          options={profileFieldOptions("Relocation")}
+          registration={register("relocation")}
+        />
+      </Field>
+      <Field label="About My Ideal Partner" className="sm:col-span-2" optional>
+        <div className="relative">
+          <textarea
+            maxLength={200}
+            rows={3}
+            className="w-full resize-none rounded-xl border border-line bg-white px-4 py-3 text-sm outline-none focus:border-black focus:ring-[3px] focus:ring-black/10"
+            placeholder="Share a few words about your ideal partner..."
+            {...register("aboutPartner")}
+          />
+          <span className="absolute bottom-2.5 right-3 text-xs text-muted">
+            {aboutLength}/200
+          </span>
+        </div>
+      </Field>
+    </div>
+  );
+}
+function Progress({ step }: { step: number }) {
+  const labels = ["Account", "About You", "Preferences", "Verify OTP"];
+  return (
+    <div className="mb-6 grid grid-cols-4">
+      {labels.map((label, index) => (
+        <Step
+          key={label}
+          number={index + 1}
+          label={label}
+          active={step >= index + 1}
+          done={step > index + 1}
+          last={index === labels.length - 1}
+        />
+      ))}
     </div>
   );
 }
@@ -646,27 +1132,27 @@ function Step({
   label,
   active,
   done,
-  last = false,
+  last,
 }: {
   number: number;
   label: string;
   active: boolean;
   done: boolean;
-  last?: boolean;
+  last: boolean;
 }) {
   return (
     <div className="relative">
       <div
-        className={`absolute left-[calc(50%+20px)] right-[-50%] top-4 h-px ${done && !last ? "bg-accent" : "bg-line"} ${last ? "hidden" : ""}`}
+        className={`absolute left-[calc(50%+20px)] right-[-50%] top-4 h-px ${done ? "bg-black" : "bg-line"} ${last ? "hidden" : ""}`}
       />
       <div className="relative z-10 flex flex-col items-center gap-2">
         <span
-          className={`flex size-8 items-center justify-center rounded-full border text-sm ${active ? "border-accent bg-accent text-white" : "border-line bg-white text-muted"}`}
+          className={`flex size-8 items-center justify-center rounded-full border text-sm ${active ? "border-black bg-black text-white" : "border-line bg-white text-muted"}`}
         >
-          {done ? "✓" : number}
+          {done ? <Check size={15} /> : number}
         </span>
         <span
-          className={`text-[11px] ${active ? "font-semibold text-[#3c0749]" : "text-muted"}`}
+          className={`text-center text-[10px] sm:text-[11px] ${active ? "font-semibold text-black" : "text-muted"}`}
         >
           {label}
         </span>
@@ -679,17 +1165,21 @@ function Field({
   error,
   className = "",
   children,
+  optional = false,
 }: {
   label: string;
   error?: string;
   className?: string;
   children: React.ReactNode;
+  optional?: boolean;
 }) {
   return (
     <div className={className}>
-      <label className="form-label mb-2">{label}</label>
+      <label className="form-label mb-2">
+        {label} {!optional ? <span className="text-pink-500">*</span> : null}
+      </label>
       {children}
-      {error && <p className="field-error">{error}</p>}
+      {error ? <p className="field-error">{error}</p> : null}
     </div>
   );
 }
@@ -705,18 +1195,20 @@ function Select({
   registration: UseFormRegisterReturn;
 }) {
   return (
-    <SearchableSelect
-      hideLabel
-      label={placeholder}
-      value={value}
-      options={options}
-      placeholder={placeholder}
-      onChange={(nextValue) =>
-        void registration.onChange({
-          target: { name: registration.name, value: nextValue },
-          type: "change",
-        })
-      }
-    />
+    <div className="[&_.form-control]:!mt-0 [&_.form-control]:!min-h-11 [&_.form-control]:!px-3 [&_.form-control]:!py-1">
+      <SearchableSelect
+        hideLabel
+        label={placeholder}
+        value={value}
+        options={options}
+        placeholder={placeholder}
+        onChange={(nextValue) =>
+          void registration.onChange({
+            target: { name: registration.name, value: nextValue },
+            type: "change",
+          })
+        }
+      />
+    </div>
   );
 }

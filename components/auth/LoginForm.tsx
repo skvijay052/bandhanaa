@@ -36,9 +36,13 @@ function friendly(message: string) {
     return "Please confirm your email before signing in.";
   return "We couldn't sign you in. Please try again shortly.";
 }
-export function LoginForm() {
+export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
   const router = useRouter();
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    oauthError
+      ? "Google sign-in could not be completed. Please try again."
+      : "",
+  );
   const {
     register,
     handleSubmit,
@@ -93,7 +97,7 @@ export function LoginForm() {
         )}
         <div>
           <label htmlFor="email" className="form-label mb-2">
-            Email / Mobile Number
+            Email or Mobile Number
           </label>
           <div className="relative">
             <UserIcon />
@@ -127,14 +131,14 @@ export function LoginForm() {
           />
           <Link
             href="/forgot-password"
-            className="mt-2 block text-right text-[13px] text-accent hover:text-[#8144b5]"
+            className="mt-2 block text-right text-[13px] text-[#6d28d9] text-accent hover:text-[#6d28d9]"
           >
             Forgot password?
           </Link>
         </div>
         <button
           type="submit"
-          className="auth-button auth-button-primary"
+          className="auth-button auth-button-primary !bg-black !text-white hover:!bg-[#222] focus:!ring-black/20"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -143,11 +147,23 @@ export function LoginForm() {
               Signing in…
             </>
           ) : (
-            "Sign In"
+            <span className="flex items-center gap-3">
+              Sign In <span aria-hidden>→</span>
+            </span>
           )}
         </button>
       </form>
-      <GoogleButton disabled={isSubmitting} onError={setError} />
+      <div
+        className="flex items-center gap-5 text-xs text-muted"
+        aria-label="or"
+      >
+        <span className="h-px flex-1 bg-line" />
+        <span>or</span>
+        <span className="h-px flex-1 bg-line" />
+      </div>
+      <div className="[&>button]:shadow-[0_7px_18px_rgba(60,42,86,.08)]">
+        <GoogleButton disabled={isSubmitting} onError={setError} />
+      </div>
     </FormFrame>
   );
 }

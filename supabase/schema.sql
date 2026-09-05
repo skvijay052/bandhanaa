@@ -109,6 +109,10 @@ create policy "Users can delete their profile photos" on storage.objects for del
 
 create or replace function public.handle_new_user() returns trigger language plpgsql security definer set search_path = '' as $$
 begin
+  if new.email_confirmed_at is null then
+    return new;
+  end if;
+
   insert into public.profiles (id,email,display_name,avatar_url,gender,age,city,state,country,bio)
   values (
     new.id,new.email,
@@ -152,6 +156,7 @@ select
   ),
   coalesce(u.raw_user_meta_data ->> 'country', 'India')
 from auth.users u
+where u.email_confirmed_at is not null
 on conflict (id) do update set
   email = coalesce(public.profiles.email, excluded.email),
   display_name = coalesce(public.profiles.display_name, excluded.display_name),

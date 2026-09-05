@@ -664,7 +664,7 @@ function ChatPanel({
 
 function EmptyChat() {
   return (
-    <section className="hidden place-items-center bg-[#efeae2] text-center md:grid">
+    <section className="hidden place-items-center bg-[#fffffff] text-center md:grid">
       <div>
         <MessageSquareIcon />
         <h2 className="mt-4 text-[20px] font-semibold">

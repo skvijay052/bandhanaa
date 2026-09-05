@@ -177,7 +177,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                     safe and trusted experience.
                   </p>
                 </div>
-                <ChevronRight className="ml-auto"/>
+                <ChevronRight className="ml-auto" />
               </Link>
               {error ? (
                 <p role="alert" className="mt-4 text-[11px] text-red-600">
@@ -235,12 +235,14 @@ function ValueRow({
           {subtitle}
         </p>
       </div>
-      {value ? (
-        <span className="ml-auto text-[13px] font-normal text-[var(--text-secondary)]">
-          {value}
-        </span>
-      ) : null}
-      <ChevronRight size={18} className="ml-auto" />
+      <div className="ml-auto flex min-w-[112px] items-center justify-end gap-2">
+        {value ? (
+          <span className="text-[13px] font-normal text-[var(--text-secondary)]">
+            {value}
+          </span>
+        ) : null}
+        <ChevronRight size={18} className="shrink-0" />
+      </div>
     </div>
   );
   return onClick ? (
@@ -281,10 +283,10 @@ function ToggleRow({
         aria-checked={checked}
         aria-label={title}
         onClick={() => onChange(!checked)}
-        className={`privacy-switch relative ml-auto h-[30px] w-[50px] shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8b3ff1] ${checked ? "bg-[#8737f2]" : "bg-[#cbd2df]"}`}
+        className={`privacy-switch relative ml-auto h-7 w-12 shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${checked ? "bg-black" : "bg-[#cbd2df]"}`}
       >
         <span
-          className={`absolute left-0 top-[3px] size-6 rounded-full bg-white transition-transform ${checked ? "translate-x-[18px]" : "translate-x-[2px]"}`}
+          className={`absolute left-1 top-1 size-5 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`}
         />
       </button>
     </div>

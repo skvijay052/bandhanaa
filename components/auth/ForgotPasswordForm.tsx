@@ -55,15 +55,15 @@ export function ForgotPasswordForm() {
   }
   if (sentTo)
     return (
-      <div>
-        <h1 className="text-[30px] font-bold tracking-[-0.02em]">
+      <div className="mx-auto w-full max-w-[660px]">
+        <h1 className="text-[32px] font-bold tracking-[-.035em] text-ink">
           Check your email
         </h1>
-        <p className="mt-3 text-[15px] leading-6 text-[#536471]">
+        <p className="mt-3 text-[15px] leading-6 text-muted">
           If an account exists for this email, we&apos;ve sent a password reset
           link.
         </p>
-        <p className="mt-4 rounded-[10px] border border-[#cfd9de] bg-[#f7f9f9] px-4 py-3 text-center text-[14px] font-semibold">
+        <p className="mt-5 rounded-xl border border-line bg-[#faf9ff] px-4 py-3 text-center text-[14px] font-semibold">
           {maskEmail(sentTo)}
         </p>
         {error ? (
@@ -75,7 +75,7 @@ export function ForgotPasswordForm() {
           type="button"
           disabled={loading || cooldown > 0}
           onClick={() => void sendReset()}
-          className="mt-6 h-12 w-full rounded-full border border-[#cfd9de] bg-white text-[15px] font-bold transition-colors duration-150 hover:bg-[#eff3f4] disabled:cursor-not-allowed disabled:opacity-60"
+          className="mt-6 h-14 w-full rounded-xl bg-black text-[15px] font-semibold text-white transition-colors hover:bg-[#222] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading
             ? "Sending..."
@@ -85,18 +85,18 @@ export function ForgotPasswordForm() {
         </button>
         <Link
           href="/login"
-          className="mt-4 flex h-12 items-center justify-center text-[14px] font-semibold text-[#1d9bf0] hover:underline"
+          className="mt-4 flex h-12 items-center justify-center text-[14px] font-semibold !text-black hover:underline"
         >
           Back to login
         </Link>
       </div>
     );
   return (
-    <div>
-      <h1 className="text-[30px] font-bold tracking-[-0.02em]">
+    <div className="mx-auto w-full max-w-[660px]">
+      <h1 className="text-[32px] font-bold tracking-[-.035em] text-ink">
         Forgot password?
       </h1>
-      <p className="mt-3 text-[15px] leading-6 text-[#536471]">
+      <p className="mt-3 text-[15px] leading-6 text-muted">
         Enter the email associated with your Bandhanaa account.
       </p>
       <form noValidate onSubmit={sendReset} className="mt-8 space-y-5">
@@ -106,7 +106,8 @@ export function ForgotPasswordForm() {
           type="email"
           inputMode="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder="Enter your email address"
+          className="!h-14 !rounded-xl !border-line focus:!border-black focus:!ring-black/10"
           value={email}
           error={error}
           onChange={(event) => {
@@ -114,13 +115,16 @@ export function ForgotPasswordForm() {
             if (error) setError("");
           }}
         />
-        <RecoveryButton loading={loading}>
+        <RecoveryButton
+          loading={loading}
+          className="!h-14 !rounded-xl !bg-black !text-white hover:!bg-[#222]"
+        >
           {loading ? "Sending..." : "Send reset link"}
         </RecoveryButton>
       </form>
       <Link
         href="/login"
-        className="mt-6 flex justify-center text-[14px] font-semibold text-[#1d9bf0] hover:underline"
+        className="mt-6 flex justify-center text-[14px] font-semibold !text-black hover:underline"
       >
         Back to login
       </Link>

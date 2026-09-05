@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import { AuthLayout } from "@/components/auth/AuthLayout";
 import { ForgotPasswordForm } from "@/components/auth/ForgotPasswordForm";
-import { RecoveryShell } from "@/components/auth/RecoveryShell";
+
 export const metadata: Metadata = { title: "Forgot Password" };
+
 export default function Page() {
   return (
-    <RecoveryShell>
+    <AuthLayout mode="login">
       <ForgotPasswordForm />
-    </RecoveryShell>
+    </AuthLayout>
   );
 }

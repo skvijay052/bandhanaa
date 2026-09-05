@@ -35,6 +35,7 @@ type ActiveItem =
   | "Matches"
   | "Requests"
   | "Messages"
+  | "Shortlist"
   | "Profile"
   | "Notifications"
   | "Settings";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Check, ChevronDown, Search, X } from "lucide-react";
+import { Check, ChevronDown, Search, Tag, X } from "lucide-react";
 
 export function SearchableSelect({ label, value, options, onChange, required, placeholder, allowCustom = false, hideLabel = false }: {
   label: string;
@@ -32,6 +32,7 @@ export function SearchableSelect({ label, value, options, onChange, required, pl
         {label}{required ? <span className="text-[#1d9bf0]"> *</span> : null}
       </label>
       <button type="button" aria-haspopup="listbox" aria-expanded={open} aria-labelledby={`${id}-label ${id}-value`} onClick={() => { setOpen((current) => !current); setQuery(""); }} className="form-control flex items-center text-left">
+        {value ? <Tag aria-hidden="true" size={16} className="mr-2 shrink-0 text-black" /> : null}
         <span id={`${id}-value`} className={`min-w-0 flex-1 truncate ${value ? "" : "text-[var(--text-muted)]"}`}>{value || placeholder || `Select ${label.toLowerCase()}`}</span>
         <ChevronDown size={18} className={`ml-3 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -50,7 +51,8 @@ export function SearchableSelect({ label, value, options, onChange, required, pl
             ) : null}
             {filtered.length ? filtered.map((option) => (
               <button key={option} type="button" role="option" aria-selected={option === value} onClick={() => { onChange(option); setOpen(false); setQuery(""); }} className={`flex min-h-10 w-full items-center rounded-lg px-3 text-left text-[14px] font-normal hover:bg-[#f7f9f9] ${option === value ? "bg-[#eff6ff]" : ""}`}>
-                <span className="flex-1">{option}</span>{option === value ? <Check size={17} className="text-[#1d9bf0]" /> : null}
+                <Tag aria-hidden="true" size={15} className={`mr-2.5 shrink-0 ${option === value ? "text-black" : "text-[var(--text-muted)]"}`} />
+                <span className="flex-1">{option}</span>{option === value ? <Check size={17} className="text-black" /> : null}
               </button>
             )) : <p className="px-3 py-5 text-center text-[13px] text-[var(--text-muted)]">No options found</p>}
           </div>

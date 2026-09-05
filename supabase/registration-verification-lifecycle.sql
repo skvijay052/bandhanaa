@@ -33,6 +33,30 @@ set
 from auth.users u
 where u.id = p.id;
 
+-- Read-only availability check used before advancing from registration Step 1.
+-- It exposes no user record or profile data.
+create or replace function public.registration_email_status(candidate_email text)
+returns text
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select case
+    when not exists (
+      select 1 from auth.users u
+      where lower(u.email) = lower(trim(candidate_email))
+    ) then 'available'
+    when exists (
+      select 1 from auth.users u
+      where lower(u.email) = lower(trim(candidate_email))
+        and u.email_confirmed_at is not null
+    ) then 'verified'
+    else 'unverified'
+  end;
+$$;
+revoke execute on function public.registration_email_status(text) from public;
+grant execute on function public.registration_email_status(text) to anon, authenticated;
 create or replace function public.registration_metadata_complete(metadata jsonb)
 returns boolean
 language sql
@@ -65,6 +89,12 @@ declare
   completed boolean := public.registration_metadata_complete(new.raw_user_meta_data);
   confirmed boolean := new.email_confirmed_at is not null;
 begin
+  -- Supabase must create the Auth user to issue an OTP, but no public profile
+  -- is persisted until the email address has been verified.
+  if not confirmed then
+    return new;
+  end if;
+
   insert into public.profiles (
     id, email, display_name, avatar_url, gender, age, birth_date, city, state,
     country, religion, height, mother_tongue, marital_status, bio,
@@ -122,6 +152,8 @@ security definer
 set search_path = ''
 as $$
 begin
+  -- Legacy or OAuth profiles may already exist. Password registrations are
+  -- created by complete_verified_registration only after verifyOtp succeeds.
   if new.email_confirmed_at is not null and old.email_confirmed_at is null then
     update public.profiles
     set
@@ -171,6 +203,91 @@ begin
   where p.id = current_user_id;
 end;
 $$;
+create or replace function public.complete_verified_registration(
+  profile_data jsonb,
+  preferences jsonb
+)
+returns table (registration_status text, onboarding_completed boolean, is_verified boolean)
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  current_user_id uuid := auth.uid();
+  current_email text;
+  confirmed boolean;
+begin
+  select u.email, u.email_confirmed_at is not null
+    into current_email, confirmed
+  from auth.users u
+  where u.id = current_user_id;
+
+  if current_user_id is null or current_email is null then
+    raise exception 'Authentication required';
+  end if;
+  if not confirmed then
+    raise exception 'Email verification required';
+  end if;
+
+  insert into public.profiles (
+    id, email, display_name, birth_date, age, gender, religion,
+    mother_tongue, marital_status, height, weight, country, state, city,
+    education, profession, company, partner_preferences, horoscope, registration_status,
+    onboarding_completed, is_verified, is_discoverable
+  ) values (
+    current_user_id,
+    current_email,
+    nullif(trim(profile_data ->> 'display_name'), ''),
+    nullif(profile_data ->> 'birth_date', '')::date,
+    date_part('year', age(nullif(profile_data ->> 'birth_date', '')::date))::integer,
+    nullif(trim(profile_data ->> 'gender'), ''),
+    nullif(trim(profile_data ->> 'religion'), ''),
+    nullif(trim(profile_data ->> 'mother_tongue'), ''),
+    nullif(trim(profile_data ->> 'marital_status'), ''),
+    nullif(trim(profile_data ->> 'height'), ''),
+    nullif(trim(profile_data ->> 'weight'), ''),
+    coalesce(nullif(trim(profile_data ->> 'country'), ''), 'India'),
+    nullif(trim(profile_data ->> 'state'), ''),
+    nullif(trim(profile_data ->> 'city'), ''),
+    nullif(trim(profile_data ->> 'education'), ''),
+    nullif(trim(profile_data ->> 'profession'), ''),
+    nullif(trim(profile_data ->> 'company'), ''),
+    coalesce(profile_data -> 'horoscope', '[]'::jsonb),
+    coalesce(preferences, '[]'::jsonb),
+    'active', true, true, true
+  )
+  on conflict (id) do update set
+    email = excluded.email,
+    display_name = excluded.display_name,
+    birth_date = excluded.birth_date,
+    age = excluded.age,
+    gender = excluded.gender,
+    religion = excluded.religion,
+    mother_tongue = excluded.mother_tongue,
+    marital_status = excluded.marital_status,
+    height = excluded.height,
+    weight = excluded.weight,
+    country = excluded.country,
+    state = excluded.state,
+    city = excluded.city,
+    education = excluded.education,
+    profession = excluded.profession,
+    company = excluded.company,
+    horoscope = excluded.horoscope,
+    partner_preferences = excluded.partner_preferences,
+    registration_status = 'active',
+    onboarding_completed = true,
+    is_verified = true,
+    is_discoverable = true;
+
+  return query
+  select p.registration_status, p.onboarding_completed, p.is_verified
+  from public.profiles p
+  where p.id = current_user_id;
+end;
+$$;
+revoke execute on function public.complete_verified_registration(jsonb, jsonb) from public, anon;
+grant execute on function public.complete_verified_registration(jsonb, jsonb) to authenticated;
 revoke execute on function public.activate_verified_profile() from public, anon;
 grant execute on function public.activate_verified_profile() to authenticated;
 
@@ -264,6 +381,7 @@ grant update (
 ) on table public.profiles to authenticated;
 
 drop policy if exists "Authenticated users can discover profiles" on public.profiles;
+drop policy if exists "Authenticated users can discover active profiles" on public.profiles;
 create policy "Authenticated users can discover active profiles"
 on public.profiles for select to authenticated
 using (
@@ -274,6 +392,7 @@ using (
 );
 
 drop policy if exists "Matched users can read each other" on public.profiles;
+drop policy if exists "Matched users can read active matches" on public.profiles;
 create policy "Matched users can read active matches"
 on public.profiles for select to authenticated
 using (
@@ -284,6 +403,7 @@ using (
 );
 
 drop policy if exists "Users can create likes" on public.profile_likes;
+drop policy if exists "Active users can create likes" on public.profile_likes;
 create policy "Active users can create likes"
 on public.profile_likes for insert to authenticated
 with check (
@@ -294,6 +414,7 @@ with check (
 );
 
 drop policy if exists "Recipients can respond to likes" on public.profile_likes;
+drop policy if exists "Active recipients can respond to likes" on public.profile_likes;
 create policy "Active recipients can respond to likes"
 on public.profile_likes for update to authenticated
 using (auth.uid() = liked_id)
@@ -304,6 +425,7 @@ with check (
 );
 
 drop policy if exists "Users can read their likes" on public.profile_likes;
+drop policy if exists "Active users can read active likes" on public.profile_likes;
 create policy "Active users can read active likes"
 on public.profile_likes for select to authenticated
 using (
@@ -314,6 +436,7 @@ using (
 );
 
 drop policy if exists "Users manage their shortlist" on public.profile_shortlists;
+drop policy if exists "Active users manage their shortlist" on public.profile_shortlists;
 create policy "Active users manage their shortlist"
 on public.profile_shortlists for all to authenticated
 using (auth.uid() = user_id)
@@ -324,6 +447,7 @@ with check (
 );
 
 drop policy if exists "Accepted matches can read messages" on public.messages;
+drop policy if exists "Active accepted matches can read messages" on public.messages;
 create policy "Active accepted matches can read messages"
 on public.messages for select to authenticated
 using (
@@ -333,6 +457,7 @@ using (
 );
 
 drop policy if exists "Accepted matches can send messages" on public.messages;
+drop policy if exists "Active accepted matches can send messages" on public.messages;
 create policy "Active accepted matches can send messages"
 on public.messages for insert to authenticated
 with check (

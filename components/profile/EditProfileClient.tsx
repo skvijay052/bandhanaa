@@ -1,6 +1,7 @@
 "use client";
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { DatePicker } from "@/components/ui/DatePicker";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
@@ -189,7 +190,6 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
           <DesktopSectionNav active={section} onChange={setSection} />
           <MobilePageHeader />
           <div className="h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-3">
-            
             <header className="mx-auto flex max-w-[780px] items-start py-6 md:py-8">
               <button
                 onClick={() => router.push("/my-profile")}
@@ -383,7 +383,14 @@ function SectionContent({
   setNotice: React.Dispatch<React.SetStateAction<string>>;
 }) {
   if (section === "Basic Details")
-    return <BasicForm draft={draft} setField={setField} />;
+    return (
+      <BasicForm
+        draft={draft}
+        setField={setField}
+        structured={structured}
+        setStructured={setStructured}
+      />
+    );
   if (section === "Photos") return <PhotosEditor draft={draft} />;
   if (section === "Profile Visibility")
     return <VisibilityEditor draft={draft} setField={setField} />;
@@ -464,22 +471,18 @@ function SectionContent({
             );
           if (label === "Date of Birth")
             return (
-              <label key={label} className="form-label">
-                {label}
-                <input
-                  type="date"
-                  max={new Date().toISOString().slice(0, 10)}
-                  value={structured[label] || draft.birthDate || ""}
-                  onChange={(e) => {
-                    setField("birthDate", e.target.value);
-                    setStructured((current) => ({
-                      ...current,
-                      [label]: e.target.value,
-                    }));
-                  }}
-                  className="form-control cursor-pointer [color-scheme:light]"
-                />
-              </label>
+              <DatePicker
+                key={label}
+                label={label}
+                value={structured[label] || draft.birthDate || ""}
+                onChange={(value) => {
+                  setField("birthDate", value);
+                  setStructured((current) => ({
+                    ...current,
+                    [label]: value,
+                  }));
+                }}
+              />
             );
           if (label === "Time of Birth")
             return (
@@ -585,12 +588,16 @@ function Field({
 function BasicForm({
   draft,
   setField,
+  structured,
+  setStructured,
 }: {
   draft: EditProfileData;
   setField: <K extends keyof EditProfileData>(
     key: K,
     value: EditProfileData[K],
   ) => void;
+  structured: Record<string, string>;
+  setStructured: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }) {
   return (
     <div>
@@ -605,13 +612,42 @@ function BasicForm({
           onChange={(x) => setField("displayName", x)}
           required
         />
-        <Field
-          label="Date of Birth"
-          type="date"
-          value={draft.birthDate}
-          onChange={(x) => setField("birthDate", x)}
-          required
-        />
+        <div className="md:col-span-2">
+          <label className="form-label">
+            Date & Time of Birth <span className="text-[#1d9bf0]">*</span>
+          </label>
+          <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
+            <DatePicker
+              hideLabel
+              label="Date of Birth"
+              value={draft.birthDate}
+              onChange={(value) => {
+                setField("birthDate", value);
+                setStructured((current) => ({
+                  ...current,
+                  "Date of Birth": value,
+                }));
+              }}
+              required
+            />
+            <label className="block">
+              <span className="sr-only">Time of Birth</span>
+              <input
+                type="time"
+                step={300}
+                value={toTimeInput(structured["Time of Birth"] ?? "")}
+                onChange={(event) =>
+                  setStructured((current) => ({
+                    ...current,
+                    "Time of Birth": event.target.value,
+                  }))
+                }
+                className="form-control !mt-0 cursor-pointer [color-scheme:light]"
+                aria-label="Time of Birth"
+              />
+            </label>
+          </div>
+        </div>
         <SearchableSelect
           label="Gender"
           value={draft.gender}

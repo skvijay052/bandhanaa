@@ -95,9 +95,10 @@ export function MatchesClient({
 
   return (
     <div className="h-dvh bg-[var(--app-bg)]">
-    
       <div className="app-shell">
-        <AppSidebar active="Matches" />
+        <AppSidebar
+          active={activeTab === "shortlisted" ? "Shortlist" : "Matches"}
+        />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-8">
           <div className="hidden">
             <MobilePageHeader
@@ -159,7 +160,7 @@ export function MatchesClient({
             ) : null}
 
             {visibleProfiles.length ? (
-              <div className="mt-6 hidden grid-cols-1 gap-5 sm:grid-cols-2 md:grid xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="mt-6 hidden grid-cols-2 gap-4 md:grid xl:grid-cols-4">
                 {visibleProfiles.map((profile, index) => (
                   <MatchCard
                     key={profile.id}

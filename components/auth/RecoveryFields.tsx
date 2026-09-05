@@ -87,15 +87,17 @@ export const RecoveryPassword = forwardRef<HTMLInputElement, InputProps>(
 export function RecoveryButton({
   loading,
   children,
+  className = "",
 }: {
   loading: boolean;
   children: React.ReactNode;
+  className?: string;
 }) {
   return (
     <button
       type="submit"
       disabled={loading}
-      className="flex h-12 w-full items-center justify-center rounded-full bg-[#1d9bf0] px-5 text-[15px] font-bold text-white transition-colors duration-150 hover:bg-[#1a8cd8] disabled:cursor-not-allowed disabled:opacity-60"
+      className={`flex h-12 w-full items-center justify-center rounded-full bg-[#1d9bf0] px-5 text-[15px] font-bold text-white transition-colors duration-150 hover:bg-[#1a8cd8] disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
     >
       {children}
     </button>

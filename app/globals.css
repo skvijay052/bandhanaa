@@ -1,5 +1,56 @@
 @import "tailwindcss";
 
+html {
+  scrollbar-color: #111 transparent;
+  scrollbar-width: thin;
+}
+
+html::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+html::-webkit-scrollbar:hover {
+  width: 4px;
+  height: 4px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #111;
+}
+
+html::-webkit-scrollbar-thumb:hover {
+  background: #000;
+}
+
+:where(
+  a[href],
+  button,
+  select,
+  summary,
+  [role="button"],
+  [role="link"],
+  [role="option"],
+  label[for],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="checkbox"],
+  input[type="radio"]
+) {
+  cursor: pointer;
+}
+
+:where(button, select, input):disabled,
+:where([role="button"], [role="link"])[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 @theme {
   --color-ink: #111116;
   --color-muted: #66666d;
@@ -194,7 +245,7 @@
   .my-profile-mobile {
     min-height: 100%;
     padding: 14px 14px 108px;
-    color: var(--text-primary); 
+    color: var(--text-primary);
   }
   .my-profile-mobile__header {
     display: grid;

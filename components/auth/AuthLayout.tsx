@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Heart, ShieldCheck, UsersRound } from "lucide-react";
 import { Brand } from "./Brand";
 
 export function AuthLayout({
@@ -13,13 +14,11 @@ export function AuthLayout({
   return (
     <main className="min-h-dvh w-full overflow-x-hidden bg-[#fbfcff] md:bg-white">
       <section
-        className={`relative m-0 grid min-h-dvh w-full grid-cols-1 overflow-x-hidden bg-transparent md:bg-white ${login ? "md:h-dvh md:grid-cols-[55%_45%] md:overflow-y-hidden" : "md:min-h-dvh md:grid-cols-[56%_44%]"}`}
+        className={`relative m-0 grid min-h-dvh w-full grid-cols-1 overflow-x-hidden bg-transparent md:bg-white ${login ? "lg:h-dvh lg:grid-cols-[50%_50%] lg:overflow-hidden" : "lg:h-dvh lg:grid-cols-[50%_50%] lg:overflow-hidden"}`}
       >
         <div className="pointer-events-none absolute -left-28 -top-24 size-[430px] rounded-full bg-[#dff9f3]/80 blur-2xl md:hidden" />
         <div className="pointer-events-none absolute -right-40 top-8 size-[420px] rounded-full bg-[#eee7ff]/80 blur-2xl md:hidden" />
-        <div
-          className={`absolute z-20 max-md:left-4 max-md:top-5 ${login ? "md:left-[46px] md:top-7" : "md:left-7 md:top-3"}`}
-        >
+        <div className="absolute left-4 top-5 z-20 lg:left-[5.5%] lg:top-10 lg:[&_img]:brightness-0 lg:[&_img]:invert">
           <Brand compact />
         </div>
         <Link
@@ -29,98 +28,96 @@ export function AuthLayout({
           {login ? "Create account" : "Sign in"}
         </Link>
 
-        <p className="absolute right-[42px] top-[34px] z-20 hidden text-[13px] text-muted md:block">
-          {login ? "New here? " : "Already have an account? "}
-          <Link
-            className="text-accent hover:text-[#8144b5]"
-            href={login ? "/register" : "/login"}
-          >
-            {login ? "Create your profile" : "Sign in"}
-          </Link>
-        </p>
-
-        <div className="relative hidden min-h-[700px] overflow-hidden md:block">
-          <div
-            className={`absolute top-[13%] z-10 space-y-4 ${login ? "left-[6%]" : "left-[3.2%]"}`}
-          >
-            <h1
-              className={`font-bold leading-[.99] tracking-[-.045em] text-ink ${login ? "text-[clamp(54px,4.2vw,66px)]" : "text-[clamp(45px,3.7vw,64px)]"}`}
-            >
-              Meaningful
-              <br />
-              connections
-              <br />
-              begin here.
-            </h1>
-            <p
-              className={`${login ? "max-w-[420px] text-lg" : "max-w-[390px] text-base"} leading-[1.5] text-muted`}
-            >
-              {login ? (
-                <>
-                  Discover people who share your values,
-                  <br />
-                  aspirations, and vision for the future.
-                </>
-              ) : (
-                <>
-                  Create your profile and take the next step
-                  <br />
-                  towards finding a meaningful connection.
-                </>
-              )}
-            </p>
-          </div>
+        <div className="relative hidden min-h-dvh overflow-hidden lg:block">
           <div className="absolute inset-0">
             <Image
-              src={
-                login
-                  ? "/bandhanaa-register-hero-full.png"
-                  : "/bandhanaa-register-onboarding-bg.png"
-              }
-              alt="A couple surrounded by flowing pink, peach, and violet light"
+              src="/register-couple-sunset.png"
+              alt="A couple looking toward a warm sunset"
               fill
               priority
-              sizes="56vw"
-              className="object-cover object-left"
+              sizes={login ? "42vw" : "36vw"}
+              className="object-cover object-center"
             />
             <div
-              className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-white/5"
+              className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/80"
               aria-hidden
             />
           </div>
-          <p className="absolute bottom-[26px] left-[46px] z-10 text-xs text-muted">
-            © 2024 Bandhanaa
-          </p>
+
+          <div className="absolute inset-x-[8%] bottom-[6%] z-10 text-white">
+            <h1 className="font-serif text-[clamp(40px,3.3vw,58px)] leading-[1.02] tracking-[-.03em]">
+              More than profiles.
+              <br />
+              <span className="text-[#f472b6]">Real possibilities.</span>
+            </h1>
+            <div className="mt-8 space-y-4 text-sm">
+              <Feature
+                icon={<Heart />}
+                title="Trusted Community"
+                text="Verified & genuine profiles"
+              />
+              <Feature
+                icon={<UsersRound />}
+                title="Meaningful Matches"
+                text="Based on your preferences"
+              />
+              <Feature
+                icon={<ShieldCheck />}
+                title="Your Privacy First"
+                text="Your information is always protected"
+              />
+            </div>
+            <div className="mt-7 h-px w-14 bg-fuchsia-400" />
+            <p className="mt-5 font-serif text-base italic">
+              “Better people. Brighter futures.”
+            </p>
+          </div>
         </div>
 
         <div
-          className={`relative flex min-w-0 flex-col justify-start px-4 pb-8 pt-[96px] md:pb-16 ${login ? "items-center sm:px-[42px] md:items-start md:justify-center md:pl-[52px] md:pr-10 md:pt-[76px]" : "items-stretch sm:px-8 md:items-center md:justify-start md:px-12 md:pt-[70px]"}`}
+          className={`relative flex min-w-0 flex-col justify-start px-4 pb-8 pt-[96px] items-stretch sm:px-8 lg:h-dvh lg:items-center lg:overflow-y-auto lg:bg-[radial-gradient(circle_at_85%_40%,#f8eefe_0,transparent_38%),radial-gradient(circle_at_15%_20%,#fdf2f8_0,transparent_32%),#faf9ff] lg:px-[5%] lg:pb-12 lg:pt-20`}
         >
+          <p
+            className={`absolute right-[9%] top-[34px] z-20 hidden text-[13px] text-muted lg:block`}
+          >
+            {login ? "New here? " : "Already have an account? "}
+            <Link
+              className="font-semibold text-[#6d28d9] hover:text-[#4c1d95]"
+              href={login ? "/register" : "/login"}
+            >
+              {login ? "Create your profile" : "Sign in"}
+            </Link>
+          </p>
+
           <div
-            className={`w-full min-w-0 shrink-0 rounded-[26px] border border-white/90 bg-white/95 px-5 py-6 shadow-[0_14px_38px_rgba(63,38,110,.10)] md:rounded-none md:border-0 md:bg-transparent md:px-0 md:py-0 md:shadow-none ${login ? "max-w-[430px]" : "max-w-[550px]"}`}
+            className={`w-full min-w-0 shrink-0 rounded-[26px] border border-white/90 bg-white/95 px-5 py-6 shadow-[0_14px_38px_rgba(63,38,110,.10)] mx-auto max-w-[820px] lg:px-9 lg:py-7 lg:shadow-[0_18px_60px_rgba(66,32,104,.10)]`}
           >
             {children}
           </div>
         </div>
-
-        <nav
-          aria-label="Footer"
-          className="absolute bottom-[26px] right-[42px] hidden items-center gap-10 text-xs text-muted md:flex"
-        >
-          <Link className="hover:text-ink" href="/privacy">
-            Privacy Policy
-          </Link>
-          <Link className="hover:text-ink" href="/terms">
-            Terms of Use
-          </Link>
-          <Link className="hover:text-ink" href="/help">
-            Help
-          </Link>
-          <Link className="hover:text-ink" href="/contact">
-            Contact
-          </Link>
-        </nav>
       </section>
     </main>
+  );
+}
+
+function Feature({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="grid size-11 place-items-center rounded-full bg-white/15 text-fuchsia-300 [&_svg]:size-5">
+        {icon}
+      </span>
+      <span>
+        <strong className="block text-sm">{title}</strong>
+        <small className="mt-0.5 block text-white/70">{text}</small>
+      </span>
+    </div>
   );
 }
