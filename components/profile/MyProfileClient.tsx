@@ -6,7 +6,6 @@ import type { MyProfileData } from "@/data/my-profile";
 import { createClient } from "@/lib/supabase/client";
 import { genderProfilePhoto } from "@/lib/profile-photo";
 import { AboutMeSection } from "./AboutMeSection";
-import { CompleteProfileCTA } from "./CompleteProfileCTA";
 import { MyProfileHero } from "./MyProfileHero";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
@@ -264,12 +263,6 @@ export function MyProfileClient({
               >
                 <DetailCard title="Horoscope" items={viewProfile.horoscope} />
               </div>
-              <div
-                id="profile-verification"
-                className="mt-5 scroll-mt-[70px] px-4"
-              >
-                <CompleteProfileCTA />
-              </div>
             </div>
             <div className="space-y-4 px-4 md:hidden">
               <section
@@ -313,7 +306,6 @@ export function MyProfileClient({
                 <DetailCard title="Horoscope" items={viewProfile.horoscope} />
               </div>
               <MobileVisibility visibility={viewProfile.visibility} />
-              <CompleteProfileCTA mobile />
             </div>
           </div>
           </div>

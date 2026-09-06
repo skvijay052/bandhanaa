@@ -19,6 +19,7 @@ import {
   Sparkles,
   UserRound,
   UsersRound,
+  X,
 } from "lucide-react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
@@ -99,6 +100,11 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
   });
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
+  useEffect(() => {
+    if (!notice) return;
+    const timeout = window.setTimeout(() => setNotice(""), 4000);
+    return () => window.clearTimeout(timeout);
+  }, [notice]);
   const setField = <K extends keyof EditProfileData>(
     key: K,
     value: EditProfileData[K],
@@ -166,7 +172,7 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
       "complete_profile_onboarding",
     );
     setDraft((current) => ({ ...current, completion }));
-    setNotice("Changes saved.");
+    setNotice("Your profile changes have been saved successfully.");
     const registrationRow = Array.isArray(registration)
       ? registration[0]
       : registration;
@@ -223,12 +229,26 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
                   setNotice={setNotice}
                 />
                 {notice ? (
-                  <p
+                  <div
                     role="status"
-                    className={`mt-4 text-[11px] ${notice === "Changes saved." ? "text-emerald-600" : notice.startsWith("Horoscope generated:") ? "text-[#1d9bf0]" : "text-red-600"}`}
+                    aria-live="polite"
+                    className={`fixed right-5 top-5 z-[100] flex max-w-[380px] items-center gap-3 rounded-xl border bg-white px-4 py-3 text-[13px] font-medium shadow-[0_12px_38px_rgba(0,0,0,0.16)] max-md:left-4 max-md:right-4 max-md:top-4 ${notice === "Your profile changes have been saved successfully." ? "border-emerald-200 text-emerald-800" : notice.startsWith("Horoscope generated:") ? "border-sky-200 text-sky-800" : "border-red-200 text-red-700"}`}
                   >
-                    {notice}
-                  </p>
+                    <span
+                      className={`grid size-8 shrink-0 place-items-center rounded-full ${notice === "Your profile changes have been saved successfully." ? "bg-emerald-100" : notice.startsWith("Horoscope generated:") ? "bg-sky-100" : "bg-red-100"}`}
+                    >
+                      <Check size={17} strokeWidth={2.5} />
+                    </span>
+                    <span className="leading-5">{notice}</span>
+                    <button
+                      type="button"
+                      aria-label="Close notification"
+                      onClick={() => setNotice("")}
+                      className="ml-auto grid size-7 shrink-0 place-items-center rounded-full text-current/60 transition-colors hover:bg-black/5 hover:text-current"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
                 ) : null}
                 <div className="mt-6 flex items-center justify-end gap-3 max-md:grid max-md:grid-cols-1">
                   <button

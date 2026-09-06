@@ -37,6 +37,7 @@ import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { profileFieldOptions } from "@/data/profile-field-options";
 import { MobileProfileCard } from "./MobileProfileCard";
 import { MobileDiscoverExperience } from "./MobileDiscoverExperience";
+import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
 import { ProfileCard } from "./ProfileCard";
 import type { DiscoverProfile } from "./types";
 export type { DiscoverProfile } from "./types";
@@ -119,7 +120,10 @@ export function DiscoverClient({
           !quickFilters.includes("working") ||
           Boolean(profile.job && profile.job !== "Not added"),
       )
-      .filter((profile) => !profile.age || (profile.age >= minAge && profile.age <= maxAge))
+      .filter(
+        (profile) =>
+          !profile.age || (profile.age >= minAge && profile.age <= maxAge),
+      )
       .sort((a, b) => b.match - a.match);
   }, [
     education,
@@ -255,6 +259,16 @@ export function DiscoverClient({
               onToggle={() => setShowFilters((value) => !value)}
               suggestions={list}
             />
+            <DiscoverBannerSlider />
+            
+            <div className="mt-6 max-md:hidden">
+              <h1 className="text-[26px] font-bold tracking-[-.025em] text-[#0f1419]">
+                Discover
+              </h1>
+              <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
+                People who match your preferences
+              </p>
+            </div>
             {showFilters ? (
               <>
                 <button
@@ -310,14 +324,6 @@ export function DiscoverClient({
                 />
               </>
             ) : null}
-            <div className="mt-6 max-md:hidden">
-              <h1 className="text-[26px] font-bold tracking-[-.025em] text-[#0f1419]">
-                Discover
-              </h1>
-              <p className="mt-1 text-[14px] text-[var(--text-secondary)]">
-                People who match your preferences
-              </p>
-            </div>
             {cardProfiles.length ? (
               <>
                 <div className="mt-6 hidden grid-cols-2 gap-4 md:grid xl:grid-cols-4">

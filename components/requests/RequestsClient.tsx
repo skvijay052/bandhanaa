@@ -143,7 +143,7 @@ export function RequestsClient({
     <div className="min-h-dvh bg-white">
       <div className="app-shell">
         <AppSidebar active="Requests" />
-        <div className="app-workspace min-w-0 flex-1 pb-[72px] md:pb-0">
+        <div className="app-workspace h-dvh min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain pb-[72px] md:pb-0">
           <DesktopTopBar avatarUrl={avatarUrl} name={viewerName} />
           <MobileRequestsPage
             activeTab={activeTab}

@@ -15,6 +15,7 @@ import {
 import { Brand } from "@/components/auth/Brand";
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import type { DiscoverProfile } from "./types";
+import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
 
 type Props = {
   profiles: DiscoverProfile[];
@@ -45,12 +46,7 @@ export function MobileDiscoverExperience({
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
       <header className="grid grid-cols-[40px_1fr_40px] items-center">
-        
-        <Link
-          href="/discover"
-          className=""
-          aria-label="Bandhanaa"
-        >
+        <Link href="/discover" className="" aria-label="Bandhanaa">
           <Brand compact />
         </Link>
         <span aria-hidden="true" />
@@ -116,6 +112,7 @@ export function MobileDiscoverExperience({
           label="Verified"
         />
       </div>
+      <DiscoverBannerSlider mobile />
       <Link
         href="/settings/edit-profile"
         className="mt-4 flex min-h-[86px] items-center rounded-[22px] bg-gradient-to-r from-[#e7e3ff] to-[#f9e5fa] px-4 text-[#6534d7] shadow-[0_8px_24px_rgba(113,74,214,.11)]"
