@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { ProfileDetailsClient } from "@/components/profile/ProfileDetailsClient";
-import type {
-  CompactProfile,
-  ProfileDetail,
-} from "@/data/profile";
+import type { CompactProfile, ProfileDetail } from "@/data/profile";
 import { getRelationshipState } from "@/data/profile";
 import { createClient } from "@/lib/supabase/server";
 import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { generatedHoroscopeItems } from "@/lib/horoscope";
+import { getProfilePrivacy } from "@/lib/profile-privacy";
 
 export const metadata: Metadata = { title: "Profile Details" };
 
@@ -46,7 +44,9 @@ function detailItems(value: unknown) {
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const record = item as Record<string, unknown>;
-    return typeof record.label === "string" && typeof record.value === "string" && record.value.trim()
+    return typeof record.label === "string" &&
+      typeof record.value === "string" &&
+      record.value.trim()
       ? [{ label: record.label, value: record.value }]
       : [];
   });
@@ -94,22 +94,43 @@ export default async function ProfilePage({
     (profileResult.data as ProfileRow | null) ??
     recommendedRows.find((candidate) => candidate.id === id);
   if (!row) notFound();
-  const photoIds = [...new Set([user.id, ...recommendedRows.map((candidate) => candidate.id)])];
+  const privacyByProfile = await getProfilePrivacy(supabase, [
+    row.id,
+    ...recommendedRows.map((candidate) => candidate.id),
+  ]);
+  const privacy = privacyByProfile.get(row.id);
+  const photoIds = [
+    ...new Set([user.id, ...recommendedRows.map((candidate) => candidate.id)]),
+  ];
   const { data: photoRows, error: photoError } = await supabase
     .from("profiles")
     .select("id, avatar_url, photos, gender")
     .in("id", photoIds);
-  if (photoError) console.error("Unable to load profile photos:", photoError.message);
-  const photoById = new Map((photoRows ?? []).map((photo) => [photo.id, photo]));
+  if (photoError)
+    console.error("Unable to load profile photos:", photoError.message);
+  const photoById = new Map(
+    (photoRows ?? []).map((photo) => [photo.id, photo]),
+  );
   const image = resolveProfilePhoto(row);
   const savedPhotos = row.photos?.filter(Boolean).slice(0, 6) ?? [];
   const photos = savedPhotos;
-  const location = [row.city, row.state, row.country].filter(Boolean).join(", ");
+  const location = [row.city, row.state, row.country]
+    .filter(Boolean)
+    .join(", ");
   const profile: ProfileDetail = {
     id: row.id,
     name: row.display_name ?? "Bandhanaa Member",
-    age: row.age ?? 0,
-    birthDate: row.birth_date ? new Date(`${row.birth_date}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Not added",
+    age: privacy?.showAge === false ? 0 : (row.age ?? 0),
+    birthDate:
+      privacy?.showAge === false
+        ? "Private"
+        : row.birth_date
+          ? new Date(`${row.birth_date}T00:00:00`).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+              year: "numeric",
+            })
+          : "Not added",
     occupation: row.profession ?? "Not added",
     company: row.company ?? "",
     location: location || "Location not added",
@@ -120,9 +141,13 @@ export default async function ProfilePage({
     motherTongue: row.mother_tongue ?? "Not added",
     education: row.education ?? "Not added",
     maritalStatus: row.marital_status ?? "Not added",
-    memberSince: row.created_at ? new Date(row.created_at).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Not added",
-    about:
-      row.bio ?? "No description added yet.",
+    memberSince: row.created_at
+      ? new Date(row.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          year: "numeric",
+        })
+      : "Not added",
+    about: row.bio ?? "No description added yet.",
     quote: "",
     verified: true,
     online: false,
@@ -135,6 +160,7 @@ export default async function ProfilePage({
     horoscope: generatedHoroscopeItems(
       row.birth_date,
       detailItems(row.horoscope),
+      { country: row.country, state: row.state, city: row.city },
     ),
     compatibility: row.compatibility ?? 0,
   };
@@ -158,7 +184,10 @@ export default async function ProfilePage({
     .map((candidate, index) => ({
       id: candidate.id,
       name: candidate.display_name ?? "Member",
-      age: candidate.age ?? 27,
+      age:
+        privacyByProfile.get(candidate.id)?.showAge === false
+          ? 0
+          : (candidate.age ?? 27),
       location: candidate.city ?? "Bengaluru",
       image: resolveProfilePhoto(photoById.get(candidate.id) ?? candidate),
       verified: true,
@@ -169,7 +198,10 @@ export default async function ProfilePage({
       user.user_metadata?.name ??
       "Member",
   );
-  const avatarUrl = resolveProfilePhoto(photoById.get(user.id), String(user.user_metadata?.avatar_url ?? ""));
+  const avatarUrl = resolveProfilePhoto(
+    photoById.get(user.id),
+    String(user.user_metadata?.avatar_url ?? ""),
+  );
   return (
     <ProfileDetailsClient
       profile={profile}

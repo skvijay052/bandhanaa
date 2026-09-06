@@ -212,31 +212,6 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
               </span>
             </header>
             <div className="mx-auto max-w-[780px]">
-              <section className="mb-8 flex items-center rounded-2xl bg-[#f2f3f5] p-5 max-md:p-4">
-                <span className="relative size-16 shrink-0 overflow-hidden rounded-full">
-                  <ProfileImage
-                    src={draft.avatar}
-                    alt={draft.displayName}
-                    fill
-                    sizes="64px"
-                    className="object-cover"
-                  />
-                </span>
-                <div className="ml-4 min-w-0">
-                  <strong className="block truncate text-[16px]">
-                    {draft.displayName}
-                  </strong>
-                  <span className="mt-1 block text-[13px] text-[var(--text-secondary)]">
-                    Profile is {draft.completion}% complete
-                  </span>
-                </div>
-                <button
-                  onClick={() => setSection("Photos")}
-                  className="ml-auto h-8 rounded-lg bg-[#1d9bf0] px-5 text-[12px] font-semibold text-white hover:bg-[#1689df]"
-                >
-                  Change
-                </button>
-              </section>
               <MobileSectionNav active={section} onChange={setSection} />
               <section className="py-2 md:py-3">
                 <SectionContent
@@ -255,17 +230,17 @@ export function EditProfileClient({ initial }: { initial: EditProfileData }) {
                     {notice}
                   </p>
                 ) : null}
-                <div className="mt-6 flex justify-end gap-3 max-md:grid max-md:grid-cols-1">
+                <div className="mt-6 flex items-center justify-end gap-3 max-md:grid max-md:grid-cols-1">
                   <button
                     onClick={() => router.push("/my-profile")}
-                    className="h-10 rounded-lg bg-[#efefef] px-5 text-[14px] font-semibold text-[#0f1419] hover:bg-[#e5e5e5] max-md:order-2"
+                    className="h-11 min-w-28 rounded-full border border-[#d8dce3] bg-white px-6 text-[14px] font-semibold text-[#0f1419] transition-colors hover:border-black hover:bg-[#f7f7f7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/15 max-md:order-2"
                   >
                     Cancel
                   </button>
                   <button
                     onClick={() => void save()}
                     disabled={saving}
-                    className="flex h-10 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#a34cef] to-[#f45ca9] text-[12px] font-semibold text-white disabled:opacity-80"
+                    className="flex h-11 min-w-40 items-center justify-center rounded-full bg-black px-7 text-[14px] font-semibold text-white shadow-sm transition-all hover:bg-[#222] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {saving ? "Saving…" : "Save & Continue"}
                   </button>
@@ -412,11 +387,12 @@ function SectionContent({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-[13px] font-semibold text-[#0f1419]">
-                Generate your Zodiac sign
+                Generate horoscope details
               </p>
               <p className="mt-1 text-[11px] text-[#536471]">
-                Uses your date of birth. Nakshatra, Rashi and Lagna remain
-                editable because they require accurate birth time and place.
+                Uses your date of birth, birth time and birthplace. Nakshatra,
+                Rashi and Lagna remain editable until a birth-chart provider is
+                configured.
               </p>
             </div>
             <button
@@ -435,6 +411,9 @@ function SectionContent({
                 setStructured((current) => ({
                   ...current,
                   "Date of Birth": birthDate,
+                  "Birth Country": current["Birth Country"] || draft.country,
+                  "Birth State": current["Birth State"] || draft.state,
+                  "Birth City": current["Birth City"] || draft.city,
                   "Zodiac Sign": zodiac,
                 }));
                 setNotice(
@@ -617,21 +596,28 @@ function BasicForm({
             Date & Time of Birth <span className="text-[#1d9bf0]">*</span>
           </label>
           <div className="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
-            <DatePicker
-              hideLabel
-              label="Date of Birth"
-              value={draft.birthDate}
-              onChange={(value) => {
-                setField("birthDate", value);
-                setStructured((current) => ({
-                  ...current,
-                  "Date of Birth": value,
-                }));
-              }}
-              required
-            />
+            <div>
+              <span className="mb-1.5 block text-[12px] text-[#536471]">
+                Date
+              </span>
+              <DatePicker
+                hideLabel
+                label="Date of Birth"
+                value={draft.birthDate}
+                onChange={(value) => {
+                  setField("birthDate", value);
+                  setStructured((current) => ({
+                    ...current,
+                    "Date of Birth": value,
+                  }));
+                }}
+                required
+              />
+            </div>
             <label className="block">
-              <span className="sr-only">Time of Birth</span>
+              <span className="mb-1.5 block text-[12px] text-[#536471]">
+                Time
+              </span>
               <input
                 type="time"
                 step={300}

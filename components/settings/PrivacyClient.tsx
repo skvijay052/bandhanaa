@@ -25,6 +25,42 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
   const router = useRouter();
   const [settings, setSettings] = useState(initial);
   const [error, setError] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  async function downloadMyData() {
+    if (downloading) return;
+    setError("");
+    setDownloading(true);
+    try {
+      const response = await fetch("/api/settings/download-data", {
+        method: "GET",
+        cache: "no-store",
+      });
+      if (!response.ok) {
+        const result = (await response.json().catch(() => null)) as {
+          message?: string;
+        } | null;
+        throw new Error(
+          result?.message || "We couldn't generate your data PDF.",
+        );
+      }
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `bandhanaa-profile-data-${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (failure) {
+      setError(
+        failure instanceof Error
+          ? failure.message
+          : "We couldn't generate your data PDF.",
+      );
+    } finally {
+      setDownloading(false);
+    }
+  }
   async function update<K extends keyof PrivacySettings>(
     key: K,
     value: PrivacySettings[K],
@@ -35,13 +71,24 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
       /[A-Z]/g,
       (letter) => `_${letter.toLowerCase()}`,
     );
-    const { error: failure } = await createClient()
+    const supabase = createClient();
+    const { error: failure } = await supabase
       .from("user_privacy_settings")
       .upsert(
         { user_id: settings.userId, [column]: value },
         { onConflict: "user_id" },
       );
-    if (failure) setError(failure.message);
+    if (failure) {
+      setSettings(settings);
+      setError(failure.message);
+      return;
+    }
+    if (key === "showOnlineStatus" && value === false) {
+      await supabase
+        .from("profiles")
+        .update({ last_seen_at: null })
+        .eq("id", settings.userId);
+    }
   }
   return (
     <main className="fixed inset-0 overflow-hidden bg-[var(--app-bg)]">
@@ -68,14 +115,18 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   value={
                     settings.profileVisibility === "everyone"
                       ? "Everyone"
-                      : "Matches"
+                      : settings.profileVisibility === "matches"
+                        ? "Matches"
+                        : "Private"
                   }
                   onClick={() =>
                     void update(
                       "profileVisibility",
                       settings.profileVisibility === "everyone"
                         ? "matches"
-                        : "everyone",
+                        : settings.profileVisibility === "matches"
+                          ? "private"
+                          : "everyone",
                     )
                   }
                 />
@@ -86,14 +137,18 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   value={
                     settings.lastSeenVisibility === "matches"
                       ? "Matches"
-                      : "Everyone"
+                      : settings.lastSeenVisibility === "everyone"
+                        ? "Everyone"
+                        : "Nobody"
                   }
                   onClick={() =>
                     void update(
                       "lastSeenVisibility",
                       settings.lastSeenVisibility === "matches"
                         ? "everyone"
-                        : "matches",
+                        : settings.lastSeenVisibility === "everyone"
+                          ? "nobody"
+                          : "matches",
                     )
                   }
                 />
@@ -123,13 +178,22 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                 <ValueRow
                   icon={Download}
                   title="Download My Data"
-                  subtitle="Get a copy of your account data"
+                  subtitle={
+                    downloading
+                      ? "Preparing your PDF…"
+                      : "Get a PDF copy of your account data"
+                  }
+                  value={downloading ? "Preparing" : undefined}
+                  onClick={() => void downloadMyData()}
+                  disabled={downloading}
                 />
-                <ValueRow
-                  icon={FileClock}
-                  title="Activity Log"
-                  subtitle="See your recent activity"
-                />
+                <Link href="/settings/activity" className="block">
+                  <ValueRow
+                    icon={FileClock}
+                    title="Activity Log"
+                    subtitle="See your recent activity"
+                  />
+                </Link>
               </SettingsSection>
               <SettingsSection title="Safety">
                 <Link href="/settings/report-block" className="block">
@@ -140,18 +204,6 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                     highlighted
                   />
                 </Link>
-                <ValueRow
-                  icon={ShieldCheck}
-                  title="Two-Step Verification"
-                  subtitle="Add an extra layer of security"
-                  value={settings.twoStepVerification ? "On" : "Off"}
-                  onClick={() =>
-                    void update(
-                      "twoStepVerification",
-                      !settings.twoStepVerification,
-                    )
-                  }
-                />
                 <form action="/api/auth/signout" method="post">
                   <button type="submit" className="w-full text-left">
                     <ValueRow
@@ -214,6 +266,7 @@ function ValueRow({
   value,
   onClick,
   highlighted = false,
+  disabled = false,
 }: {
   icon: typeof Eye;
   title: string;
@@ -221,6 +274,7 @@ function ValueRow({
   value?: string;
   onClick?: () => void;
   highlighted?: boolean;
+  disabled?: boolean;
 }) {
   const content = (
     <div
@@ -246,7 +300,11 @@ function ValueRow({
     </div>
   );
   return onClick ? (
-    <button onClick={onClick} className="w-full text-left">
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-full text-left disabled:cursor-wait disabled:opacity-70"
+    >
       {content}
     </button>
   ) : (

@@ -36,12 +36,14 @@ export function MessagesClient({
   currentUserId,
   viewerName,
   avatarUrl,
+  readReceipts,
 }: {
   initialConversations: Conversation[];
   initialMessages: ChatMessage[];
   currentUserId: string;
   viewerName: string;
   avatarUrl: string;
+  readReceipts: boolean;
 }) {
   const router = useRouter();
   const [filter, setFilter] = useState<ConversationFilter>("all");
@@ -159,7 +161,7 @@ export function MessagesClient({
   }, [currentUserId, router, selectedId]);
 
   useEffect(() => {
-    if (!selected || selected.unread === 0) return;
+    if (!readReceipts || !selected || selected.unread === 0) return;
     const supabase = createClient();
     void supabase
       .from("messages")
@@ -176,7 +178,7 @@ export function MessagesClient({
             ),
           );
       });
-  }, [currentUserId, selected]);
+  }, [currentUserId, readReceipts, selected]);
 
   async function sendMessage() {
     const text = draft.trim();
@@ -457,7 +459,6 @@ function ConversationRow({
         </span>
       </span>
       <span className="flex shrink-0 flex-col items-end justify-center text-[11px] text-[#667781] max-md:absolute max-md:right-4 max-md:top-4 max-md:gap-5">
-    
         {item.unread ? (
           <span className="grid size-5 place-items-center rounded-full bg-[#ed2082] font-bold text-white">
             {item.unread}
@@ -709,7 +710,7 @@ function ProfileDetails({
           />
         </span>
         <h3 className="mt-4 text-[20px] font-semibold">
-          {conversation.name}, {conversation.age}
+          {conversation.name}, {conversation.age || "Age hidden"}
         </h3>
         <p className="mt-1 text-[13px] text-[#667781]">
           {conversation.profession}

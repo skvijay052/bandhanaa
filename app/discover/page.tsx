@@ -7,6 +7,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import { getRelationshipState } from "@/data/profile";
+import { getProfilePrivacy } from "@/lib/profile-privacy";
 
 export const metadata: Metadata = { title: "Discover" };
 
@@ -73,6 +74,7 @@ export default async function Page() {
   const recommendationRows = (recommendations.data ??
     []) as RecommendationRow[];
   const recommendationIds = recommendationRows.map((profile) => profile.id);
+  const privacyByProfile = await getProfilePrivacy(supabase, recommendationIds);
   const [photoResult, onlineResult] = recommendationIds.length
     ? await Promise.all([
         supabase
@@ -110,6 +112,7 @@ export default async function Page() {
 
   const profiles: DiscoverProfile[] = recommendationRows.map((profile) => {
     const storedPhotos = photosByProfile.get(profile.id);
+    const privacy = privacyByProfile.get(profile.id);
     const relationship = relationships.data?.find(
       (item) => item.liker_id === profile.id || item.liked_id === profile.id,
     );
@@ -123,7 +126,7 @@ export default async function Page() {
     return {
       id: profile.id,
       name: profile.display_name ?? "Member",
-      age: profile.age ?? 25,
+      age: privacy?.showAge === false ? 0 : (profile.age ?? 25),
       job: profile.profession ?? "Professional",
       city: location || "India",
       maritalStatus: storedPhotos?.marital_status ?? "Not added",
@@ -142,6 +145,7 @@ export default async function Page() {
       ),
       match: profile.match_score ?? 85,
       online: Boolean(
+        privacy?.showLastSeen !== false &&
         onlineByProfile.get(profile.id) &&
         Date.now() -
           new Date(onlineByProfile.get(profile.id) as string).getTime() <

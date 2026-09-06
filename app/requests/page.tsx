@@ -6,6 +6,7 @@ import type { InterestProfile } from "@/data/interests";
 import type { RequestTab } from "@/components/requests/RequestsClient";
 import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { createClient } from "@/lib/supabase/server";
+import { getProfilePrivacy } from "@/lib/profile-privacy";
 
 export const metadata: Metadata = { title: "Requests" };
 
@@ -65,6 +66,7 @@ export default async function RequestsPage({
       ),
     ),
   ];
+  const privacyByProfile = await getProfilePrivacy(supabase, profileIds);
   const { data: profileRows } = profileIds.length
     ? await supabase
         .from("profiles")
@@ -82,11 +84,12 @@ export default async function RequestsPage({
   const toProfile = (row: LikeRow): InterestProfile => {
     const profileId = row.liker_id === user.id ? row.liked_id : row.liker_id;
     const profile = byId.get(profileId);
+    const privacy = privacyByProfile.get(profileId);
     return {
       id: `${row.liker_id}:${row.liked_id}`,
       profileId,
       name: profile?.display_name ?? "Bandhanaa Member",
-      age: profile?.age ?? 25,
+      age: privacy?.showAge === false ? 0 : (profile?.age ?? 25),
       occupation: profile?.profession ?? "Professional",
       location:
         [profile?.city, profile?.state, profile?.country]
@@ -100,6 +103,7 @@ export default async function RequestsPage({
       religion: profile?.religion ?? "Not added",
       motherTongue: profile?.mother_tongue ?? "Not added",
       online: Boolean(
+        privacy?.showLastSeen !== false &&
         profile?.last_seen_at &&
         Date.now() - new Date(profile.last_seen_at).getTime() < 120000,
       ),

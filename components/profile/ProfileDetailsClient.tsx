@@ -73,6 +73,13 @@ export function ProfileDetailsClient({
   }, [notice]);
 
   useEffect(() => {
+    // The database function deduplicates repeat views for 30 minutes.
+    void createClient().rpc("log_profile_view_activity", {
+      viewed_user_id: profile.id,
+    });
+  }, [profile.id]);
+
+  useEffect(() => {
     const supabase = createClient();
     void supabase
       .from("profile_shortlists")
@@ -247,7 +254,7 @@ export function ProfileDetailsClient({
                     {profile.location}
                     <span>·</span>
                     <CalendarDays size={14} />
-                    {profile.age} years
+                    {profile.age ? `${profile.age} years` : "Age hidden"}
                   </p>
                 </div>
                 <ProfileActions
@@ -366,7 +373,7 @@ function MobileProfileExperience({
           ? onConfirm
           : onUnfollow;
   const basics = [
-    [UserRound, "Age", String(profile.age)],
+    [UserRound, "Age", profile.age ? String(profile.age) : "Private"],
     [CalendarDays, "Date of Birth", profile.birthDate || "Not added"],
     [UserRound, "Gender", profile.gender || "Not added"],
     [MapPin, "Current Location", profile.location],
@@ -435,7 +442,7 @@ function MobileProfileExperience({
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="flex items-center gap-2 text-[25px] font-bold leading-tight tracking-[-.04em]">
-              {profile.name}, {profile.age}
+              {profile.name}, {profile.age || "Age hidden"}
               <BadgeCheck size={20} className="fill-[#8c45ff] text-white" />
             </h1>
             <p className="mt-3 flex items-center gap-2 text-[14px] text-[var(--text-secondary)]">

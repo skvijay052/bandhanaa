@@ -260,7 +260,7 @@ function FeaturedProfile({
         <div className="absolute inset-x-5 bottom-5 text-white">
           <Link href={`/profile/${profile.id}`} className="inline-flex">
             <h2 className="flex items-center gap-2 text-[31px] font-bold tracking-[-.03em]">
-              {profile.name}, {profile.age}
+              {profile.name}, {profile.age || "Age hidden"}
               <BadgeCheck size={23} className="fill-[#ff4d9b] text-white" />
             </h2>
           </Link>

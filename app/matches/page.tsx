@@ -5,6 +5,7 @@ import { MatchesClient } from "@/components/matches/MatchesClient";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchProfile, MatchTab } from "@/data/matches";
 import { resolveProfilePhoto } from "@/lib/profile-photo";
+import { getProfilePrivacy } from "@/lib/profile-privacy";
 
 export const metadata: Metadata = { title: "Matches" };
 
@@ -79,6 +80,7 @@ export default async function MatchesPage({
   const recommendationRows = (recommendations.data ??
     []) as RecommendationRow[];
   const recommendationIds = recommendationRows.map((profile) => profile.id);
+  const privacyByProfile = await getProfilePrivacy(supabase, recommendationIds);
   const photoResult = recommendationIds.length
     ? await supabase
         .from("profiles")
@@ -99,10 +101,11 @@ export default async function MatchesPage({
   const profiles: MatchProfile[] = recommendationRows.map((profile) => {
     const location = splitLocation(profile.city);
     const details = photosByProfile.get(profile.id);
+    const privacy = privacyByProfile.get(profile.id);
     return {
       id: profile.id,
       name: profile.display_name ?? "Bandhanaa Member",
-      age: profile.age ?? 26,
+      age: privacy?.showAge === false ? 0 : (profile.age ?? 26),
       city: location.city,
       state: location.state,
       occupation: profile.profession ?? "Professional",
@@ -128,6 +131,7 @@ export default async function MatchesPage({
           ? "Family Values"
           : "Family Values",
       online: Boolean(
+        privacy?.showLastSeen !== false &&
         details?.last_seen_at &&
         Date.now() - new Date(details.last_seen_at).getTime() < 120_000,
       ),

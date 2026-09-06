@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CheckCircle2, X } from "lucide-react";
 
 const SUBJECT_MAX_LENGTH = 150;
 const MESSAGE_MIN_LENGTH = 10;
@@ -14,6 +15,12 @@ export function ContactSupportForm({ email }: { email: string }) {
     message: string;
   } | null>(null);
   const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    if (notice?.type !== "success") return;
+    const timer = window.setTimeout(() => setNotice(null), 5000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -112,13 +119,37 @@ export function ContactSupportForm({ email }: { email: string }) {
           className="form-textarea block"
         />
       </label>
-      {notice ? (
-        <p
-          role={notice.type === "error" ? "alert" : "status"}
-          className={`text-[13px] ${notice.type === "error" ? "text-[#f4212e]" : "text-emerald-600"}`}
-        >
+      {notice?.type === "error" ? (
+        <p role="alert" className="text-[13px] text-[#f4212e]">
           {notice.message}
         </p>
+      ) : null}
+      {notice?.type === "success" ? (
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed left-4 right-4 top-5 z-[100] mx-auto flex max-w-md items-start gap-3 rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.18)] sm:left-auto sm:right-6 sm:mx-0"
+        >
+          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-emerald-50 text-emerald-600">
+            <CheckCircle2 size={22} aria-hidden="true" />
+          </span>
+          <div className="min-w-0 flex-1 pt-0.5">
+            <strong className="block text-[14px] font-semibold text-[#0f1419]">
+              Message sent successfully
+            </strong>
+            <p className="mt-1 text-[13px] leading-5 text-[#536471]">
+              {notice.message}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            aria-label="Dismiss notification"
+            className="grid size-8 shrink-0 place-items-center rounded-full text-[#536471] transition-colors hover:bg-[#f2f2f2] hover:text-black"
+          >
+            <X size={17} aria-hidden="true" />
+          </button>
+        </div>
       ) : null}
       <button
         type="submit"

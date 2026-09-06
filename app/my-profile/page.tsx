@@ -132,6 +132,11 @@ export default async function MyProfilePage() {
     horoscope: generatedHoroscopeItems(
       row?.birth_date,
       detailItems(row?.horoscope, horoscopeLabels),
+      {
+        country: row?.country,
+        state: row?.state,
+        city: row?.city,
+      },
     ),
   };
   return <MyProfileClient profile={profile} acceptedInterestCount={acceptedInterestCount ?? 0} sentInterestCount={sentResult.count ?? 0} shortlistedCount={shortlistResult.count ?? 0} />;

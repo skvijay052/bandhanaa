@@ -156,7 +156,7 @@ function MobileMatchCard({
         <div className="absolute inset-x-5 bottom-5 text-white">
           <Link href={`/profile/${profile.id}`} className="inline-flex">
             <h2 className="flex items-center gap-1.5 text-[18px] font-semibold tracking-[-.02em]">
-              {profile.name}, {profile.age}
+              {profile.name}, {profile.age || "Age hidden"}
               {profile.verified ? (
                 <BadgeCheck
                   size={16}
@@ -295,7 +295,7 @@ function MobileMatchCardLegacy({
         <div className="flex items-start justify-between gap-1.5">
           <div className="min-w-0">
             <h2 className="flex items-center gap-1 truncate text-[clamp(16px,4.2vw,21px)] font-bold tracking-[-.03em] text-[var(--text-primary)]">
-              {profile.name}, {profile.age}
+              {profile.name}, {profile.age || "Age hidden"}
               <BadgeCheck
                 size={15}
                 className="shrink-0 fill-[#ff4d9b] text-white"

@@ -5,6 +5,7 @@ import { MessagesClient } from "@/components/messages/MessagesClient";
 import type { ChatMessage, Conversation } from "@/data/messages";
 import { createClient } from "@/lib/supabase/server";
 import { resolveProfilePhoto } from "@/lib/profile-photo";
+import { getProfilePrivacy } from "@/lib/profile-privacy";
 
 export const metadata: Metadata = { title: "Messages" };
 
@@ -51,7 +52,7 @@ export default async function MessagesPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/messages");
 
-  const [likesResult, messagesResult] = await Promise.all([
+  const [likesResult, messagesResult, privacyResult] = await Promise.all([
     supabase
       .from("profile_likes")
       .select("liker_id, liked_id, created_at")
@@ -64,6 +65,11 @@ export default async function MessagesPage() {
         "id, interest_liker_id, interest_liked_id, sender_id, body, read_at, created_at",
       )
       .order("created_at", { ascending: true }),
+    supabase
+      .from("user_privacy_settings")
+      .select("read_receipts")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
   if (likesResult.error)
     console.error(
@@ -79,10 +85,13 @@ export default async function MessagesPage() {
     like.liker_id === user.id ? like.liked_id : like.liker_id,
   );
   const profileIds = [...new Set([...partnerIds, user.id])];
+  const privacyByProfile = await getProfilePrivacy(supabase, profileIds);
   const profilesResult = profileIds.length
     ? await supabase
         .from("profiles")
-        .select("id, display_name, avatar_url, photos, gender, age, profession, city")
+        .select(
+          "id, display_name, avatar_url, photos, gender, age, profession, city",
+        )
         .in("id", profileIds)
     : { data: [] as ProfileRow[], error: null };
   if (profilesResult.error)
@@ -121,7 +130,10 @@ export default async function MessagesPage() {
         interestLikedId: like.liked_id,
         partnerId,
         name: profile?.display_name ?? "Bandhanaa Member",
-        age: profile?.age ?? 25,
+        age:
+          privacyByProfile.get(partnerId)?.showAge === false
+            ? 0
+            : (profile?.age ?? 25),
         profession: profile?.profession ?? "Professional",
         city: profile?.city ?? "India",
         avatar: resolveProfilePhoto(profile),
@@ -156,7 +168,10 @@ export default async function MessagesPage() {
       user.user_metadata?.name ??
       "Member",
   );
-  const avatarUrl = resolveProfilePhoto(profiles.get(user.id), String(user.user_metadata?.avatar_url ?? ""));
+  const avatarUrl = resolveProfilePhoto(
+    profiles.get(user.id),
+    String(user.user_metadata?.avatar_url ?? ""),
+  );
   return (
     <MessagesClient
       initialConversations={conversations}
@@ -164,6 +179,7 @@ export default async function MessagesPage() {
       currentUserId={user.id}
       viewerName={viewerName}
       avatarUrl={avatarUrl}
+      readReceipts={privacyResult.data?.read_receipts ?? true}
     />
   );
 }

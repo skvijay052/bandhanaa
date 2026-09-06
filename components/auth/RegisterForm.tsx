@@ -11,6 +11,7 @@ import { profileFieldOptions } from "@/data/profile-field-options";
 import { cityOptions, countries, stateOptions } from "@/data/location-options";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { zodiacSignForDate } from "@/lib/horoscope";
 import { GoogleButton } from "./GoogleButton";
 import { PasswordField } from "./PasswordField";
 
@@ -391,6 +392,13 @@ export function RegisterForm() {
           horoscope: [
             { label: "Date of Birth", value: values.birthDate },
             { label: "Time of Birth", value: values.birthTime },
+            { label: "Birth Country", value: values.country },
+            { label: "Birth State", value: values.state },
+            { label: "Birth City", value: values.city },
+            {
+              label: "Zodiac Sign",
+              value: zodiacSignForDate(values.birthDate),
+            },
           ],
         },
         preferences: partnerPreferences,

@@ -119,7 +119,7 @@ export function DiscoverClient({
           !quickFilters.includes("working") ||
           Boolean(profile.job && profile.job !== "Not added"),
       )
-      .filter((profile) => profile.age >= minAge && profile.age <= maxAge)
+      .filter((profile) => !profile.age || (profile.age >= minAge && profile.age <= maxAge))
       .sort((a, b) => b.match - a.match);
   }, [
     education,
@@ -929,7 +929,7 @@ function SearchResults({ profiles }: { profiles: DiscoverProfile[] }) {
           </span>
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-1.5 text-[15px] font-semibold text-[var(--text-primary)]">
-              {profile.name}, {profile.age}
+              {profile.name}, {profile.age || "Age hidden"}
               <BadgeCheck
                 size={15}
                 className="fill-[#1d9bf0] text-[#1d9bf0] [&>path:last-child]:text-white"

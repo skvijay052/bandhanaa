@@ -3,10 +3,12 @@ import {
   Bell,
   CircleHelp,
   Heart,
+  History,
   LockKeyhole,
   Pencil,
   Search,
   Settings,
+  ShieldAlert,
   Shield,
 } from "lucide-react";
 const groups = [
@@ -21,9 +23,21 @@ const groups = [
   {
     title: "Preferences",
     items: [
-      [Heart, "Partner Preferences", "/settings/edit-profile?section=Partner%20Preferences"],
-      [LockKeyhole, "Privacy", "/settings/edit-profile?section=Profile%20Visibility"],
+      [
+        Heart,
+        "Partner Preferences",
+        "/settings/edit-profile?section=Partner%20Preferences",
+      ],
+      [
+        LockKeyhole,
+        "Privacy",
+        "/settings/edit-profile?section=Profile%20Visibility",
+      ],
     ],
+  },
+  {
+    title: "Data & Activity",
+    items: [[History, "Activity Log", "/settings/activity"]],
   },
   {
     title: "Safety & Privacy",
@@ -33,17 +47,29 @@ const groups = [
     title: "Support",
     items: [
       [CircleHelp, "Help Center", "/settings/help"],
+      [ShieldAlert, "Report & Block", "/settings/report-block"],
       [Bell, "Contact Us", "/settings/contact"],
     ],
   },
 ] as const;
-export function SettingsNavigation({ active = "Settings & Privacy" }: { active?: string }) {
+export function SettingsNavigation({
+  active = "Settings & Privacy",
+}: {
+  active?: string;
+}) {
   return (
     <aside className="hidden h-full min-h-0 overflow-y-auto border-r border-[var(--border)] bg-white px-6 py-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:block">
-      <h2 className="px-2 text-[24px] font-bold tracking-[-0.02em]">Settings</h2>
+      <h2 className="px-2 text-[24px] font-bold tracking-[-0.02em]">
+        Settings
+      </h2>
       <label className="mt-7 flex h-12 items-center gap-3 rounded-full bg-[#f2f3f5] px-4 text-[var(--text-secondary)]">
         <Search size={19} aria-hidden="true" />
-        <input type="search" aria-label="Search settings" placeholder="Search" className="min-w-0 flex-1 bg-transparent text-[15px] font-normal text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]" />
+        <input
+          type="search"
+          aria-label="Search settings"
+          placeholder="Search"
+          className="min-w-0 flex-1 bg-transparent text-[15px] font-normal text-[var(--text-primary)] outline-none placeholder:text-[var(--text-secondary)]"
+        />
       </label>
       {groups.map((group) => (
         <section key={group.title} className="mt-8">

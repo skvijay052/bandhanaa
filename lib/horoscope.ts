@@ -1,5 +1,24 @@
 export type HoroscopeItem = { label: string; value: string };
 
+export type HoroscopeBirthDetails = {
+  birthTime?: string | null;
+  country?: string | null;
+  state?: string | null;
+  city?: string | null;
+};
+
+const horoscopeOrder = [
+  "Date of Birth",
+  "Time of Birth",
+  "Birth Country",
+  "Birth State",
+  "Birth City",
+  "Zodiac Sign",
+  "Nakshatra",
+  "Rashi / Moon Sign",
+  "Lagna / Ascendant",
+] as const;
+
 export function zodiacSignForDate(dateValue: string) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue.trim());
   if (!match) return "";
@@ -29,15 +48,34 @@ export function zodiacSignForDate(dateValue: string) {
 export function generatedHoroscopeItems(
   birthDate: string | null | undefined,
   savedItems: HoroscopeItem[],
+  birthDetails: HoroscopeBirthDetails = {},
 ) {
-  const items = savedItems.filter((item) => item.value.trim());
-  if (!birthDate) return items;
+  const values = new Map(
+    savedItems
+      .map((item) => [item.label, item.value.trim()] as const)
+      .filter(([, value]) => value && value.toLowerCase() !== "not added"),
+  );
+  const addFallback = (label: string, value?: string | null) => {
+    const normalized = value?.trim();
+    if (normalized && !values.has(label)) values.set(label, normalized);
+  };
 
-  const values = new Map(items.map((item) => [item.label, item.value]));
-  if (!values.has("Date of Birth")) values.set("Date of Birth", birthDate);
+  addFallback("Date of Birth", birthDate);
+  addFallback("Time of Birth", birthDetails.birthTime);
+  addFallback("Birth Country", birthDetails.country);
+  addFallback("Birth State", birthDetails.state);
+  addFallback("Birth City", birthDetails.city);
 
-  const zodiac = zodiacSignForDate(birthDate);
-  if (zodiac && !values.has("Zodiac Sign")) values.set("Zodiac Sign", zodiac);
+  const zodiac = birthDate ? zodiacSignForDate(birthDate) : "";
+  if (zodiac) values.set("Zodiac Sign", zodiac);
 
-  return Array.from(values, ([label, value]) => ({ label, value }));
+  const ordered = horoscopeOrder.flatMap((label) => {
+    const value = values.get(label);
+    return value ? [{ label, value }] : [];
+  });
+  const knownLabels = new Set<string>(horoscopeOrder);
+  const custom = Array.from(values, ([label, value]) => ({ label, value })).filter(
+    (item) => !knownLabels.has(item.label),
+  );
+  return [...ordered, ...custom];
 }

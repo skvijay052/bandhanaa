@@ -82,7 +82,7 @@ export function ProfileCard({
         </div>
 
         <p className="mt-1 truncate text-[13px] text-white/90">
-          {profile.age}
+          {profile.age || "Age hidden"}
           <span className="mx-2 text-white/60">•</span>
           {profile.job}
         </p>

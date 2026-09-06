@@ -452,7 +452,7 @@ function MobileRequestCard({
               href={`/profile/${profile.profileId}`}
               className="flex items-center gap-1.5 truncate text-[19px] font-bold tracking-[-.03em] text-[var(--text-primary)]"
             >
-              {profile.name}, {profile.age}
+              {profile.name}, {profile.age || "Age hidden"}
               {profile.verified ? (
                 <BadgeCheck
                   size={16}
@@ -577,7 +577,7 @@ function MobileRequestCardLegacy({
           href={`/profile/${profile.profileId}`}
           className="flex items-center gap-1 truncate text-[15px] font-bold tracking-[-.02em] text-[#0f1419]"
         >
-          {profile.name}, {profile.age}
+          {profile.name}, {profile.age || "Age hidden"}
           {profile.verified ? (
             <BadgeCheck
               size={15}
@@ -787,7 +787,7 @@ function RequestRow({
           href={`/profile/${profile.profileId}`}
           className="inline-flex items-center gap-1 text-[16px] font-bold text-[#0f1419]"
         >
-          {profile.name}, {profile.age}
+          {profile.name}, {profile.age || "Age hidden"}
           {profile.verified ? (
             <BadgeCheck
               size={17}

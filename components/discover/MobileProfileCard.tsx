@@ -47,7 +47,7 @@ export function MobileProfileCard({
             href={`/profile/${profile.id}`}
             className="min-w-0 flex-1 truncate text-[18px] font-bold tracking-[-.025em] text-[#0f1419]"
           >
-            {profile.name}, {profile.age}
+            {profile.name}, {profile.age || "Age hidden"}
           </Link>
           <BadgeCheck
             size={17}
