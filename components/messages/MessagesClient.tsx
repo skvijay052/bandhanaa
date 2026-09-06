@@ -69,7 +69,7 @@ export function MessagesClient({
             (filter === "unread" ? item.unread > 0 : item.archived))
         );
       }),
-    [filter, query],
+    [conversations, filter, query],
   );
   const selected =
     conversations.find((item) => item.id === selectedId) ?? conversations[0];
@@ -129,7 +129,7 @@ export function MessagesClient({
                     preview: row.body,
                     time: formatTime(row.created_at),
                     unread:
-                      row.sender_id !== currentUserId && selectedId !== id
+                      row.sender_id !== currentUserId
                         ? conversation.unread + 1
                         : conversation.unread,
                   }

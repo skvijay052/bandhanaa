@@ -80,7 +80,7 @@ export function NotificationsClient({
           <NotificationOverviewCard />
           <PremiumCard />
         </AppSidebar>
-        <div className="min-w-0 flex-1 pb-[72px] md:pb-0">
+        <div className="min-h-0 min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-0">
           <MobilePageHeader />
           <div className="hidden md:block">
             <NotificationFilters

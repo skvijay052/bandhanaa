@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { RequestsClient } from "@/components/requests/RequestsClient";
 import type { InterestProfile } from "@/data/interests";
 import type { RequestTab } from "@/components/requests/RequestsClient";
-import { resolveProfilePhoto } from "@/lib/profile-photo";
+import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import { createClient } from "@/lib/supabase/server";
 import { getProfilePrivacy } from "@/lib/profile-privacy";
 
@@ -97,7 +97,7 @@ export default async function RequestsPage({
           .join(", ") || "India",
       status: row.status,
       verified: true,
-      image: resolveProfilePhoto(profile),
+      image: resolveProfilePhoto(profile, genderDiscoverPhoto(profile?.gender)),
       compatibility: profile?.compatibility ?? 0,
       height: profile?.height ?? "Not added",
       religion: profile?.religion ?? "Not added",

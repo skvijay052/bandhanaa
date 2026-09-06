@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { MatchesClient } from "@/components/matches/MatchesClient";
 import { createClient } from "@/lib/supabase/server";
 import type { MatchProfile, MatchTab } from "@/data/matches";
-import { resolveProfilePhoto } from "@/lib/profile-photo";
+import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import { getProfilePrivacy } from "@/lib/profile-privacy";
 
 export const metadata: Metadata = { title: "Matches" };
@@ -116,7 +116,7 @@ export default async function MatchesPage({
       language: details?.mother_tongue ?? "Not added",
       compatibility: profile.match_score ?? 85,
       verified: true,
-      image: resolveProfilePhoto(details ?? profile),
+      image: resolveProfilePhoto(details ?? profile, genderDiscoverPhoto(details?.gender)),
       photoCount: Math.max(
         details?.photos?.length ?? 0,
         details?.avatar_url ? 1 : 0,
