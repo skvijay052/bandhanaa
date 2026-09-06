@@ -69,7 +69,7 @@ export function DesktopNotificationRow({
   onComplete: () => void;
 }) {
   return (
-    <article className={`flex min-h-[82px] items-center px-2 transition-colors hover:bg-[#f7f9f9] ${item.unread ? "bg-[#f7fbfe]" : "bg-white"}`}>
+    <article className={`flex min-h-[82px] items-center px-2 transition-colors hover:bg-[#f7f9f9] ${item.unread ? "bg-white" : "bg-white"}`}>
       <span className="relative size-[46px] shrink-0 overflow-hidden rounded-full bg-slate-100">
         <ProfileImage
           src={item.avatar ?? "/profiles/ananya.png"}

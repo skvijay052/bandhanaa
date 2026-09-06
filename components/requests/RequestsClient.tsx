@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -13,6 +14,7 @@ import {
   MapPin,
   MessageSquare,
   Send,
+  Search,
   ShieldCheck,
   Sparkles,
   X,
@@ -40,6 +42,7 @@ export function RequestsClient({
   initialTab,
   viewerName,
   avatarUrl,
+  viewerGender,
 }: {
   currentUserId: string;
   initialReceived: InterestProfile[];
@@ -48,7 +51,12 @@ export function RequestsClient({
   initialTab: RequestTab;
   viewerName: string;
   avatarUrl: string;
+  viewerGender: string | null;
 }) {
+  const normalizedGender = viewerGender?.trim().toLowerCase();
+  const emptyImage = ["male", "man", "boy"].includes(normalizedGender ?? "")
+    ? "/requests-empty-female.png"
+    : "/requests-empty-male.png";
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(initialTab);
   const [received, setReceived] = useState(initialReceived);
@@ -146,6 +154,7 @@ export function RequestsClient({
         <div className="app-workspace h-dvh min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-y-contain pb-[72px] md:pb-0">
           <DesktopTopBar avatarUrl={avatarUrl} name={viewerName} />
           <MobileRequestsPage
+            emptyImage={emptyImage}
             activeTab={activeTab}
             onTab={(tab) => {
               setActiveTab(tab);
@@ -228,14 +237,7 @@ export function RequestsClient({
                   />
                 ))
               ) : (
-                <div className="py-20 text-center">
-                  <p className="text-[16px] font-semibold text-[#0f1419]">
-                    No {activeTab} profiles
-                  </p>
-                  <p className="mt-1 text-[14px] text-[#536471]">
-                    New activity will appear here.
-                  </p>
-                </div>
+                <RequestEmpty kind={activeTab} image={emptyImage} />
               )}
             </section>
           </main>
@@ -246,6 +248,7 @@ export function RequestsClient({
 }
 
 function MobileRequestsPage({
+  emptyImage,
   activeTab,
   onTab,
   received,
@@ -257,6 +260,7 @@ function MobileRequestsPage({
   onAccept,
   onRemove,
 }: {
+  emptyImage: string;
   activeTab: RequestTab;
   onTab: (tab: RequestTab) => void;
   received: InterestProfile[];
@@ -376,9 +380,10 @@ function MobileRequestsPage({
             onRemove={() => onRemove(profile)}
           />
         ))}
-        <MobileRequestEmpty
+        <RequestEmpty
           kind={activeTab}
           hasProfiles={profiles.length > 0}
+          image={emptyImage}
         />
         {profiles.length > 2 ? (
           <div className="pt-4">
@@ -664,37 +669,46 @@ function MobileRequestCardLegacy({
   );
 }
 
-function MobileRequestEmpty({
+function RequestEmpty({
+  image,
   kind,
-  hasProfiles,
+  hasProfiles = false,
 }: {
   kind: RequestTab;
-  hasProfiles: boolean;
+  hasProfiles?: boolean;
+  image: string;
 }) {
   if (hasProfiles) return null;
   return (
-    <div className="mt-8 rounded-[24px] bg-white/80 px-6 py-14 text-center shadow-[0_10px_30px_rgba(63,38,110,.06)]">
-      <div className="mx-auto grid size-20 place-items-center rounded-full bg-[#f3eaff] text-[#8b3de8]">
-        {kind === "received" ? <Heart size={36} /> : <Send size={36} />}
+    <div className="mx-auto flex max-w-[470px] flex-col items-center px-4 py-10 text-center md:py-14">
+      <div aria-hidden="true" className="relative mb-5 aspect-[1370/1150] w-full max-w-[300px]">
+        <Image
+          src={image}
+          alt=""
+          fill
+          sizes="(max-width: 400px) 75vw, 300px"
+          className="object-contain"
+        />
       </div>
-      <h2 className="mt-4 text-[18px] font-bold text-[#0f1419]">
-        {kind === "received"
-          ? "All caught up!"
-          : kind === "sent"
-            ? "Requests on the way!"
-            : "Your connections"}
+      <h2 className="text-[20px] font-bold text-[#0f1419]">
+        No {kind} profiles
       </h2>
-      <p className="mx-auto mt-2 max-w-[280px] text-[13px] leading-5 text-[#687684]">
-        {kind === "received"
-          ? "You have no more new requests. Check back later for new connections."
-          : kind === "sent"
-            ? "We’ll notify you when someone responds."
-            : "Accepted connections will appear here."}
+      <p className="mt-1 text-[13px] leading-5 text-[#687684]">
+        New activity will appear here.
+      </p>
+      <Link
+        href="/discover"
+        className="mt-4 inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-black px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:bg-black/85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
+      >
+        <Search size={17} aria-hidden="true" />
+        Discover Profiles
+      </Link>
+      <p className="mt-3 max-w-[360px] text-[12px] leading-[18px] text-[#687684]">
+        Find people who match your preferences and start meaningful connections.
       </p>
     </div>
   );
 }
-
 function ConfirmRemovalModal({
   profile,
   kind,

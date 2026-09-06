@@ -4,11 +4,11 @@ export type ProfilePhotoSource = {
   gender?: string | null;
 };
 
-export const MALE_PROFILE_PHOTO_FALLBACK = "/avatar-male-default.png";
-export const FEMALE_PROFILE_PHOTO_FALLBACK = "/avatar-female-default.png";
+export const MALE_PROFILE_PHOTO_FALLBACK = "/profile-male-circle-default.png";
+export const FEMALE_PROFILE_PHOTO_FALLBACK = "/profile-female-circle-default.png";
 export const PROFILE_PHOTO_FALLBACK = MALE_PROFILE_PHOTO_FALLBACK;
-export const MALE_DISCOVER_PHOTO_FALLBACK = "/discover-male-default.png";
-export const FEMALE_DISCOVER_PHOTO_FALLBACK = "/discover-female-default.png";
+export const MALE_DISCOVER_PHOTO_FALLBACK = "/discover-male-portrait-default.png";
+export const FEMALE_DISCOVER_PHOTO_FALLBACK = "/discover-female-portrait-default.png";
 
 export function genderProfilePhoto(gender?: string | null) {
   const value = gender?.trim().toLowerCase();

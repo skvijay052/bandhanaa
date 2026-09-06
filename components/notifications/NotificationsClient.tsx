@@ -5,7 +5,6 @@ import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import type { NotificationItem } from "@/data/notifications";
 import { createClient } from "@/lib/supabase/client";
-import { LoadMoreButton } from "./LoadMoreButton";
 import {
   MobileNotificationFilters,
   NotificationFilters,
@@ -24,7 +23,6 @@ export function NotificationsClient({
   const router = useRouter();
   const [active, setActive] = useState("All");
   const [items, setItems] = useState<NotificationItem[]>(initialItems);
-  const [expanded, setExpanded] = useState(false);
   useEffect(() => setItems(initialItems), [initialItems]);
   useEffect(() => {
     const supabase = createClient();
@@ -126,16 +124,6 @@ export function NotificationsClient({
                 <p className="py-16 text-center text-[14px] text-[var(--text-secondary)]">
                   No notifications yet.
                 </p>
-              ) : null}
-              {visible.length ? (
-                <div className="mt-5">
-                  <LoadMoreButton onClick={() => setExpanded(true)} />
-                  {expanded ? (
-                    <p className="mt-2 text-center text-[11px] text-[#777c91]">
-                      You’re all caught up.
-                    </p>
-                  ) : null}
-                </div>
               ) : null}
             </div>
           </div>

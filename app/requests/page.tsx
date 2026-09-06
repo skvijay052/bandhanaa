@@ -130,6 +130,7 @@ export default async function RequestsPage({
       initialFollowing={following}
       initialTab={initialTab}
       viewerName={viewer?.display_name ?? "Member"}
+      viewerGender={viewer?.gender ?? null}
       avatarUrl={resolveProfilePhoto(
         viewer,
         String(user.user_metadata?.avatar_url ?? ""),
