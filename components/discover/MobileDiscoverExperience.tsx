@@ -203,6 +203,32 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
         <span className="grid h-9 shrink-0 place-items-center rounded-full bg-gradient-to-r from-[#8c45ff] to-[#f34ca4] px-3 text-[11px] font-bold text-white">Complete ›</span>
       </Link>
 
+      {newMatchProfiles.length ? (
+        <section className="mt-6" aria-label="New matches">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-[20px] font-bold tracking-[-.02em] text-[#20242d]">New Matches</h2>
+              <p className="mt-0.5 text-[11px] text-[#7a8190]">Swipe to explore your latest matches</p>
+            </div>
+            <Link href="/matches" className="shrink-0 text-[13px] font-semibold text-[#8c45ff]">View All</Link>
+          </div>
+          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {newMatchProfiles.map((profile, index) => (
+              <div key={profile.id} className="w-[calc(100vw-32px)] shrink-0 snap-center">
+                <NewMatchCard
+                  profile={profile}
+                  liked={shortlisted.includes(profile.id)}
+                  onShortlist={() => onShortlist(profile.id)}
+                  priority={index === 0}
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">No profiles available yet.</div>
+      )}
+
       {recentVisitors.length ? (
         <section className="mt-6" aria-label="Recent visitors">
           <div className="flex items-end justify-between gap-3">
@@ -233,32 +259,6 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
           </div>
         </section>
       ) : null}
-
-      {newMatchProfiles.length ? (
-        <section className="mt-6" aria-label="New matches">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-[20px] font-bold tracking-[-.02em] text-[#20242d]">New Matches</h2>
-              <p className="mt-0.5 text-[11px] text-[#7a8190]">Swipe to explore your latest matches</p>
-            </div>
-            <Link href="/matches" className="shrink-0 text-[13px] font-semibold text-[#8c45ff]">View All</Link>
-          </div>
-          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {newMatchProfiles.map((profile, index) => (
-              <div key={profile.id} className="w-[calc(100vw-32px)] shrink-0 snap-center">
-                <NewMatchCard
-                  profile={profile}
-                  liked={shortlisted.includes(profile.id)}
-                  onShortlist={() => onShortlist(profile.id)}
-                  priority={index === 0}
-                />
-              </div>
-            ))}
-          </div>
-        </section>
-      ) : (
-        <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">No profiles available yet.</div>
-      )}
     </div>
   );
 }
