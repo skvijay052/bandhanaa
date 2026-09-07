@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { RouteProgressBar } from "@/components/layout/RouteProgressBar";
+import { MobileRelationshipActionEnhancer } from "@/components/profile/MobileRelationshipActionEnhancer";
 import "./globals.css";
 import "./mobile-overrides.css";
 
@@ -27,6 +28,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <RouteProgressBar />
         </Suspense>
+        <MobileRelationshipActionEnhancer />
         {children}
       </body>
     </html>
