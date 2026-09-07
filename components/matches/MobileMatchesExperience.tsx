@@ -173,7 +173,7 @@ function MobileMatchCard({
 }) {
   return (
     <article className="w-full overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)]">
-      <div className="relative h-[clamp(220px,40dvh,350px)] overflow-hidden bg-[#e8e9ec]">
+      <div className="relative h-[clamp(245px,43dvh,380px)] overflow-hidden bg-[#e8e9ec]">
         <Link href={`/profile/${profile.id}`} className="absolute inset-0">
           <ProfileImage
             src={profile.image}
