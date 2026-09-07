@@ -2,6 +2,8 @@
 
 import { useEffect } from "react";
 
+const ABOUT_READ_MORE_MIN_LENGTH = 200;
+
 export function MobileProfileStickyEnhancer() {
   useEffect(() => {
     let cleanup: (() => void) | undefined;
@@ -12,6 +14,7 @@ export function MobileProfileStickyEnhancer() {
       const scrollContainer = root?.querySelector(".app-workspace");
       const tabNav = root?.querySelector("nav.sticky");
       const bottomActions = root?.querySelector("div.fixed.z-\\[110\\]");
+      const aboutSection = root?.querySelector("#mobile-about");
 
       if (
         !(scrollContainer instanceof HTMLElement) ||
@@ -21,6 +24,20 @@ export function MobileProfileStickyEnhancer() {
         attempts += 1;
         if (attempts < 30) window.setTimeout(attach, 100);
         return;
+      }
+
+      if (aboutSection instanceof HTMLElement) {
+        const aboutText = aboutSection.querySelector("p");
+        const readMoreButton = Array.from(
+          aboutSection.querySelectorAll("button"),
+        ).find((button) =>
+          /read more|read less/i.test(button.textContent ?? ""),
+        );
+        const characterCount = (aboutText?.textContent ?? "").trim().length;
+
+        if (readMoreButton instanceof HTMLButtonElement) {
+          readMoreButton.hidden = characterCount <= ABOUT_READ_MORE_MIN_LENGTH;
+        }
       }
 
       const update = () => {
