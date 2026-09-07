@@ -13,12 +13,12 @@ const iconStyles: Record<
   NotificationType,
   { className: string; Icon: typeof Heart }
 > = {
-  like: { className: "bg-[#e8f5fe] text-[#1d9bf0]", Icon: Heart },
-  message: { className: "bg-[#e8f5fe] text-[#1d9bf0]", Icon: MessageCircle },
-  accepted: { className: "bg-[#e8f5fe] text-[#1d9bf0]", Icon: Check },
-  view: { className: "bg-[#e8f5fe] text-[#1d9bf0]", Icon: Eye },
-  connection: { className: "bg-[#e8f5fe] text-[#1d9bf0]", Icon: UsersRound },
-  profile_complete: { className: "bg-[#e8f5fe] text-[#1d9bf0]", Icon: Shield },
+  like: { className: "text-[#f34ca4]", Icon: Heart },
+  message: { className: "text-[#f34ca4]", Icon: MessageCircle },
+  accepted: { className: "text-[#f34ca4]", Icon: Check },
+  view: { className: "text-[#f34ca4]", Icon: Eye },
+  connection: { className: "text-[#f34ca4]", Icon: UsersRound },
+  profile_complete: { className: "text-[#f34ca4]", Icon: Shield },
 };
 
 function TypeIcon({
@@ -69,8 +69,8 @@ export function DesktopNotificationRow({
   onComplete: () => void;
 }) {
   return (
-    <article className={`flex min-h-[82px] items-center px-2 transition-colors hover:bg-[#f7f9f9] ${item.unread ? "bg-white" : "bg-white"}`}>
-      <span className="relative size-[46px] shrink-0 overflow-hidden rounded-full bg-slate-100">
+    <article className="flex min-h-[82px] items-center px-2 transition-colors">
+      <span className="relative size-[46px] shrink-0 overflow-hidden rounded-full">
         <ProfileImage
           src={item.avatar ?? "/profiles/ananya.png"}
           alt={item.name ? `${item.name}'s avatar` : "Your profile"}
@@ -97,13 +97,13 @@ export function DesktopNotificationRow({
         {item.actionLabel ? (
           <button
             onClick={onComplete}
-            className="h-8 rounded-lg border border-[#1d9bf0] px-3 text-[12px] font-semibold text-[#1d9bf0] hover:bg-[#e8f5fe]"
+            className="h-8 rounded-lg border border-[#f34ca4] px-3 text-[12px] font-semibold text-[#f34ca4] hover:bg-[#fff0f7]"
           >
             {item.actionLabel}
           </button>
         ) : (
           <span
-            className={`size-2 rounded-full ${item.unread ? "bg-[#1d9bf0]" : "bg-[#cfd9de]"}`}
+            className={`size-2 rounded-full ${item.unread ? "bg-[#f34ca4]" : "bg-[#cfd9de]"}`}
           />
         )}
       </div>
@@ -120,9 +120,9 @@ export function MobileNotificationRow({
 }) {
   return (
     <article
-      className={`relative flex items-center border-b border-[var(--border)] py-4 ${item.unread ? "bg-[#f7fbfe]" : "bg-white"} ${item.actionLabel ? "min-h-[96px] pb-11" : "min-h-[80px]"}`}
+      className={`relative flex items-center border-b border-[var(--border)] py-4 ${item.actionLabel ? "min-h-[96px] pb-11" : "min-h-[80px]"}`}
     >
-      <span className="relative size-11 shrink-0 overflow-hidden rounded-full bg-slate-100">
+      <span className="relative size-11 shrink-0 overflow-hidden rounded-full">
         <ProfileImage
           src={item.avatar ?? "/profiles/ananya.png"}
           alt={item.name ? `${item.name}'s avatar` : "Your profile"}
@@ -142,13 +142,13 @@ export function MobileNotificationRow({
           {item.time}
         </time>
         <span
-          className={`mt-auto mb-1 size-2 rounded-full ${item.unread ? "bg-[#1d9bf0]" : "bg-[#cfd9de]"}`}
+          className={`mt-auto mb-1 size-2 rounded-full ${item.unread ? "bg-[#f34ca4]" : "bg-[#cfd9de]"}`}
         />
       </div>
       {item.actionLabel ? (
         <button
           onClick={onComplete}
-          className="absolute bottom-3 right-0 h-8 rounded-lg border border-[#1d9bf0] px-3 text-[12px] font-semibold text-[#1d9bf0]"
+          className="absolute bottom-3 right-0 h-8 rounded-lg border border-[#f34ca4] px-3 text-[12px] font-semibold text-[#f34ca4]"
         >
           {item.actionLabel}
         </button>
