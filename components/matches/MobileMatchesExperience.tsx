@@ -10,16 +10,34 @@ import {
   Heart,
   MapPin,
   Ruler,
+  Send,
+  UsersRound,
 } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
 import { ProfileImage } from "@/components/ui/ProfileImage";
-import type { MatchProfile } from "@/data/matches";
+import type { MatchProfile, MatchTab } from "@/data/matches";
+
+type MobileTabCounts = Record<MatchTab, number>;
+
+const mobileTabs: Array<{
+  id: MatchTab;
+  label: string;
+  icon: typeof UsersRound;
+}> = [
+  { id: "all", label: "All Matches", icon: UsersRound },
+  { id: "shortlisted", label: "Shortlisted", icon: Bookmark },
+  { id: "sent", label: "Sent", icon: Send },
+  { id: "received", label: "Received", icon: Heart },
+];
 
 export function MobileMatchesExperience({
   profiles,
   shortlisted,
   sentIds,
   followingIds,
+  activeTab,
+  tabCounts,
+  onTabChange,
   onShortlist,
   onInterest,
 }: {
@@ -27,6 +45,9 @@ export function MobileMatchesExperience({
   shortlisted: string[];
   sentIds: string[];
   followingIds: string[];
+  activeTab: MatchTab;
+  tabCounts: MobileTabCounts;
+  onTabChange: (tab: MatchTab) => void;
   onShortlist: (profile: MatchProfile) => void;
   onInterest: (profile: MatchProfile) => void;
 }) {
@@ -52,8 +73,43 @@ export function MobileMatchesExperience({
         </div>
       </header>
 
+      <nav
+        aria-label="Match categories"
+        className="-mx-4 flex gap-2 overflow-x-auto bg-[#f8fafc] px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {mobileTabs.map(({ id, label, icon: Icon }) => {
+          const active = activeTab === id;
+          const count = tabCounts[id];
+          return (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onTabChange(id)}
+              aria-pressed={active}
+              className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-3.5 text-[12px] font-semibold shadow-[0_6px_20px_rgba(44,33,80,.08)] transition ${
+                active
+                  ? "bg-gradient-to-r from-[#7b35ff] via-[#ba43e8] to-[#f54fa8] text-white"
+                  : "border border-[#ece8f0] bg-white text-[#181b24]"
+              }`}
+            >
+              <Icon size={16} strokeWidth={1.9} />
+              <span>{label}</span>
+              <span
+                className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[10px] font-bold ${
+                  active
+                    ? "bg-white/90 text-[#8a3ee8]"
+                    : "bg-[#f1f2f6] text-[#596172]"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+
       {orderedProfiles.length ? (
-        <div className="-mx-4 h-[calc(100dvh-136px-env(safe-area-inset-bottom))] snap-y snap-mandatory overflow-y-auto overscroll-contain px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-4 h-[calc(100dvh-188px)] snap-y snap-mandatory overflow-y-auto overscroll-contain px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {orderedProfiles.map((profile, index) => (
             <div
               key={profile.id}
@@ -72,13 +128,24 @@ export function MobileMatchesExperience({
           ))}
         </div>
       ) : (
-        <div className="grid min-h-[52dvh] place-items-center text-center">
+        <div className="grid min-h-[52dvh] place-items-center px-6 text-center">
           <div>
-            <h2 className="text-[18px] font-semibold text-[#0f1419]">
-              No matches found
+            <span className="mx-auto grid size-12 place-items-center rounded-full bg-[#f4efff] text-[#8c45ff]">
+              {activeTab === "shortlisted" ? (
+                <Bookmark size={21} />
+              ) : activeTab === "sent" ? (
+                <Send size={21} />
+              ) : activeTab === "received" ? (
+                <Heart size={21} />
+              ) : (
+                <UsersRound size={21} />
+              )}
+            </span>
+            <h2 className="mt-3 text-[18px] font-semibold text-[#0f1419]">
+              {emptyTitle(activeTab)}
             </h2>
-            <p className="mt-2 text-[13px] text-[#687184]">
-              New matching profiles will appear here.
+            <p className="mt-2 text-[13px] leading-5 text-[#687184]">
+              {emptyMessage(activeTab)}
             </p>
           </div>
         </div>
@@ -106,7 +173,7 @@ function MobileMatchCard({
 }) {
   return (
     <article className="w-full overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)]">
-      <div className="relative h-[clamp(235px,44dvh,390px)] overflow-hidden bg-[#e8e9ec]">
+      <div className="relative h-[clamp(220px,40dvh,350px)] overflow-hidden bg-[#e8e9ec]">
         <Link href={`/profile/${profile.id}`} className="absolute inset-0">
           <ProfileImage
             src={profile.image}
@@ -221,4 +288,21 @@ function MatchDetail({
       </span>
     </div>
   );
+}
+
+function emptyTitle(tab: MatchTab) {
+  if (tab === "shortlisted") return "No shortlisted profiles yet";
+  if (tab === "sent") return "No requests sent yet";
+  if (tab === "received") return "No requests received yet";
+  return "No matches found";
+}
+
+function emptyMessage(tab: MatchTab) {
+  if (tab === "shortlisted")
+    return "Profiles you save will appear here for quick access.";
+  if (tab === "sent")
+    return "Profiles you send a request to will appear here.";
+  if (tab === "received")
+    return "New requests from matching profiles will appear here.";
+  return "New matching profiles will appear here.";
 }
