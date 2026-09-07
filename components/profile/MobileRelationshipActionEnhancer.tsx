@@ -44,6 +44,10 @@ export function MobileRelationshipActionEnhancer() {
       if (window.innerWidth >= 768) return;
       document.querySelectorAll("button").forEach((node) => {
         if (!(node instanceof HTMLButtonElement)) return;
+        if (node.closest(".mobile-matches-type")) {
+          delete node.dataset.relationshipAction;
+          return;
+        }
         const label = node.textContent?.trim().toLowerCase();
         if (label === "requested" || label === "following") {
           node.disabled = false;
@@ -60,7 +64,7 @@ export function MobileRelationshipActionEnhancer() {
       if (window.innerWidth >= 768) return;
       const target = event.target as HTMLElement | null;
       const button = target?.closest("button[data-relationship-action]") as HTMLButtonElement | null;
-      if (!button) return;
+      if (!button || button.closest(".mobile-matches-type")) return;
 
       const kind = button.dataset.relationshipAction === "following" ? "following" : "requested";
       const { profileId, profileName } = getProfileContext(button);
