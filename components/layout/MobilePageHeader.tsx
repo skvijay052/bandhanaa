@@ -10,7 +10,7 @@ export function MobilePageHeader({
   description?: string;
 }) {
   return (
-    <header className="mobile-page-header relative overflow-hidden px-4 pb-5 pt-5 md:hidden">
+    <header className="mobile-page-header sticky top-0 z-[90] overflow-hidden border-b border-black/5 bg-[#f8fafc]/95 px-4 pb-5 pt-5 backdrop-blur-xl md:hidden">
       <div className="relative grid grid-cols-[44px_1fr_44px] items-center">
        
         <Link
