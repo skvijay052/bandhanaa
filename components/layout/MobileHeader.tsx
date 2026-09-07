@@ -5,7 +5,7 @@ import { Brand } from "@/components/auth/Brand";
 
 export function MobileHeader({ avatarUrl, name = "Your" }: { avatarUrl?: string; name?: string }) {
   return (
-    <header className="flex h-[64px] items-center px-4 md:hidden">
+    <header className="sticky top-0 z-[90] flex h-[64px] items-center border-b border-black/5 bg-[#f8fafc]/95 px-4 backdrop-blur-xl md:hidden">
       <Link href="/discover" aria-label="Bandhanaa home">
         <Brand compact />
       </Link>
