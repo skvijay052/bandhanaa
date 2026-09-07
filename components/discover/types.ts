@@ -14,5 +14,6 @@ export type DiscoverProfile = {
   photoCount: number;
   match: number;
   online: boolean;
+  createdAt: string | null;
   relationship: "none" | "outgoing_pending" | "incoming_pending" | "following";
 };
