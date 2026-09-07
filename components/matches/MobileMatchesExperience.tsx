@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
   BadgeCheck,
   Bookmark,
@@ -10,17 +11,22 @@ import {
   Heart,
   MapPin,
   Ruler,
-  Sparkles,
 } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import type { MatchProfile } from "@/data/matches";
+
+type MobileMatchFilter = "best" | "new" | "compatible" | "nearby";
+
+const NEW_MATCH_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const HIGH_COMPATIBILITY_SCORE = 90;
 
 export function MobileMatchesExperience({
   profiles,
   shortlisted,
   sentIds,
   followingIds,
+  viewerCity,
   onShortlist,
   onInterest,
 }: {
@@ -28,18 +34,54 @@ export function MobileMatchesExperience({
   shortlisted: string[];
   sentIds: string[];
   followingIds: string[];
+  viewerCity: string;
   onShortlist: (profile: MatchProfile) => void;
   onInterest: (profile: MatchProfile) => void;
 }) {
+  const [activeFilter, setActiveFilter] = useState<MobileMatchFilter>("best");
+
+  const filteredProfiles = useMemo(() => {
+    const byCompatibility = (items: MatchProfile[]) =>
+      [...items].sort((a, b) => b.compatibility - a.compatibility);
+
+    if (activeFilter === "new") {
+      const cutoff = Date.now() - NEW_MATCH_WINDOW_MS;
+      return profiles
+        .filter((profile) => {
+          if (!profile.createdAt) return false;
+          const createdAt = new Date(profile.createdAt).getTime();
+          return Number.isFinite(createdAt) && createdAt >= cutoff;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt ?? 0).getTime() -
+            new Date(a.createdAt ?? 0).getTime(),
+        );
+    }
+
+    if (activeFilter === "compatible") {
+      return byCompatibility(
+        profiles.filter(
+          (profile) => profile.compatibility >= HIGH_COMPATIBILITY_SCORE,
+        ),
+      );
+    }
+
+    if (activeFilter === "nearby") {
+      const city = normalizeCity(viewerCity);
+      if (!city) return [];
+      return byCompatibility(
+        profiles.filter((profile) => normalizeCity(profile.city) === city),
+      );
+    }
+
+    return byCompatibility(profiles);
+  }, [activeFilter, profiles, viewerCity]);
+
   return (
-    <div className="mobile-half-type mobile-matches-type relative z-10 px-4 pb-32 pt-5 md:hidden">
-      <header className="grid grid-cols-[40px_1fr_40px] items-center">
-        
-        <Link
-          href="/discover"
-          className=""
-          aria-label="Bandhanaa"
-        >
+    <div className="mobile-half-type mobile-matches-type relative z-10 px-4 pb-28 md:hidden">
+      <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center border-b border-black/5 bg-[#f8fafc]/95 px-4 py-3 backdrop-blur-xl">
+        <Link href="/discover" aria-label="Bandhanaa">
           <Brand compact />
         </Link>
         <span aria-hidden="true" />
@@ -52,31 +94,64 @@ export function MobileMatchesExperience({
             <Heart size={17} />
           </Link>
         </div>
-      </header> 
-       
-      <div className="-mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <Pill active label="Best Matches" />
-        <Pill label="New Matches" badge />
-        <Pill label="Highly Compatible" />
+      </header>
+
+      <div className="-mx-4 flex gap-3 overflow-x-auto bg-[#f8fafc] px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <Pill
+          active={activeFilter === "best"}
+          label="Best Matches"
+          onClick={() => setActiveFilter("best")}
+        />
+        <Pill
+          active={activeFilter === "new"}
+          label="New Matches"
+          badge
+          onClick={() => setActiveFilter("new")}
+        />
+        <Pill
+          active={activeFilter === "compatible"}
+          label="Highly Compatible"
+          onClick={() => setActiveFilter("compatible")}
+        />
+        <Pill
+          active={activeFilter === "nearby"}
           label="Near You"
           icon={<MapPin size={12} className="text-[#a247f2]" />}
+          onClick={() => setActiveFilter("nearby")}
         />
       </div>
-      <div className="mt-4 space-y-4">
-        {profiles.map((profile, index) => (
-          <MobileMatchCard
-            key={profile.id}
-            profile={profile}
-            liked={shortlisted.includes(profile.id)}
-            sent={sentIds.includes(profile.id)}
-            following={followingIds.includes(profile.id)}
-            priority={index < 2}
-            onShortlist={() => onShortlist(profile)}
-            onInterest={() => onInterest(profile)}
-          />
-        ))}
-      </div>
+
+      {filteredProfiles.length ? (
+        <div className="-mx-4 h-[calc(100dvh-154px)] snap-y snap-mandatory overflow-y-auto overscroll-contain px-4 pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {filteredProfiles.map((profile, index) => (
+            <div
+              key={profile.id}
+              className="flex min-h-[calc(100dvh-154px)] snap-start snap-always items-start py-2"
+            >
+              <MobileMatchCard
+                profile={profile}
+                liked={shortlisted.includes(profile.id)}
+                sent={sentIds.includes(profile.id)}
+                following={followingIds.includes(profile.id)}
+                priority={index < 2}
+                onShortlist={() => onShortlist(profile)}
+                onInterest={() => onInterest(profile)}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid min-h-[52dvh] place-items-center text-center">
+          <div>
+            <h2 className="text-[18px] font-semibold text-[#0f1419]">
+              No matches found
+            </h2>
+            <p className="mt-2 text-[13px] text-[#687184]">
+              Try another match filter.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -86,15 +161,19 @@ function Pill({
   active = false,
   badge = false,
   icon,
+  onClick,
 }: {
   label: string;
   active?: boolean;
   badge?: boolean;
   icon?: React.ReactNode;
+  onClick: () => void;
 }) {
   return (
     <button
       type="button"
+      onClick={onClick}
+      aria-pressed={active}
       className={`mobile-matches-pill flex h-7 shrink-0 items-center gap-1 rounded-full px-3 text-[13px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[var(--text-primary)]"}`}
     >
       {icon}
@@ -126,7 +205,7 @@ function MobileMatchCard({
   onInterest: () => void;
 }) {
   return (
-    <article className="overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)]">
+    <article className="w-full overflow-hidden rounded-[20px] border border-[#eceaf0] bg-white shadow-[0_10px_30px_rgba(42,35,70,.09)]">
       <div className="relative aspect-[0.88] min-h-[390px] overflow-hidden bg-[#e8e9ec]">
         <Link href={`/profile/${profile.id}`} className="absolute inset-0">
           <ProfileImage
@@ -242,132 +321,6 @@ function MatchDetail({
   );
 }
 
-function MobileMatchCardLegacy({
-  profile,
-  liked,
-  sent,
-  priority,
-  onShortlist,
-  onInterest,
-}: {
-  profile: MatchProfile;
-  liked: boolean;
-  sent: boolean;
-  priority: boolean;
-  onShortlist: () => void;
-  onInterest: () => void;
-}) {
-  return (
-    <article className="grid grid-cols-[42%_minmax(0,1fr)] gap-3 rounded-[24px] bg-white p-3 shadow-[0_12px_35px_rgba(44,33,80,.1)]">
-      <div className="relative min-h-[250px] overflow-hidden rounded-[20px] bg-[#eee] min-[430px]:min-h-[270px]">
-        <Link href={`/profile/${profile.id}`} className="absolute inset-0">
-          <ProfileImage
-            src={profile.image}
-            alt={profile.name}
-            fill
-            priority={priority}
-            sizes="42vw"
-            className="object-cover"
-          />
-        </Link>
-        <span
-          className={`absolute left-2 top-2 rounded-full px-2.5 py-1 text-[10px] ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}
-        >
-          ● {profile.online ? "Online" : "Offline"}
-        </span>
-        <span className="absolute bottom-3 left-3 rounded-lg bg-black/55 px-2 py-1 text-[11px] text-white">
-          ▧ {Math.max(profile.photoCount, 1)}
-        </span>
-        <button
-          type="button"
-          onClick={onShortlist}
-          aria-label={liked ? "Remove from shortlist" : "Add to shortlist"}
-          className="absolute right-2 top-2 grid size-10 place-items-center rounded-[14px] bg-white text-[#0f1419] shadow-lg min-[430px]:size-11"
-        >
-          <Heart
-            size={19}
-            fill={liked ? "#ff3040" : "none"}
-            className={liked ? "text-[#ff3040]" : ""}
-          />
-        </button>
-      </div>
-      <div className="flex min-w-0 flex-col py-2">
-        <div className="flex items-start justify-between gap-1.5">
-          <div className="min-w-0">
-            <h2 className="flex items-center gap-1 truncate text-[clamp(16px,4.2vw,21px)] font-bold tracking-[-.03em] text-[var(--text-primary)]">
-              {profile.name}, {profile.age || "Age hidden"}
-              <BadgeCheck
-                size={15}
-                className="shrink-0 fill-[#ff4d9b] text-white"
-              />
-            </h2>
-            <p className="mt-1 truncate text-[clamp(10px,2.8vw,13px)] text-[var(--text-secondary)]">
-              {profile.occupation} ›
-            </p>
-            <p className="mt-2 flex items-center gap-1 truncate text-[clamp(9px,2.6vw,12px)] text-[var(--text-secondary)]">
-              <MapPin size={13} fill="currentColor" />
-              {profile.city}, {profile.state}
-            </p>
-          </div>
-          <Score value={profile.compatibility} />
-        </div>
-        <div className="mt-3 rounded-[18px] bg-gradient-to-br from-[#faf9ff] to-[#f7f1ff] p-3 text-[#0f1419]">
-          <strong className="text-[11px]">You match on</strong>
-          <div className="mt-2.5 grid grid-cols-2 gap-x-2 gap-y-2 text-[clamp(9px,2.5vw,11px)]">
-            <span className="flex items-center gap-2">
-              <GraduationCap size={14} />
-              Education
-            </span>
-            <span className="flex items-center gap-2">
-              <BriefcaseBusiness size={14} />
-              Career Goals
-            </span>
-            <span className="flex items-center gap-2">
-              <MapPin size={14} />
-              Location
-            </span>
-            <span className="flex items-center gap-2">
-              <Heart size={14} />
-              {profile.lifestyle}
-            </span>
-          </div>
-          <Link
-            href={`/profile/${profile.id}`}
-            className="mt-3 block text-[11px] font-semibold text-[#8b3de8]"
-          >
-            View Details ›
-          </Link>
-        </div>
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-3">
-          <Link
-            href={`/profile/${profile.id}`}
-            className="flex h-10 min-w-0 items-center justify-center gap-1 rounded-full border border-[#8b3de8] px-1 text-[clamp(9px,2.6vw,12px)] font-semibold text-[#8b3de8]"
-          >
-            <Eye size={13} className="shrink-0" />
-            View Profile
-          </Link>
-          <button
-            type="button"
-            onClick={onInterest}
-            disabled={sent}
-            className="flex h-10 min-w-0 items-center justify-center gap-1 rounded-full bg-gradient-to-r from-[#873df1] to-[#f547a2] px-1 text-[clamp(9px,2.6vw,12px)] font-semibold text-white disabled:opacity-70"
-          >
-            <Heart size={13} className="shrink-0" />
-            {sent ? "Requested" : "Send Interest"}
-          </button>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function Score({ value }: { value: number }) {
-  return (
-    <span className="grid size-[52px] shrink-0 place-items-center rounded-full border-[4px] border-[#9146ee] border-l-[#f1eafd] text-center text-[#8b3de8] min-[430px]:size-[62px]">
-      <span>
-        <strong className="block text-[15px] leading-none">{value}%</strong>
-        <small className="text-[8px]">Match</small>
-      </span>
-    </span>
-  );
+function normalizeCity(value: string) {
+  return value.split(",")[0]?.trim().toLowerCase() ?? "";
 }
