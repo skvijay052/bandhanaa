@@ -10,6 +10,7 @@ import { getProfilePrivacy } from "@/lib/profile-privacy";
 export const metadata: Metadata = { title: "Messages" };
 
 type LikeRow = { liker_id: string; liked_id: string; created_at: string };
+type ShortlistRow = { profile_id: string };
 type ProfileRow = {
   id: string;
   display_name: string | null;
@@ -52,7 +53,7 @@ export default async function MessagesPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/messages");
 
-  const [likesResult, messagesResult, privacyResult] = await Promise.all([
+  const [likesResult, messagesResult, privacyResult, shortlistsResult] = await Promise.all([
     supabase
       .from("profile_likes")
       .select("liker_id, liked_id, created_at")
@@ -70,6 +71,10 @@ export default async function MessagesPage() {
       .select("read_receipts")
       .eq("user_id", user.id)
       .maybeSingle(),
+    supabase
+      .from("profile_shortlists")
+      .select("profile_id")
+      .eq("user_id", user.id),
   ]);
   if (likesResult.error)
     console.error(
@@ -78,9 +83,14 @@ export default async function MessagesPage() {
     );
   if (messagesResult.error)
     console.error("Unable to load messages:", messagesResult.error.message);
+  if (shortlistsResult.error)
+    console.error("Unable to load shortlisted profiles:", shortlistsResult.error.message);
 
   const likes = (likesResult.data ?? []) as LikeRow[];
   const messageRows = (messagesResult.data ?? []) as MessageRow[];
+  const favouriteIds = new Set(
+    ((shortlistsResult.data ?? []) as ShortlistRow[]).map((row) => row.profile_id),
+  );
   const partnerIds = likes.map((like) =>
     like.liker_id === user.id ? like.liked_id : like.liker_id,
   );
@@ -118,7 +128,7 @@ export default async function MessagesPage() {
   }
 
   const conversations: Conversation[] = likes
-    .map((like, index) => {
+    .map((like) => {
       const id = conversationId(like.liker_id, like.liked_id);
       const partnerId =
         like.liker_id === user.id ? like.liked_id : like.liker_id;
@@ -141,6 +151,7 @@ export default async function MessagesPage() {
         time: formatMessageTime(latest?.created_at ?? like.created_at),
         unread: unreadByConversation.get(id) ?? 0,
         verified: true,
+        favourite: favouriteIds.has(partnerId),
       };
     })
     .sort((a, b) =>
