@@ -13,12 +13,12 @@ const iconStyles: Record<
   NotificationType,
   { className: string; Icon: typeof Heart }
 > = {
-  like: { className: "text-[#f34ca4]", Icon: Heart },
-  message: { className: "text-[#f34ca4]", Icon: MessageCircle },
-  accepted: { className: "text-[#f34ca4]", Icon: Check },
-  view: { className: "text-[#f34ca4]", Icon: Eye },
-  connection: { className: "text-[#f34ca4]", Icon: UsersRound },
-  profile_complete: { className: "text-[#f34ca4]", Icon: Shield },
+  like: { className: "text-[#f34ca4] md:text-[#1d9bf0]", Icon: Heart },
+  message: { className: "text-[#f34ca4] md:text-[#1d9bf0]", Icon: MessageCircle },
+  accepted: { className: "text-[#f34ca4] md:text-[#1d9bf0]", Icon: Check },
+  view: { className: "text-[#f34ca4] md:text-[#1d9bf0]", Icon: Eye },
+  connection: { className: "text-[#f34ca4] md:text-[#1d9bf0]", Icon: UsersRound },
+  profile_complete: { className: "text-[#f34ca4] md:text-[#1d9bf0]", Icon: Shield },
 };
 
 function TypeIcon({
@@ -97,13 +97,13 @@ export function DesktopNotificationRow({
         {item.actionLabel ? (
           <button
             onClick={onComplete}
-            className="h-8 rounded-lg border border-[#f34ca4] px-3 text-[12px] font-semibold text-[#f34ca4] hover:bg-[#fff0f7]"
+            className="h-8 rounded-lg border border-[#1d9bf0] px-3 text-[12px] font-semibold text-[#1d9bf0] hover:bg-[#eff8ff]"
           >
             {item.actionLabel}
           </button>
         ) : (
           <span
-            className={`size-2 rounded-full ${item.unread ? "bg-[#f34ca4]" : "bg-[#cfd9de]"}`}
+            className={`size-2 rounded-full ${item.unread ? "bg-[#1d9bf0]" : "bg-[#cfd9de]"}`}
           />
         )}
       </div>
