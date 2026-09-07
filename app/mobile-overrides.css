@@ -4,7 +4,7 @@
     scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom));
   }
 
-  /* Edit Profile: use Bandhanaa pink for the active mobile tab. */
+  /* Edit Profile: use Bandhanaa pink for every blue accent on mobile. */
   .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] {
     color: #f34ca4 !important;
   }
@@ -16,6 +16,50 @@
 
   .edit-profile-shell nav.md\:hidden .bg-\[\#1d9bf0\] {
     background: #f34ca4 !important;
+  }
+
+  .edit-profile-shell .text-\[\#1d9bf0\],
+  .edit-profile-shell .text-sky-500,
+  .edit-profile-shell .text-sky-600,
+  .edit-profile-shell .text-sky-700,
+  .edit-profile-shell .text-sky-800,
+  .edit-profile-shell .text-blue-500,
+  .edit-profile-shell .text-blue-600,
+  .edit-profile-shell .text-blue-700,
+  .edit-profile-shell .text-blue-800 {
+    color: #f34ca4 !important;
+  }
+
+  .edit-profile-shell .bg-\[\#1d9bf0\],
+  .edit-profile-shell .bg-sky-50,
+  .edit-profile-shell .bg-sky-100,
+  .edit-profile-shell .bg-blue-50,
+  .edit-profile-shell .bg-blue-100 {
+    background-color: #fff3f9 !important;
+  }
+
+  .edit-profile-shell .bg-sky-500,
+  .edit-profile-shell .bg-sky-600,
+  .edit-profile-shell .bg-blue-500,
+  .edit-profile-shell .bg-blue-600 {
+    background-color: #f34ca4 !important;
+  }
+
+  .edit-profile-shell .border-sky-200,
+  .edit-profile-shell .border-sky-300,
+  .edit-profile-shell .border-blue-200,
+  .edit-profile-shell .border-blue-300 {
+    border-color: #f7b4d5 !important;
+  }
+
+  .edit-profile-shell input[type="checkbox"],
+  .edit-profile-shell input[type="radio"],
+  .edit-profile-shell input[type="range"] {
+    accent-color: #f34ca4;
+  }
+
+  .edit-profile-shell a {
+    --tw-text-opacity: 1;
   }
 
   /* Keep Save & Continue / Cancel above the fixed mobile bottom navigation. */
@@ -77,9 +121,6 @@
 
   .edit-profile-shell nav.md\:hidden > button:last-child > span:first-child {
     border-color: #e4e6ed !important;
-  }
-
-  .edit-profile-shell nav.md\:hidden > button:last-child > span:first-child {
     width: 36px;
     height: 36px;
   }
