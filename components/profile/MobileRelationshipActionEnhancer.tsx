@@ -11,14 +11,25 @@ type PendingAction = {
 };
 
 function getProfileContext(button: HTMLButtonElement) {
-  const container = button.closest("article, li, [data-profile-id], [data-profile-card], section, div");
-  const profileLink = container?.querySelector('a[href^="/profile/"]') as HTMLAnchorElement | null;
+  let node: HTMLElement | null = button;
+  let profileLink: HTMLAnchorElement | null = null;
+  let heading = "";
+
+  while (node && node !== document.body) {
+    if (!profileLink) {
+      profileLink = node.querySelector('a[href^="/profile/"]') as HTMLAnchorElement | null;
+    }
+    if (!heading) {
+      heading = node.querySelector("h1, h2, h3, strong")?.textContent?.trim() ?? "";
+    }
+    if (profileLink) break;
+    node = node.parentElement;
+  }
+
   const href = profileLink?.getAttribute("href") ?? "";
   const idFromLink = href.match(/^\/profile\/([^/?#]+)/)?.[1] ?? "";
   const idFromPath = window.location.pathname.match(/^\/profile\/([^/?#]+)/)?.[1] ?? "";
   const profileId = idFromLink || idFromPath;
-
-  const heading = container?.querySelector("h1, h2, h3, strong")?.textContent?.trim() ?? "";
   const profileName = heading.replace(/,\s*\d+.*$/, "").trim() || "this profile";
   return { profileId, profileName };
 }
@@ -75,17 +86,21 @@ export function MobileRelationshipActionEnhancer() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      let query = supabase.from("profile_likes").delete();
-      if (pending.kind === "requested") {
-        query = query.eq("liker_id", user.id).eq("liked_id", pending.profileId).eq("status", "pending");
-      } else {
-        query = query.or(
-          `and(liker_id.eq.${user.id},liked_id.eq.${pending.profileId}),and(liker_id.eq.${pending.profileId},liked_id.eq.${user.id})`,
-        );
-      }
+      const result = pending.kind === "requested"
+        ? await supabase
+            .from("profile_likes")
+            .delete()
+            .eq("liker_id", user.id)
+            .eq("liked_id", pending.profileId)
+            .eq("status", "pending")
+        : await supabase
+            .from("profile_likes")
+            .delete()
+            .or(
+              `and(liker_id.eq.${user.id},liked_id.eq.${pending.profileId}),and(liker_id.eq.${pending.profileId},liked_id.eq.${user.id})`,
+            );
 
-      const { error } = await query;
-      if (!error) {
+      if (!result.error) {
         setPending(null);
         router.refresh();
       }
