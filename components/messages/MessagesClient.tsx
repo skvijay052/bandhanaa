@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Info,
   Heart,
+  MapPin,
   Mic,
   Search,
   Send,
@@ -424,21 +425,22 @@ function ConversationRow({
   return (
     <button
       onClick={onClick}
-      className={`relative mb-3 flex min-h-[92px] w-full items-center gap-3 rounded-[22px] px-4 py-3 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#1d9bf0] max-md:bg-white/95 max-md:shadow-[0_9px_26px_rgba(63,38,110,.07)] ${active ? "md:bg-[#f1f3f5]" : "md:bg-white md:hover:bg-[#f7f9f9]"}`}
+      className={`group relative mb-3 flex min-h-[112px] w-full items-center gap-4 overflow-hidden rounded-[24px] border border-transparent px-4 py-3.5 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#8b3de8] max-md:bg-white max-md:shadow-[0_10px_30px_rgba(42,35,70,.09)] ${active ? "md:bg-[#f1f3f5]" : "md:bg-white md:hover:bg-[#f7f9f9]"}`}
     >
-      <span className="relative size-[62px] shrink-0 overflow-hidden rounded-[18px] bg-slate-100 md:size-[64px] md:rounded-full">
+      <span className="relative h-[86px] w-[78px] shrink-0 overflow-hidden rounded-[20px] bg-[#e8e9ec] md:size-[64px] md:rounded-full">
         <ProfileImage
           src={item.avatar}
-          alt=""
+          alt={item.name}
           fill
-          sizes="64px"
+          sizes="(max-width: 767px) 78px, 64px"
           className="object-cover"
         />
+        <span className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/30 to-transparent md:hidden" />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-1.5">
-          <strong className="text-[15px] font-bold text-[#111b21]">
-            {item.name}
+      <span className="min-w-0 flex-1 py-0.5">
+        <span className="flex min-w-0 items-center gap-1.5 pr-8">
+          <strong className="truncate text-[16px] font-bold tracking-[-.01em] text-[#111b21]">
+            {item.name}{item.age ? `, ${item.age}` : ""}
           </strong>
           {item.verified ? (
             <BadgeCheck
@@ -448,22 +450,36 @@ function ConversationRow({
             />
           ) : null}
           {active ? (
-            <span className="ml-auto size-1.5 rounded-full bg-[#1d9bf0]" />
+            <span className="ml-auto size-1.5 rounded-full bg-[#1d9bf0] md:block max-md:hidden" />
           ) : null}
         </span>
-        <span className="mt-1 block truncate text-[11px] text-[#667781] md:hidden">
-          {item.profession}
+        <span className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] font-medium text-[#687184] md:hidden">
+          <span className="truncate">{item.profession}</span>
+          {item.city ? (
+            <>
+              <span className="text-[#c4c7cd]">•</span>
+              <span className="flex min-w-0 items-center gap-1 truncate">
+                <MapPin size={11} className="shrink-0 text-[#8b3de8]" />
+                <span className="truncate">{item.city}</span>
+              </span>
+            </>
+          ) : null}
         </span>
-        <span className="mt-1 block truncate text-[13px] text-[#667781]">
-          {item.preview} · {item.time}
+        <span className={`mt-2 block truncate text-[13px] ${item.unread ? "font-semibold text-[#252936]" : "text-[#667781]"}`}>
+          {item.preview || "Start a conversation"}
+        </span>
+        <span className="mt-1.5 block text-[10px] font-medium text-[#9aa1ad] md:hidden">
+          {item.time}
         </span>
       </span>
       <span className="flex shrink-0 flex-col items-end justify-center text-[11px] text-[#667781] max-md:absolute max-md:right-4 max-md:top-4 max-md:gap-5">
         {item.unread ? (
-          <span className="grid size-5 place-items-center rounded-full bg-[#ed2082] font-bold text-white">
+          <span className="grid min-h-5 min-w-5 place-items-center rounded-full bg-gradient-to-r from-[#8b3de8] to-[#f34ca4] px-1.5 text-[9px] font-bold text-white shadow-[0_4px_12px_rgba(139,61,232,.2)]">
             {item.unread}
           </span>
-        ) : null}
+        ) : (
+          <span className="size-2 rounded-full bg-[#d9dde4] md:hidden" />
+        )}
       </span>
     </button>
   );
