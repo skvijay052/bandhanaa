@@ -15,6 +15,7 @@ export type Conversation = {
   unread: number;
   verified: boolean;
   favourite?: boolean;
+  archived?: boolean;
 };
 
 export type ChatMessage = {
