@@ -17,6 +17,7 @@ export function MatchesClient({
   receivedIds,
   followingIds,
   initialTab = "all",
+  viewerCity,
 }: {
   profiles: MatchProfile[];
   initialShortlisted: string[];
@@ -24,6 +25,7 @@ export function MatchesClient({
   receivedIds: string[];
   followingIds: string[];
   initialTab?: MatchTab;
+  viewerCity: string;
 }) {
   const [activeTab, setActiveTab] = useState<MatchTab>(initialTab);
   const [shortlisted, setShortlisted] = useState(initialShortlisted);
@@ -112,6 +114,7 @@ export function MatchesClient({
               shortlisted={shortlisted}
               sentIds={sentInterests}
               followingIds={followingIds}
+              viewerCity={viewerCity}
               onShortlist={(profile) => void toggleShortlist(profile)}
               onInterest={(profile) => void sendInterest(profile)}
             />
