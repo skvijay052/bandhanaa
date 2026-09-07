@@ -36,6 +36,64 @@ function getProfileContext(button: HTMLButtonElement) {
   return { profileId, profileName };
 }
 
+function replaceRelationshipLabel(
+  button: HTMLButtonElement,
+  label: "Send Request" | "Requested" | "Following",
+) {
+  const walker = document.createTreeWalker(button, NodeFilter.SHOW_TEXT);
+  let node = walker.nextNode();
+  let fallback: Text | null = null;
+
+  while (node) {
+    if (node instanceof Text) {
+      const value = node.textContent?.trim().toLowerCase() ?? "";
+      if (value) fallback = node;
+      if (
+        value === "requested" ||
+        value === "following" ||
+        value === "send request"
+      ) {
+        node.textContent = label;
+        return;
+      }
+    }
+    node = walker.nextNode();
+  }
+
+  if (fallback) fallback.textContent = label;
+}
+
+function updateProfileRelationshipButtons(
+  profileId: string,
+  label: "Send Request" | "Requested" | "Following",
+) {
+  document.querySelectorAll("button").forEach((node) => {
+    if (!(node instanceof HTMLButtonElement)) return;
+    if (node.closest(".mobile-matches-type")) return;
+
+    const currentLabel = node.textContent?.trim().toLowerCase();
+    if (
+      currentLabel !== "requested" &&
+      currentLabel !== "following" &&
+      currentLabel !== "send request"
+    ) {
+      return;
+    }
+
+    const context = getProfileContext(node);
+    if (context.profileId !== profileId) return;
+
+    replaceRelationshipLabel(node, label);
+    if (label === "Requested") {
+      node.dataset.relationshipAction = "requested";
+    } else if (label === "Following") {
+      node.dataset.relationshipAction = "following";
+    } else {
+      delete node.dataset.relationshipAction;
+    }
+  });
+}
+
 export function MobileRelationshipActionEnhancer() {
   const router = useRouter();
   const [pending, setPending] = useState<PendingAction | null>(null);
@@ -66,19 +124,29 @@ export function MobileRelationshipActionEnhancer() {
 
     normalizeButtons();
     const observer = new MutationObserver(normalizeButtons);
-    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
 
     const onClick = (event: MouseEvent) => {
       if (window.innerWidth >= 768) return;
       const target = event.target as HTMLElement | null;
-      const button = target?.closest("button[data-relationship-action]") as HTMLButtonElement | null;
+      const button = target?.closest(
+        "button[data-relationship-action]",
+      ) as HTMLButtonElement | null;
       if (
         !button ||
         button.closest(".mobile-matches-type") ||
         button.dataset.nativeRelationshipAction === "true"
-      ) return;
+      )
+        return;
 
-      const kind = button.dataset.relationshipAction === "following" ? "following" : "requested";
+      const kind =
+        button.dataset.relationshipAction === "following"
+          ? "following"
+          : "requested";
       const { profileId, profileName } = getProfileContext(button);
       if (!profileId) return;
 
@@ -96,30 +164,53 @@ export function MobileRelationshipActionEnhancer() {
 
   async function confirm() {
     if (!pending || busy) return;
+
+    const action = pending;
     setBusy(true);
+
+    // Optimistic UI update: close the modal and change the profile buttons now,
+    // without waiting for the Supabase round trip.
+    updateProfileRelationshipButtons(action.profileId, "Send Request");
+    setPending(null);
+
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      const result = pending.kind === "requested"
-        ? await supabase
-            .from("profile_likes")
-            .delete()
-            .eq("liker_id", user.id)
-            .eq("liked_id", pending.profileId)
-            .eq("status", "pending")
-        : await supabase
-            .from("profile_likes")
-            .delete()
-            .or(
-              `and(liker_id.eq.${user.id},liked_id.eq.${pending.profileId}),and(liker_id.eq.${pending.profileId},liked_id.eq.${user.id})`,
-            );
-
-      if (!result.error) {
-        setPending(null);
-        router.refresh();
+      if (!user) {
+        updateProfileRelationshipButtons(
+          action.profileId,
+          action.kind === "following" ? "Following" : "Requested",
+        );
+        return;
       }
+
+      const result =
+        action.kind === "requested"
+          ? await supabase
+              .from("profile_likes")
+              .delete()
+              .eq("liker_id", user.id)
+              .eq("liked_id", action.profileId)
+              .eq("status", "pending")
+          : await supabase
+              .from("profile_likes")
+              .delete()
+              .or(
+                `and(liker_id.eq.${user.id},liked_id.eq.${action.profileId}),and(liker_id.eq.${action.profileId},liked_id.eq.${user.id})`,
+              );
+
+      if (result.error) {
+        updateProfileRelationshipButtons(
+          action.profileId,
+          action.kind === "following" ? "Following" : "Requested",
+        );
+        return;
+      }
+
+      router.refresh();
     } finally {
       setBusy(false);
     }
@@ -134,7 +225,9 @@ export function MobileRelationshipActionEnhancer() {
       aria-modal="true"
       aria-labelledby="relationship-confirm-title"
       className="fixed inset-0 z-[1000] grid place-items-end bg-black/45 p-4 backdrop-blur-[2px] md:place-items-center"
-      onMouseDown={(event) => event.target === event.currentTarget && !busy && setPending(null)}
+      onMouseDown={(event) =>
+        event.target === event.currentTarget && !busy && setPending(null)
+      }
     >
       <div className="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-2xl">
         <div className="mx-auto grid size-12 place-items-center rounded-full bg-[#fff0f5] text-[#e72c6c]">
