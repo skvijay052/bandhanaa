@@ -1,0 +1,6 @@
+@media (max-width: 767px) {
+  section[aria-label="Advanced profile filters"] {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+    scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+}
