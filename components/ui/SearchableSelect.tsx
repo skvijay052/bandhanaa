@@ -29,7 +29,7 @@ export function SearchableSelect({ label, value, options, onChange, required, pl
   return (
     <div ref={root} className="relative">
       <label id={`${id}-label`} className={hideLabel ? "sr-only" : "form-label"}>
-        {label}{required ? <span className="text-[#1d9bf0]"> *</span> : null}
+        {label}{required ? <span className="text-[#ff1682]"> *</span> : null}
       </label>
       <button type="button" aria-haspopup="listbox" aria-expanded={open} aria-labelledby={`${id}-label ${id}-value`} onClick={() => { setOpen((current) => !current); setQuery(""); }} className="form-control flex items-center text-left">
         {value ? <Tag aria-hidden="true" size={16} className="mr-2 shrink-0 text-black" /> : null}
