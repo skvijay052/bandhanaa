@@ -128,7 +128,7 @@ export function MobileDiscoverExperience({
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-0 md:hidden">
       <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center bg-white px-4 py-3">
-        <Link href="/discover" className="" aria-label="Bandhanaa">
+        <Link href="/discover" aria-label="Bandhanaa">
           <Brand compact />
         </Link>
         <span aria-hidden="true" />
@@ -142,6 +142,7 @@ export function MobileDiscoverExperience({
           </Link>
         </div>
       </header>
+
       <label className="mobile-discover-search mt-5 flex h-11 items-center rounded-full border border-[#e6e2ea] bg-white px-3 text-[#87909e] shadow-[0_7px_22px_rgba(44,33,80,.08)]">
         <Search size={17} />
         <input
@@ -162,6 +163,7 @@ export function MobileDiscoverExperience({
           <SlidersHorizontal size={16} />
         </button>
       </label>
+
       <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <FilterPill
           active={filterMode === "for-you"}
@@ -192,10 +194,60 @@ export function MobileDiscoverExperience({
           label="Active"
         />
       </div>
+
       <DiscoverBannerSlider mobile />
+
+      {latestProfiles.length ? (
+        <section className="mt-5" aria-label="Latest profiles">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[20px] font-bold tracking-[-.02em] text-[var(--text-primary)]">
+              Latest Profiles
+            </h2>
+            <Link
+              href="/matches"
+              className="text-[14px] font-semibold text-[#8c45ff]"
+            >
+              View All
+            </Link>
+          </div>
+
+          <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {latestProfiles.map((profile) => (
+              <Link
+                key={profile.id}
+                href={`/profile/${profile.id}`}
+                className="flex w-[76px] shrink-0 flex-col items-center text-center"
+              >
+                <span className="relative grid size-[72px] place-items-center rounded-full bg-gradient-to-br from-[#8c45ff] via-[#d24ad7] to-[#ff4d9b] p-[2px]">
+                  <span className="relative block size-full overflow-hidden rounded-full border-2 border-white bg-[#eee]">
+                    <ProfileImage
+                      src={profile.image}
+                      alt={profile.name}
+                      fill
+                      sizes="72px"
+                      className="object-cover"
+                    />
+                  </span>
+                  {profile.online ? (
+                    <span
+                      className="absolute bottom-0 right-0 size-4 rounded-full border-2 border-white bg-[#2dd477]"
+                      aria-label="Online"
+                    />
+                  ) : null}
+                </span>
+                <strong className="mt-1.5 block w-full truncate text-[11px] font-semibold text-[#20242d]">
+                  {profile.name}
+                  {profile.age ? `, ${profile.age}` : ""}
+                </strong>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
       <Link
         href="/settings/edit-profile"
-        className="mt-4 flex min-h-[86px] items-center rounded-[22px] bg-gradient-to-r from-[#e7e3ff] to-[#f9e5fa] px-4 text-[#6534d7] shadow-[0_8px_24px_rgba(113,74,214,.11)]"
+        className="mt-5 flex min-h-[86px] items-center rounded-[22px] bg-gradient-to-r from-[#e7e3ff] to-[#f9e5fa] px-4 text-[#6534d7] shadow-[0_8px_24px_rgba(113,74,214,.11)]"
       >
         <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/85">
           <Star size={16} className="size-4 fill-[#7448e8] text-[#7448e8]" />
@@ -213,6 +265,7 @@ export function MobileDiscoverExperience({
         </span>
         <span className="ml-2 text-2xl">›</span>
       </Link>
+
       {featured ? (
         <FeaturedProfile
           profile={featured}
@@ -224,50 +277,6 @@ export function MobileDiscoverExperience({
           No profiles match this filter.
         </div>
       )}
-      {latestProfiles.length ? (
-        <section className="mt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[20px] font-bold text-[var(--text-primary)]">
-              New Profiles
-            </h2>
-            <Link
-              href="/matches"
-              className="text-[15px] font-semibold text-[#8c45ff]"
-            >
-              View All
-            </Link>
-          </div>
-          <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {latestProfiles.map((profile) => (
-              <Link
-                key={profile.id}
-                href={`/profile/${profile.id}`}
-                className="relative h-[145px] w-[128px] shrink-0 snap-start overflow-hidden rounded-[20px] bg-[#eee]"
-              >
-                <ProfileImage
-                  src={profile.image}
-                  alt={profile.name}
-                  fill
-                  sizes="128px"
-                  className="object-cover"
-                />
-                {profile.online ? (
-                  <span className="absolute left-2 top-2 rounded-full bg-[#075d2d]/85 px-2 py-1 text-[10px] text-[#50ef8d]">
-                    ● Online
-                  </span>
-                ) : null}
-                {profile.createdAt &&
-                Date.now() - new Date(profile.createdAt).getTime() <=
-                  NEW_PROFILE_WINDOW_MS ? (
-                  <span className="mobile-new-badge absolute bottom-2 left-2 rounded-full bg-[#f85da6] font-semibold text-white">
-                    New
-                  </span>
-                ) : null}
-              </Link>
-            ))}
-          </div>
-        </section>
-      ) : null}
     </div>
   );
 }
