@@ -126,7 +126,7 @@ export function MobileDiscoverExperience({
 
   const featured = filteredProfiles[0];
   return (
-    <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
+    <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-0 md:hidden">
       <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center bg-white px-4 py-3">
         <Link href="/discover" className="" aria-label="Bandhanaa">
           <Brand compact />
@@ -259,7 +259,7 @@ export function MobileDiscoverExperience({
                 {profile.createdAt &&
                 Date.now() - new Date(profile.createdAt).getTime() <=
                   NEW_PROFILE_WINDOW_MS ? (
-                  <span className="mobile-new-badge absolute left-2 bottom-2 rounded-full bg-[#f85da6] font-semibold text-white">
+                  <span className="mobile-new-badge absolute bottom-2 left-2 rounded-full bg-[#f85da6] font-semibold text-white">
                     New
                   </span>
                 ) : null}
