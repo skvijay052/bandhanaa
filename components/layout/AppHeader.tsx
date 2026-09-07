@@ -10,7 +10,7 @@ export function AppHeader({
   name: string;
 }) {
   return (
-    <header className="flex h-[68px] items-center justify-between border-b border-[#eeeeF2] px-7 max-md:h-[62px] max-md:px-4">
+    <header className="flex h-[68px] items-center justify-between border-b border-[#eeeeF2] px-7 max-md:sticky max-md:top-0 max-md:z-[90] max-md:h-[62px] max-md:bg-[#f8fafc]/95 max-md:px-4 max-md:backdrop-blur-xl">
       <Brand compact />
       <div className="flex items-center gap-6 max-md:gap-4">
         <button
