@@ -11,7 +11,6 @@ import {
   ArrowLeft,
   ChevronRight,
   Info,
-  Heart,
   MapPin,
   Mic,
   Search,
@@ -322,23 +321,14 @@ function ConversationPanel({
         </div>
         <div className="flex items-center justify-between md:hidden">
           <Brand compact />
-          <div className="flex gap-2.5">
-            <Link
-              href="/matches?tab=shortlisted"
-              aria-label="Shortlist"
-              className="grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
-            >
-              <Heart size={22} strokeWidth={1.8} />
-            </Link>
-            <Link
-              href="/notifications"
-              aria-label="Notifications"
-              className="relative grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
-            >
-              <Bell size={22} strokeWidth={1.8} />
-              <span className="absolute right-2 top-2 size-2 rounded-full bg-[#8b3de8] ring-2 ring-white" />
-            </Link>
-          </div>
+          <Link
+            href="/notifications"
+            aria-label="Notifications"
+            className="relative grid size-11 place-items-center rounded-[15px] bg-white/90 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+          >
+            <Bell size={22} strokeWidth={1.8} />
+            <span className="absolute right-2 top-2 size-2 rounded-full bg-[#8b3de8] ring-2 ring-white" />
+          </Link>
         </div>
         <div className="mt-6 md:hidden">
           <h1 className="text-[27px] font-bold tracking-[-.035em] text-[#0f1419]">
