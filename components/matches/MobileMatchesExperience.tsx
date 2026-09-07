@@ -75,7 +75,7 @@ export function MobileMatchesExperience({
 
       <nav
         aria-label="Match categories"
-        className="-mx-4 flex gap-2 overflow-x-auto bg-[#f8fafc] px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 flex scroll-px-4 gap-2.5 overflow-x-auto bg-[#f8fafc] px-4 py-3.5 scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {mobileTabs.map(({ id, label, icon: Icon }) => {
           const active = activeTab === id;
@@ -86,19 +86,19 @@ export function MobileMatchesExperience({
               type="button"
               onClick={() => onTabChange(id)}
               aria-pressed={active}
-              className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-3.5 text-[12px] font-semibold shadow-[0_6px_20px_rgba(44,33,80,.08)] transition ${
+              className={`flex h-11 shrink-0 items-center gap-2 rounded-full px-4 text-[13px] font-semibold tracking-[-.01em] transition-all duration-200 ${
                 active
-                  ? "bg-gradient-to-r from-[#7b35ff] via-[#ba43e8] to-[#f54fa8] text-white"
-                  : "border border-[#ece8f0] bg-white text-[#181b24]"
+                  ? "bg-gradient-to-r from-[#7b35ff] via-[#bd42e4] to-[#f54fa8] text-white shadow-[0_8px_24px_rgba(153,60,231,.24)]"
+                  : "border border-[#ece8f0] bg-white text-[#171a22] shadow-[0_5px_18px_rgba(44,33,80,.07)]"
               }`}
             >
-              <Icon size={16} strokeWidth={1.9} />
-              <span>{label}</span>
+              <Icon size={17} strokeWidth={1.9} className="shrink-0" />
+              <span className="whitespace-nowrap">{label}</span>
               <span
-                className={`grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-[10px] font-bold ${
+                className={`grid h-7 min-w-7 place-items-center rounded-full px-2 text-[11px] font-bold ${
                   active
-                    ? "bg-white/90 text-[#8a3ee8]"
-                    : "bg-[#f1f2f6] text-[#596172]"
+                    ? "bg-white/92 text-[#8b3de8]"
+                    : "bg-[#f0f1f5] text-[#596172]"
                 }`}
               >
                 {count}
@@ -109,7 +109,7 @@ export function MobileMatchesExperience({
       </nav>
 
       {orderedProfiles.length ? (
-        <div className="-mx-4 h-[calc(100dvh-188px)] snap-y snap-mandatory overflow-y-auto overscroll-contain px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="-mx-4 h-[calc(100dvh-194px)] snap-y snap-mandatory overflow-y-auto overscroll-contain px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {orderedProfiles.map((profile, index) => (
             <div
               key={profile.id}
