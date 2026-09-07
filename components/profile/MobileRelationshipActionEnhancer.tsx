@@ -151,7 +151,7 @@ export function MobileRelationshipActionEnhancer() {
       if (!profileId) return;
 
       event.preventDefault();
-      event.stopPropagation();
+      event.stopImmediatePropagation();
       setPending({ profileId, profileName, kind });
     };
 
@@ -168,8 +168,6 @@ export function MobileRelationshipActionEnhancer() {
     const action = pending;
     setBusy(true);
 
-    // Optimistic UI update: close the modal and change the profile buttons now,
-    // without waiting for the Supabase round trip.
     updateProfileRelationshipButtons(action.profileId, "Send Request");
     setPending(null);
 
