@@ -1,3 +1,13 @@
+/* Edit Profile: keep required/blue accents on-brand across desktop and mobile. */
+.edit-profile-shell .text-\[\#1d9bf0\] {
+  color: #f34ca4 !important;
+}
+
+/* Edit Profile: remove the legacy Generate Horoscope card while keeping horoscope fields. */
+.edit-profile-shell .border-\[\#d7e8f5\].bg-\[\#f5fbff\] {
+  display: none !important;
+}
+
 @media (max-width: 767px) {
   section[aria-label="Advanced profile filters"] {
     padding-bottom: calc(96px + env(safe-area-inset-bottom));
