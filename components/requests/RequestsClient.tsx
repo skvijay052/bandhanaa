@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   BadgeCheck,
+  Bell,
   BriefcaseBusiness,
   Bookmark,
   Check,
   Clock3,
-  Heart,
   MapPin,
   MessageSquare,
   Send,
@@ -282,7 +282,6 @@ function MobileRequestsPage({
       <div className="pointer-events-none absolute -left-28 -top-28 size-[430px] rounded-full bg-[#dff9f3]/80 blur-2xl" />
       <div className="pointer-events-none absolute -right-36 top-10 size-[420px] rounded-full bg-[#eee7ff]/80 blur-2xl" />
       <header className="relative grid grid-cols-[40px_1fr_40px] items-center pb-4 pt-5">
-        
         <Link
           href="/discover"
           className=""
@@ -293,11 +292,12 @@ function MobileRequestsPage({
         <span aria-hidden="true" />
         <div className="justify-self-end">
           <Link
-            href="/matches?tab=shortlisted"
-            aria-label="Shortlisted profiles"
-            className="grid size-9 place-items-center rounded-[13px] bg-white/90 p-1 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+            href="/notifications"
+            aria-label="Notifications"
+            className="relative grid size-9 place-items-center rounded-[13px] bg-white/90 p-1 shadow-[0_7px_22px_rgba(15,20,25,.07)]"
           >
-            <Heart size={17} strokeWidth={1.8} />
+            <Bell size={17} strokeWidth={1.8} />
+            <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#f34ca4] ring-2 ring-white" />
           </Link>
         </div>
       </header>
