@@ -42,6 +42,17 @@ export function MatchesClient({
     return result;
   }, [activeTab, profiles, receivedIds, sentInterests, shortlisted]);
 
+  const mobileTabCounts = useMemo(
+    () => ({
+      all: profiles.length,
+      shortlisted: profiles.filter((profile) => shortlisted.includes(profile.id))
+        .length,
+      sent: profiles.filter((profile) => sentInterests.includes(profile.id)).length,
+      received: profiles.filter((profile) => receivedIds.includes(profile.id)).length,
+    }),
+    [profiles, receivedIds, sentInterests, shortlisted],
+  );
+
   async function sendInterest(profile: MatchProfile) {
     if (sentInterests.includes(profile.id)) return;
     setSentInterests((items) => [...items, profile.id]);
@@ -94,6 +105,11 @@ export function MatchesClient({
     }
   }
 
+  function changeTab(tab: MatchTab) {
+    setActiveTab(tab);
+    setNotice("");
+  }
+
   return (
     <div className="h-dvh bg-[var(--app-bg)]">
       <div className="app-shell">
@@ -113,6 +129,9 @@ export function MatchesClient({
               shortlisted={shortlisted}
               sentIds={sentInterests}
               followingIds={followingIds}
+              activeTab={activeTab}
+              tabCounts={mobileTabCounts}
+              onTabChange={changeTab}
               onShortlist={(profile) => void toggleShortlist(profile)}
               onInterest={(profile) => void sendInterest(profile)}
             />
@@ -126,13 +145,7 @@ export function MatchesClient({
             </header>
 
             <div className="mt-3 hidden md:mt-5 md:block">
-              <MatchesTabs
-                active={activeTab}
-                onChange={(tab) => {
-                  setActiveTab(tab);
-                  setNotice("");
-                }}
-              />
+              <MatchesTabs active={activeTab} onChange={changeTab} />
             </div>
 
             <div className="mt-7 hidden items-end justify-between md:flex">
