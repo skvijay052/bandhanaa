@@ -13,14 +13,18 @@ export function MobilePageHeader({
   backHref?: string;
   compact?: boolean;
 }) {
+  const resolvedBackHref =
+    backHref ?? (title === "Activity Log" ? "/settings/privacy" : undefined);
+  const resolvedCompact = compact || title === "Activity Log";
+
   return (
     <header
-      className={`mobile-page-header sticky top-0 z-[90] overflow-hidden bg-white px-4 md:hidden ${compact ? "py-3" : "pb-5 pt-5"}`}
+      className={`mobile-page-header sticky top-0 z-[90] overflow-hidden bg-white px-4 md:hidden ${resolvedCompact ? "py-3" : "pb-5 pt-5"}`}
     >
       <div className="relative grid grid-cols-[44px_1fr_44px] items-center">
-        {backHref ? (
+        {resolvedBackHref ? (
           <Link
-            href={backHref}
+            href={resolvedBackHref}
             aria-label="Back"
             className="grid size-10 place-items-center rounded-[13px] bg-white text-[#111] shadow-[0_7px_22px_rgba(15,20,25,.07)]"
           >
@@ -32,7 +36,7 @@ export function MobilePageHeader({
           </Link>
         )}
 
-        {backHref ? (
+        {resolvedBackHref ? (
           <div className="flex justify-center" aria-label="Bandhanaa">
             <Brand compact />
           </div>
@@ -52,7 +56,7 @@ export function MobilePageHeader({
       </div>
 
       {title ? (
-        <div className={`relative ${compact ? "mt-3" : "mt-5"}`}>
+        <div className={`relative ${resolvedCompact ? "mt-3" : "mt-5"}`}>
           <h1 className="text-[27px] font-bold tracking-[-.035em] text-[#0f1419]">
             {title}
           </h1>
