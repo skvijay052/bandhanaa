@@ -7,16 +7,22 @@ export function MobileProfileStickyEnhancer() {
     const root = document.querySelector(".mobile-profile-sticky-scope");
     if (!(root instanceof HTMLElement)) return;
 
+    const scrollContainer = root.querySelector(".app-workspace");
     const tabNav = root.querySelector("nav.sticky");
     const bottomActions = root.querySelector("div.fixed.z-\\[110\\]");
-    if (!(tabNav instanceof HTMLElement) || !(bottomActions instanceof HTMLElement)) return;
+    if (
+      !(scrollContainer instanceof HTMLElement) ||
+      !(tabNav instanceof HTMLElement) ||
+      !(bottomActions instanceof HTMLElement)
+    ) return;
 
     const update = () => {
       const navTop = tabNav.getBoundingClientRect().top;
-      const isTabStuck = navTop <= 1;
+      const containerTop = scrollContainer.getBoundingClientRect().top;
+      const isTabStuck = navTop <= containerTop + 1;
       tabNav.classList.toggle("mobile-profile-tabs-stuck", isTabStuck);
 
-      const showBottomActions = window.scrollY > 260 || navTop < window.innerHeight * 0.7;
+      const showBottomActions = scrollContainer.scrollTop > 260;
       bottomActions.classList.toggle("mobile-profile-actions-visible", showBottomActions);
     };
 
@@ -24,10 +30,10 @@ export function MobileProfileStickyEnhancer() {
     bottomActions.classList.add("mobile-profile-actions-enhanced");
     update();
 
-    window.addEventListener("scroll", update, { passive: true });
+    scrollContainer.addEventListener("scroll", update, { passive: true });
     window.addEventListener("resize", update);
     return () => {
-      window.removeEventListener("scroll", update);
+      scrollContainer.removeEventListener("scroll", update);
       window.removeEventListener("resize", update);
       tabNav.classList.remove("mobile-profile-tabs-enhanced", "mobile-profile-tabs-stuck");
       bottomActions.classList.remove("mobile-profile-actions-enhanced", "mobile-profile-actions-visible");
