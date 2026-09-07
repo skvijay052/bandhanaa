@@ -96,37 +96,37 @@ export function MobileMatchesExperience({
         </div>
       </header>
 
-      <div className="-mx-4 flex gap-3 overflow-x-auto bg-[#f8fafc] px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <Pill
-          active={activeFilter === "best"}
-          label="Best Matches"
-          onClick={() => setActiveFilter("best")}
-        />
-        <Pill
-          active={activeFilter === "new"}
-          label="New Matches"
-          badge
-          onClick={() => setActiveFilter("new")}
-        />
-        <Pill
-          active={activeFilter === "compatible"}
-          label="Highly Compatible"
-          onClick={() => setActiveFilter("compatible")}
-        />
-        <Pill
-          active={activeFilter === "nearby"}
-          label="Near You"
-          icon={<MapPin size={12} className="text-[#a247f2]" />}
-          onClick={() => setActiveFilter("nearby")}
-        />
-      </div>
+      <div className="-mx-4 h-[calc(100dvh-64px)] snap-y snap-mandatory overflow-y-auto overscroll-contain pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-3 overflow-x-auto bg-[#f8fafc] px-4 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <Pill
+            active={activeFilter === "best"}
+            label="Best Matches"
+            onClick={() => setActiveFilter("best")}
+          />
+          <Pill
+            active={activeFilter === "new"}
+            label="New Matches"
+            badge
+            onClick={() => setActiveFilter("new")}
+          />
+          <Pill
+            active={activeFilter === "compatible"}
+            label="Highly Compatible"
+            onClick={() => setActiveFilter("compatible")}
+          />
+          <Pill
+            active={activeFilter === "nearby"}
+            label="Near You"
+            icon={<MapPin size={12} className="text-[#a247f2]" />}
+            onClick={() => setActiveFilter("nearby")}
+          />
+        </div>
 
-      {filteredProfiles.length ? (
-        <div className="-mx-4 h-[calc(100dvh-154px)] snap-y snap-mandatory overflow-y-auto overscroll-contain px-4 pb-24 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {filteredProfiles.map((profile, index) => (
+        {filteredProfiles.length ? (
+          filteredProfiles.map((profile, index) => (
             <div
               key={profile.id}
-              className="flex min-h-[calc(100dvh-154px)] snap-start snap-always items-start py-2"
+              className="flex min-h-[calc(100dvh-154px)] snap-start snap-always items-start px-4 py-2"
             >
               <MobileMatchCard
                 profile={profile}
@@ -138,20 +138,20 @@ export function MobileMatchesExperience({
                 onInterest={() => onInterest(profile)}
               />
             </div>
-          ))}
-        </div>
-      ) : (
-        <div className="grid min-h-[52dvh] place-items-center text-center">
-          <div>
-            <h2 className="text-[18px] font-semibold text-[#0f1419]">
-              No matches found
-            </h2>
-            <p className="mt-2 text-[13px] text-[#687184]">
-              Try another match filter.
-            </p>
+          ))
+        ) : (
+          <div className="grid min-h-[52dvh] place-items-center px-4 text-center">
+            <div>
+              <h2 className="text-[18px] font-semibold text-[#0f1419]">
+                No matches found
+              </h2>
+              <p className="mt-2 text-[13px] text-[#687184]">
+                Try another match filter.
+              </p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
