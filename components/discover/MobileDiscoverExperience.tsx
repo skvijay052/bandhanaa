@@ -111,7 +111,7 @@ export function MobileDiscoverExperience({
   const featured = filteredProfiles[0];
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
-      <header className="grid grid-cols-[40px_1fr_40px] items-center">
+      <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center border-b border-black/5 bg-[#f8fafc]/95 px-4 py-3 backdrop-blur-xl">
         <Link href="/discover" className="" aria-label="Bandhanaa">
           <Brand compact />
         </Link>
