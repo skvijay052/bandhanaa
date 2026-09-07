@@ -151,7 +151,15 @@ export function MyProfileClient({
       <div className="app-shell">
         <AppSidebar active="Profile" />
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-[72px] md:pb-0">
-          <MobileMyProfileExperience profile={viewProfile} stats={{ interested: acceptedInterestCount, sent: sentInterestCount, shortlisted: shortlistedCount }} onEdit={edit} onAvatar={() => choosePhoto("avatar")} onAddPhoto={() => choosePhoto("gallery")} />
+          <MobileMyProfileExperience
+            profile={viewProfile}
+            stats={{ interested: acceptedInterestCount, sent: sentInterestCount, shortlisted: shortlistedCount }}
+            onEdit={edit}
+            onAvatar={() => choosePhoto("avatar")}
+            onAddPhoto={() => choosePhoto("gallery")}
+            onSetProfilePicture={setProfilePicture}
+            onDeletePhoto={deletePhoto}
+          />
           <div className="hidden md:block">
           <MobilePageHeader
             title="My Profile"
