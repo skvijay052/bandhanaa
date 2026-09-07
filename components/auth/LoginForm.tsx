@@ -43,6 +43,7 @@ export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
       ? "Google sign-in could not be completed. Please try again."
       : "",
   );
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -51,6 +52,7 @@ export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
+  const busy = isSubmitting || isRedirecting;
   async function submit(values: LoginValues) {
     setError("");
     const identifier = values.email.trim();
@@ -67,14 +69,18 @@ export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
           /email not confirmed/i.test(authError.message)
         ) {
           localStorage.setItem(verificationEmailStorageKey, normalizedEmail);
+          setIsRedirecting(true);
           router.push("/verify-email");
           return;
         }
+        setIsRedirecting(false);
         return setError(friendly(authError.message));
       }
+      setIsRedirecting(true);
       router.replace("/dashboard");
       router.refresh();
     } catch {
+      setIsRedirecting(false);
       setError(
         "Unable to connect. Check your internet connection and try again.",
       );
@@ -139,9 +145,9 @@ export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
         <button
           type="submit"
           className="auth-button auth-button-primary !bg-black !text-white hover:!bg-[#222] focus:!ring-black/20"
-          disabled={isSubmitting}
+          disabled={busy}
         >
-          {isSubmitting ? (
+          {busy ? (
             <>
               <span className="mr-2 size-[18px] animate-spin rounded-full border-2 border-current border-r-transparent" />
               Signing in…
@@ -162,7 +168,7 @@ export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
         <span className="h-px flex-1 bg-line" />
       </div>
       <div className="[&>button]:shadow-[0_7px_18px_rgba(60,42,86,.08)]">
-        <GoogleButton disabled={isSubmitting} onError={setError} />
+        <GoogleButton disabled={busy} onError={setError} />
       </div>
     </FormFrame>
   );
