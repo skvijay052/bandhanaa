@@ -1,4 +1,4 @@
-export type ConversationFilter = "all" | "unread" | "archived";
+export type ConversationFilter = "all" | "unread" | "favourites";
 
 export type Conversation = {
   id: string;
@@ -14,7 +14,7 @@ export type Conversation = {
   time: string;
   unread: number;
   verified: boolean;
-  archived?: boolean;
+  favourite?: boolean;
 };
 
 export type ChatMessage = {
