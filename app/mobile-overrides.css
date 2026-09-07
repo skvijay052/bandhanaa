@@ -23,4 +23,64 @@
     padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
     scroll-padding-bottom: calc(120px + env(safe-area-inset-bottom));
   }
+
+  /* Edit Profile mobile title row: centered title with the standard back-button treatment. */
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header {
+    position: relative;
+    display: grid !important;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center !important;
+    padding-top: 12px !important;
+    padding-bottom: 14px !important;
+  }
+
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > button:first-child {
+    width: 40px !important;
+    height: 40px !important;
+    margin-right: 0 !important;
+    border-radius: 13px !important;
+    background: #fff !important;
+    box-shadow: 0 7px 22px rgba(15, 20, 25, 0.07);
+  }
+
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > button:first-child svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.9;
+  }
+
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > div {
+    grid-column: 2;
+    text-align: center;
+  }
+
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > div h1 {
+    font-size: 17px !important;
+    line-height: 22px;
+    letter-spacing: -0.015em;
+  }
+
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > span {
+    display: none !important;
+  }
+
+  /* Make the More tab match the size, border and active state of every other tab. */
+  .edit-profile-shell nav.md\:hidden > button:last-child {
+    position: relative;
+    min-width: 74px !important;
+    gap: 0.25rem !important;
+    padding-bottom: 0.75rem !important;
+    font-size: 12px !important;
+    line-height: 1rem !important;
+    color: inherit;
+  }
+
+  .edit-profile-shell nav.md\:hidden > button:last-child > span:first-child {
+    border-color: #e4e6ed !important;
+  }
+
+  .edit-profile-shell nav.md\:hidden > button:last-child > span:first-child {
+    width: 36px;
+    height: 36px;
+  }
 }
