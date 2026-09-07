@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Heart } from "lucide-react";
+import { ArrowLeft, Bell } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
 
 export function MobilePageHeader({
@@ -46,11 +46,12 @@ export function MobilePageHeader({
 
         <div className="justify-self-end">
           <Link
-            href="/matches?tab=shortlisted"
-            aria-label="Shortlist"
-            className="grid size-10 place-items-center rounded-[13px] bg-white text-[#111] shadow-[0_7px_22px_rgba(15,20,25,.07)]"
+            href="/notifications"
+            aria-label="Notifications"
+            className="relative grid size-10 place-items-center rounded-[13px] bg-white text-[#111] shadow-[0_7px_22px_rgba(15,20,25,.07)]"
           >
-            <Heart size={18} strokeWidth={1.8} />
+            <Bell size={18} strokeWidth={1.8} />
+            <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#f34ca4] ring-2 ring-white" />
           </Link>
         </div>
       </div>
