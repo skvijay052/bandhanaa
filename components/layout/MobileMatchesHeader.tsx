@@ -2,7 +2,7 @@ import { Bell, Menu } from "lucide-react";
 
 export function MobileMatchesHeader() {
   return (
-    <header className="grid h-16 grid-cols-[40px_1fr_40px] items-center px-4 md:hidden">
+    <header className="sticky top-0 z-[90] grid h-16 grid-cols-[40px_1fr_40px] items-center border-b border-black/5 bg-[#f8fafc]/95 px-4 backdrop-blur-xl md:hidden">
       <button
         aria-label="Open menu"
         className="grid size-10 place-items-center"
