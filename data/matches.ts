@@ -18,6 +18,7 @@ export interface MatchProfile {
   lifestyle: string;
   familyValues: string;
   online: boolean;
+  createdAt?: string | null;
 }
 
 export type MatchTab = "all" | "shortlisted" | "sent" | "received";
