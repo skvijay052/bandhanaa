@@ -1,16 +1,45 @@
 "use client";
 import Link from "next/link";
-import { ArrowLeft, BadgeCheck, Bookmark, BriefcaseBusiness, CalendarDays, Camera, ChevronDown, GraduationCap, Heart, Languages, MapPin, MessageCircle, Pencil, Ruler, Settings, Sparkles, UserRound, Users, Weight } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, BadgeCheck, Bookmark, BriefcaseBusiness, CalendarDays, Camera, Check, GraduationCap, Heart, Languages, MapPin, MessageCircle, MoreVertical, Pencil, Ruler, Settings, Sparkles, Trash2, UserRound, Users, Weight } from "lucide-react";
 import type { MyProfileData } from "@/data/my-profile";
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { Brand } from "@/components/auth/Brand";
 import { DetailCard } from "./ProfileDetailCards";
 
-export function MobileMyProfileExperience({ profile, stats, onEdit, onAvatar, onAddPhoto }: { profile: MyProfileData; stats: { interested: number; sent: number; shortlisted: number }; onEdit: () => void; onAvatar: () => void; onAddPhoto: () => void }) {
+export function MobileMyProfileExperience({
+  profile,
+  stats,
+  onEdit,
+  onAvatar,
+  onAddPhoto,
+  onSetProfilePicture,
+  onDeletePhoto,
+}: {
+  profile: MyProfileData;
+  stats: { interested: number; sent: number; shortlisted: number };
+  onEdit: () => void;
+  onAvatar: () => void;
+  onAddPhoto: () => void;
+  onSetProfilePicture: (photo: string) => Promise<void>;
+  onDeletePhoto: (photo: string) => Promise<void>;
+}) {
+  const [photoMenu, setPhotoMenu] = useState<string | null>(null);
   const location = [profile.city, profile.state, profile.country].filter((v) => v && v !== "Not added").join(", ") || "Location not added";
   const details = [[CalendarDays, "Age", profile.age ? `${profile.age} years` : "Not added"], [CalendarDays, "Date of Birth", profile.birthDate], [UserRound, "Gender", profile.gender], [Ruler, "Height", profile.height], [Weight, "Weight", profile.weight], [Sparkles, "Religion", profile.religion], [Languages, "Mother Tongue", profile.motherTongue], [Heart, "Marital Status", profile.maritalStatus], [MapPin, "Location", location], [GraduationCap, "Education", profile.education], [BriefcaseBusiness, "Profession", profile.profession], [BriefcaseBusiness, "Company", profile.company]] as const;
   const chips = profile.lifestyle.slice(0, 4).map((item) => item.value).filter((v) => v && v !== "Not added");
-  const photos = Array.from(new Set([profile.avatar, ...profile.photos].filter(Boolean))).slice(0, 4);
+  const photos = Array.from(new Set([profile.avatar, ...profile.photos].filter(Boolean))).slice(0, 6);
+
+  async function setAsProfile(photo: string) {
+    setPhotoMenu(null);
+    await onSetProfilePicture(photo);
+  }
+
+  async function removePhoto(photo: string) {
+    setPhotoMenu(null);
+    await onDeletePhoto(photo);
+  }
+
   return <div className="my-profile-mobile md:hidden">
     <header className="my-profile-mobile__header">
       <Link href="/discover" aria-label="Back"><ArrowLeft /></Link>
@@ -27,7 +56,48 @@ export function MobileMyProfileExperience({ profile, stats, onEdit, onAvatar, on
       <div className="my-profile-mobile__section-title"><h3>About Me</h3><button onClick={onEdit}><Pencil /> Edit</button></div><p className="my-profile-mobile__about">{profile.about}</p>{chips.length > 0 && <div className="my-profile-mobile__chips">{chips.map((chip) => <span key={chip}>{chip}</span>)}</div>}<div className="my-profile-mobile__divider" />
       <div className="my-profile-mobile__section-title"><h3>Basic Details</h3><button onClick={onEdit}><Pencil /> Edit</button></div><div className="my-profile-mobile__details">{details.map(([Icon, label, value]) => <div key={label}><span><Icon /></span><p><small>{label}</small><strong>{value || "Not added"}</strong></p></div>)}</div>
     </section>
-    <section className="my-profile-mobile__card my-profile-mobile__photos"><div className="my-profile-mobile__section-title"><h3>My Photos</h3><button onClick={onEdit}><Pencil /> Edit</button></div><div className="my-profile-mobile__photo-row">{photos.map((photo, index) => <div key={photo} className={index === 0 ? "is-primary" : ""}><ProfileImage src={photo} alt={`${profile.name} photo ${index + 1}`} fill sizes="90px" className="object-cover" />{index === 0 && <i>✓</i>}</div>)}{photos.length < 6 && <button onClick={onAddPhoto}><b>＋</b><span>Add Photo</span></button>}</div></section>
+    <section className="my-profile-mobile__card my-profile-mobile__photos">
+      <div className="my-profile-mobile__section-title"><h3>My Photos</h3><button onClick={onEdit}><Pencil /> Edit</button></div>
+      <div className="my-profile-mobile__photo-row">
+        {photos.map((photo, index) => {
+          const isProfile = profile.avatar === photo;
+          const open = photoMenu === photo;
+          return <div key={photo} className={`${isProfile ? "is-primary" : ""} !overflow-visible`}>
+            <span className="absolute inset-0 overflow-hidden rounded-[inherit] bg-[#eee]"><ProfileImage src={photo} alt={`${profile.name} photo ${index + 1}`} fill sizes="90px" className="object-cover" /></span>
+            <button
+              type="button"
+              onClick={() => setPhotoMenu(open ? null : photo)}
+              aria-label={`Photo options for photo ${index + 1}`}
+              aria-expanded={open}
+              className="absolute right-1.5 top-1.5 z-20 grid size-6 place-items-center rounded-full bg-black/55 text-white shadow-sm backdrop-blur-sm"
+            >
+              <MoreVertical size={14} />
+            </button>
+            {isProfile ? <span className="absolute bottom-1.5 right-1.5 z-20 grid size-6 place-items-center rounded-full bg-gradient-to-br from-[#8c45ff] to-[#f34ca4] text-white ring-2 ring-white"><Check size={14} strokeWidth={3} /></span> : null}
+            {open ? <div className="absolute right-1 top-9 z-40 w-[142px] overflow-hidden rounded-xl border border-[#f0e7f3] bg-white py-1 text-left shadow-[0_12px_30px_rgba(42,35,70,.18)]">
+              <button
+                type="button"
+                disabled={isProfile}
+                onClick={() => void setAsProfile(photo)}
+                className="flex h-9 w-full items-center gap-2 px-3 text-[11px] font-semibold text-[#7d39e8] disabled:text-[#a8a8b2]"
+              >
+                <Check size={14} />
+                {isProfile ? "Profile photo" : "Set as profile"}
+              </button>
+              <button
+                type="button"
+                onClick={() => void removePhoto(photo)}
+                className="flex h-9 w-full items-center gap-2 border-t border-[#f3edf5] px-3 text-[11px] font-semibold text-[#e33d83]"
+              >
+                <Trash2 size={14} />
+                Delete
+              </button>
+            </div> : null}
+          </div>;
+        })}
+        {photos.length < 6 && <button onClick={onAddPhoto}><b>＋</b><span>Add Photo</span></button>}
+      </div>
+    </section>
     <div className="space-y-4 px-3 pb-6">
       <DetailCard title="Lifestyle" items={profile.lifestyle} />
       <DetailCard title="Family" items={profile.family} />
