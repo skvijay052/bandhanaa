@@ -7,6 +7,7 @@ import {
   Bell,
   Bookmark,
   BriefcaseBusiness,
+  Eye,
   GraduationCap,
   MapPin,
   Search,
@@ -16,6 +17,7 @@ import {
 import { Brand } from "@/components/auth/Brand";
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { createClient } from "@/lib/supabase/client";
+import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import type { DiscoverProfile } from "./types";
 import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
 
@@ -33,11 +35,37 @@ type Props = {
 };
 
 type MobileFilterMode = "for-you" | "nearby" | "new" | "active";
+
+type RecentVisitorRow = {
+  id: string;
+  display_name: string | null;
+  profession: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  avatar_url: string | null;
+  photos: string[] | null;
+  gender: string | null;
+  last_seen_at: string | null;
+  viewed_at: string;
+};
+
+type RecentVisitor = {
+  id: string;
+  name: string;
+  profession: string;
+  location: string;
+  image: string;
+  online: boolean;
+  viewedAt: string;
+};
+
 const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen, onFilters, completion, shortlisted, onShortlist }: Props) {
   const [filterMode, setFilterMode] = useState<MobileFilterMode>("for-you");
   const [viewerCity, setViewerCity] = useState("");
+  const [recentVisitors, setRecentVisitors] = useState<RecentVisitor[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -49,6 +77,38 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
       if (!cancelled) setViewerCity(String(data?.city ?? "").trim());
     }
     void loadViewerCity();
+    return () => { cancelled = true; };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadRecentVisitors() {
+      const { data, error } = await createClient().rpc("get_recent_profile_visitors", {
+        result_limit: 8,
+      });
+      if (cancelled || error || !data) return;
+      const visitors = (data as RecentVisitorRow[]).map((visitor) => ({
+        id: visitor.id,
+        name: visitor.display_name?.trim() || "Member",
+        profession: visitor.profession?.trim() || "Professional",
+        location: [visitor.city, visitor.state, visitor.country].filter(Boolean).join(", ") || "India",
+        image: resolveProfilePhoto(
+          {
+            avatar_url: visitor.avatar_url,
+            photos: visitor.photos,
+            gender: visitor.gender,
+          },
+          genderDiscoverPhoto(visitor.gender),
+        ),
+        online: Boolean(
+          visitor.last_seen_at &&
+          Date.now() - new Date(visitor.last_seen_at).getTime() < 120_000,
+        ),
+        viewedAt: visitor.viewed_at,
+      }));
+      setRecentVisitors(visitors);
+    }
+    void loadRecentVisitors();
     return () => { cancelled = true; };
   }, []);
 
@@ -76,7 +136,11 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
     .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
     .slice(0, 5), [profiles]);
 
-  const largeCardProfiles = latestProfiles.length ? latestProfiles : filteredProfiles.slice(0, 5);
+  const newMatchProfiles = useMemo(() => {
+    const source = latestProfiles.length ? latestProfiles : [...profiles].sort((a, b) => b.match - a.match);
+    return source.filter((profile) => profile.relationship !== "following").slice(0, 5);
+  }, [latestProfiles, profiles]);
+
   const safeCompletion = Math.max(0, Math.min(100, completion));
 
   return (
@@ -139,17 +203,58 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
         <span className="grid h-9 shrink-0 place-items-center rounded-full bg-gradient-to-r from-[#8c45ff] to-[#f34ca4] px-3 text-[11px] font-bold text-white">Complete ›</span>
       </Link>
 
-      {largeCardProfiles.length ? (
-        <section className="mt-5 space-y-5" aria-label="Latest profile cards">
-          {largeCardProfiles.map((profile, index) => (
-            <FeaturedProfile
-              key={profile.id}
-              profile={profile}
-              liked={shortlisted.includes(profile.id)}
-              onShortlist={() => onShortlist(profile.id)}
-              priority={index === 0}
-            />
-          ))}
+      {recentVisitors.length ? (
+        <section className="mt-6" aria-label="Recent visitors">
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h2 className="text-[20px] font-bold tracking-[-.02em] text-[#20242d]">Recent Visitors</h2>
+              <p className="mt-0.5 text-[11px] text-[#7a8190]">People who recently viewed your profile</p>
+            </div>
+          </div>
+          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {recentVisitors.map((visitor) => (
+              <Link
+                key={visitor.id}
+                href={`/profile/${visitor.id}`}
+                className="w-[158px] shrink-0 snap-start overflow-hidden rounded-[20px] bg-white shadow-[0_10px_28px_rgba(44,33,80,.09)]"
+              >
+                <span className="relative block h-[170px] w-full overflow-hidden bg-[#eee]">
+                  <ProfileImage src={visitor.image} alt={visitor.name} fill sizes="158px" className="object-cover" />
+                  <span className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/55 to-transparent" />
+                  <span className={`absolute left-3 top-3 size-2.5 rounded-full ring-2 ring-white ${visitor.online ? "bg-[#2dd477]" : "bg-[#a8afb9]"}`} />
+                  <span className="absolute bottom-2.5 left-3 right-3 truncate text-[12px] font-semibold text-white">{visitor.name}</span>
+                </span>
+                <span className="block px-3 py-2.5">
+                  <span className="block truncate text-[11px] font-medium text-[#2b3039]">{visitor.profession}</span>
+                  <span className="mt-1 block truncate text-[10px] text-[#8a91a1]">{visitor.location}</span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {newMatchProfiles.length ? (
+        <section className="mt-6" aria-label="New matches">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-[20px] font-bold tracking-[-.02em] text-[#20242d]">New Matches</h2>
+              <p className="mt-0.5 text-[11px] text-[#7a8190]">Swipe to explore your latest matches</p>
+            </div>
+            <Link href="/matches" className="shrink-0 text-[13px] font-semibold text-[#8c45ff]">View All</Link>
+          </div>
+          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {newMatchProfiles.map((profile, index) => (
+              <div key={profile.id} className="w-[calc(100vw-32px)] shrink-0 snap-center">
+                <NewMatchCard
+                  profile={profile}
+                  liked={shortlisted.includes(profile.id)}
+                  onShortlist={() => onShortlist(profile.id)}
+                  priority={index === 0}
+                />
+              </div>
+            ))}
+          </div>
         </section>
       ) : (
         <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">No profiles available yet.</div>
@@ -162,29 +267,31 @@ function FilterPill({ icon, label, active = false, onClick }: { icon: React.Reac
   return <button type="button" onClick={onClick} aria-pressed={active} className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419]"}`}>{icon}{label}</button>;
 }
 
-function FeaturedProfile({ profile, liked, onShortlist, priority = false }: { profile: DiscoverProfile; liked: boolean; onShortlist: () => void; priority?: boolean }) {
+function NewMatchCard({ profile, liked, onShortlist, priority = false }: { profile: DiscoverProfile; liked: boolean; onShortlist: () => void; priority?: boolean }) {
   return (
-    <article className="overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)]">
-      <div className="relative h-[440px] overflow-hidden">
-        <Link href={`/profile/${profile.id}`} className="absolute inset-0"><ProfileImage src={profile.image} alt={profile.name} fill priority={priority} sizes="(max-width: 767px) 100vw, 0px" className="object-cover" /></Link>
-        <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        <span className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[12px] font-medium ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}>● {profile.online ? "Online" : "Offline"}</span>
-        <button type="button" onClick={onShortlist} aria-label={liked ? "Remove bookmark" : "Bookmark profile"} className="absolute right-4 top-4 grid size-10 place-items-center rounded-[14px] bg-white text-[#0f1419] shadow-lg"><Bookmark size={25} fill={liked ? "#8c45ff" : "none"} className={liked ? "text-[#8c45ff]" : ""} /></button>
+    <article className="overflow-hidden rounded-[24px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.12)]">
+      <div className="relative h-[360px] overflow-hidden bg-[#eee]">
+        <Link href={`/profile/${profile.id}`} className="absolute inset-0">
+          <ProfileImage src={profile.image} alt={profile.name} fill priority={priority} sizes="calc(100vw - 32px)" className="object-cover" />
+        </Link>
+        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+        <span className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[11px] font-medium ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}>● {profile.online ? "Online" : "Offline"}</span>
+        <button type="button" onClick={onShortlist} aria-label={liked ? "Remove bookmark" : "Bookmark profile"} className="absolute right-4 top-4 grid size-10 place-items-center rounded-[14px] bg-white text-[#8c45ff] shadow-lg"><Bookmark size={20} fill={liked ? "currentColor" : "none"} /></button>
         <div className="absolute inset-x-5 bottom-5 text-white">
-          <Link href={`/profile/${profile.id}`} className="inline-flex"><h2 className="flex items-center gap-2 text-[31px] font-bold tracking-[-.03em]">{profile.name}, {profile.age || "Age hidden"}<BadgeCheck size={23} className="fill-[#ff4d9b] text-white" /></h2></Link>
-          <p className="mt-1 text-[16px]">{profile.job}</p>
-          <p className="mt-2 flex items-center gap-2 text-[15px]"><MapPin size={17} fill="white" />{profile.city}</p>
+          <Link href={`/profile/${profile.id}`} className="inline-flex">
+            <h3 className="flex items-center gap-1.5 text-[23px] font-bold tracking-[-.03em]">{profile.name}, {profile.age || "Age hidden"}<BadgeCheck size={18} className="fill-[#ff4d9b] text-white" /></h3>
+          </Link>
+          <p className="mt-1 truncate text-[13px]">{profile.job}</p>
+          <p className="mt-1.5 flex items-center gap-1.5 truncate pr-16 text-[12px]"><MapPin size={14} fill="white" />{profile.city}</p>
         </div>
-        <span className="absolute bottom-5 right-5 rounded-full bg-black/60 px-3 py-1 text-[12px] text-white">1/{Math.max(profile.photoCount, 1)}</span>
+        <span className="absolute bottom-5 right-5 rounded-full bg-black/60 px-3 py-1 text-[11px] font-semibold text-white">{profile.match}% Match</span>
       </div>
-      <div className="rounded-t-[28px] px-5 pb-7 pt-5">
-        <div className="grid grid-cols-3 gap-3">
-          <Detail icon={<GraduationCap size={20} />} label="Education" value={profile.education} />
-          <Detail icon={<BriefcaseBusiness size={19} />} label="Profession" value={profile.job} />
-          <Detail icon={<span className="text-[18px]">▥</span>} label="Height" value={profile.height} />
-        </div>
-        <p className="mt-5 line-clamp-2 text-[15px] leading-6 text-[var(--text-secondary)]">{profile.bio}</p>
+      <div className="grid grid-cols-3 gap-2 px-4 py-3">
+        <Detail icon={<GraduationCap size={17} />} label="Education" value={profile.education} />
+        <Detail icon={<BriefcaseBusiness size={16} />} label="Profession" value={profile.job} />
+        <Detail icon={<Eye size={16} />} label="Profile" value={`${profile.photoCount || 1} photo${profile.photoCount === 1 ? "" : "s"}`} />
       </div>
+      <p className="line-clamp-2 border-t border-[#f0edf3] px-4 py-3 text-[12px] leading-5 text-[#687184]">{profile.bio}</p>
     </article>
   );
 }
