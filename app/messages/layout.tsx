@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { ChatProfilePictureEnhancer } from "@/components/messages/ChatProfilePictureEnhancer";
+import { MessagesFavouritesEnhancer } from "@/components/messages/MessagesFavouritesEnhancer";
 
 export default function MessagesLayout({ children }: { children: ReactNode }) {
   return (
@@ -69,6 +70,7 @@ export default function MessagesLayout({ children }: { children: ReactNode }) {
         }
       `}</style>
       <ChatProfilePictureEnhancer />
+      <MessagesFavouritesEnhancer />
       {children}
     </div>
   );
