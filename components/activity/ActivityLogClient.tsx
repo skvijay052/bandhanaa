@@ -266,17 +266,14 @@ export function ActivityLogClient({
   }
 
   return (
-    <main className="fixed inset-0 overflow-hidden bg-[var(--app-bg)]">
+    <main className="fixed inset-0 overflow-hidden bg-[var(--app-bg)] max-md:bg-white">
       <div className="app-shell edit-profile-shell !h-full">
         <AppSidebar active="Settings" />
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <SettingsNavigation active="Activity Log" />
-          <div className="h-full min-h-0 overflow-y-auto px-5 pb-24 md:px-8 md:pb-10">
-            <MobilePageHeader
-              title="Activity Log"
-              description="See your recent activity"
-            />
-            <div className="mx-auto w-full max-w-[1080px] py-5 md:py-7">
+          <div className="h-full min-h-0 overflow-y-auto pb-24 max-md:bg-white md:px-8 md:pb-10">
+            <MobilePageHeader backHref="/settings/privacy" compact />
+            <div className="mx-auto w-full max-w-[1080px] px-4 py-3 md:px-0 md:py-7">
               <header className="hidden md:block">
                 <h1 className="text-[22px] font-bold tracking-[-.02em] text-[#0f1419]">
                   Activity Log
