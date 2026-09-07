@@ -33,166 +33,73 @@ type Props = {
 };
 
 type MobileFilterMode = "for-you" | "nearby" | "new" | "active";
-
 const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
-export function MobileDiscoverExperience({
-  profiles,
-  query,
-  onQuery,
-  filtersOpen,
-  onFilters,
-  completion,
-  shortlisted,
-  onShortlist,
-}: Props) {
+export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen, onFilters, completion, shortlisted, onShortlist }: Props) {
   const [filterMode, setFilterMode] = useState<MobileFilterMode>("for-you");
   const [viewerCity, setViewerCity] = useState("");
 
   useEffect(() => {
     let cancelled = false;
-
     async function loadViewerCity() {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) return;
-
-      const { data } = await supabase
-        .from("profiles")
-        .select("city")
-        .eq("id", user.id)
-        .maybeSingle();
-
+      const { data } = await supabase.from("profiles").select("city").eq("id", user.id).maybeSingle();
       if (!cancelled) setViewerCity(String(data?.city ?? "").trim());
     }
-
     void loadViewerCity();
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const filteredProfiles = useMemo(() => {
-    const byMatch = (items: DiscoverProfile[]) =>
-      [...items].sort((a, b) => b.match - a.match);
-
+    const byMatch = (items: DiscoverProfile[]) => [...items].sort((a, b) => b.match - a.match);
     if (filterMode === "nearby") {
       const currentCity = normalizeCity(viewerCity);
       if (!currentCity) return [];
-      return byMatch(
-        profiles.filter((profile) => normalizeCity(profile.city) === currentCity),
-      );
+      return byMatch(profiles.filter((profile) => normalizeCity(profile.city) === currentCity));
     }
-
     if (filterMode === "new") {
       const cutoff = Date.now() - NEW_PROFILE_WINDOW_MS;
-      return profiles
-        .filter((profile) => {
-          if (!profile.createdAt) return false;
-          const createdAt = new Date(profile.createdAt).getTime();
-          return Number.isFinite(createdAt) && createdAt >= cutoff;
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt ?? 0).getTime() -
-            new Date(a.createdAt ?? 0).getTime(),
-        );
+      return profiles.filter((profile) => {
+        if (!profile.createdAt) return false;
+        const createdAt = new Date(profile.createdAt).getTime();
+        return Number.isFinite(createdAt) && createdAt >= cutoff;
+      }).sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime());
     }
-
-    if (filterMode === "active") {
-      return byMatch(profiles.filter((profile) => profile.online));
-    }
-
+    if (filterMode === "active") return byMatch(profiles.filter((profile) => profile.online));
     return byMatch(profiles);
   }, [filterMode, profiles, viewerCity]);
 
-  const latestProfiles = useMemo(
-    () =>
-      [...profiles]
-        .filter((profile) => {
-          if (!profile.createdAt) return false;
-          return Number.isFinite(new Date(profile.createdAt).getTime());
-        })
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt ?? 0).getTime() -
-            new Date(a.createdAt ?? 0).getTime(),
-        )
-        .slice(0, 5),
-    [profiles],
-  );
+  const latestProfiles = useMemo(() => [...profiles]
+    .filter((profile) => profile.createdAt && Number.isFinite(new Date(profile.createdAt).getTime()))
+    .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
+    .slice(0, 5), [profiles]);
 
   const featured = filteredProfiles[0];
+  const safeCompletion = Math.max(0, Math.min(100, completion));
+
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-0 md:hidden">
       <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center bg-white px-4 py-3">
-        <Link href="/discover" aria-label="Bandhanaa">
-          <Brand compact />
-        </Link>
+        <Link href="/discover" aria-label="Bandhanaa"><Brand compact /></Link>
         <span aria-hidden="true" />
         <div className="justify-self-end">
-          <Link
-            href="/matches?tab=shortlisted"
-            aria-label="Shortlisted profiles"
-            className="grid size-9 place-items-center rounded-[13px] bg-white p-1 text-[#0f1419] shadow-[0_8px_24px_rgba(44,33,80,.1)]"
-          >
-            <Heart size={17} />
-          </Link>
+          <Link href="/matches?tab=shortlisted" aria-label="Shortlisted profiles" className="grid size-9 place-items-center rounded-[13px] bg-white p-1 text-[#0f1419] shadow-[0_8px_24px_rgba(44,33,80,.1)]"><Heart size={17} /></Link>
         </div>
       </header>
 
       <label className="mobile-discover-search mt-5 flex h-11 items-center rounded-full border border-[#e6e2ea] bg-white px-3 text-[#87909e] shadow-[0_7px_22px_rgba(44,33,80,.08)]">
         <Search size={17} />
-        <input
-          id="mobile-discover-search"
-          type="search"
-          value={query}
-          onChange={(event) => onQuery(event.target.value)}
-          placeholder="Search by name, profession or city"
-          className="min-w-0 flex-1 bg-transparent px-3 text-[15px] text-[var(--text-primary)] outline-none placeholder:text-[#8b93a1]"
-        />
-        <button
-          type="button"
-          onClick={onFilters}
-          aria-expanded={filtersOpen}
-          aria-label="Advanced filters"
-          className="grid h-8 w-10 place-items-center border-l border-[#ebe8ef]"
-        >
-          <SlidersHorizontal size={16} />
-        </button>
+        <input id="mobile-discover-search" type="search" value={query} onChange={(event) => onQuery(event.target.value)} placeholder="Search by name, profession or city" className="min-w-0 flex-1 bg-transparent px-3 text-[15px] text-[var(--text-primary)] outline-none placeholder:text-[#8b93a1]" />
+        <button type="button" onClick={onFilters} aria-expanded={filtersOpen} aria-label="Advanced filters" className="grid h-8 w-10 place-items-center border-l border-[#ebe8ef]"><SlidersHorizontal size={16} /></button>
       </label>
 
       <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <FilterPill
-          active={filterMode === "for-you"}
-          onClick={() => setFilterMode("for-you")}
-          icon={<Star size={17} />}
-          label="For You"
-        />
-        <FilterPill
-          active={filterMode === "nearby"}
-          onClick={() => setFilterMode("nearby")}
-          icon={<MapPin size={17} className="text-[#ff4da0]" />}
-          label="Nearby"
-        />
-        <FilterPill
-          active={filterMode === "new"}
-          onClick={() => setFilterMode("new")}
-          icon={
-            <span className="mobile-new-badge rounded bg-[#ff4da0] font-bold text-white">
-              NEW
-            </span>
-          }
-          label="New"
-        />
-        <FilterPill
-          active={filterMode === "active"}
-          onClick={() => setFilterMode("active")}
-          icon={<span className="size-3 rounded-full bg-[#2dd477]" />}
-          label="Active"
-        />
+        <FilterPill active={filterMode === "for-you"} onClick={() => setFilterMode("for-you")} icon={<Star size={17} />} label="For You" />
+        <FilterPill active={filterMode === "nearby"} onClick={() => setFilterMode("nearby")} icon={<MapPin size={17} className="text-[#ff4da0]" />} label="Nearby" />
+        <FilterPill active={filterMode === "new"} onClick={() => setFilterMode("new")} icon={<span className="mobile-new-badge rounded bg-[#ff4da0] font-bold text-white">NEW</span>} label="New" />
+        <FilterPill active={filterMode === "active"} onClick={() => setFilterMode("active")} icon={<span className="size-3 rounded-full bg-[#2dd477]" />} label="Active" />
       </div>
 
       <DiscoverBannerSlider mobile />
@@ -200,220 +107,76 @@ export function MobileDiscoverExperience({
       {latestProfiles.length ? (
         <section className="mt-5" aria-label="Latest profiles">
           <div className="flex items-center justify-between">
-            <h2 className="text-[20px] font-bold tracking-[-.02em] text-[var(--text-primary)]">
-              Latest Profiles
-            </h2>
-            <Link
-              href="/matches"
-              className="text-[14px] font-semibold text-[#8c45ff]"
-            >
-              View All
-            </Link>
+            <h2 className="text-[20px] font-bold tracking-[-.02em] text-[var(--text-primary)]">Latest Profiles</h2>
+            <Link href="/matches" className="text-[14px] font-semibold text-[#8c45ff]">View All</Link>
           </div>
-
           <div className="-mx-4 mt-3 flex gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {latestProfiles.map((profile) => (
-              <Link
-                key={profile.id}
-                href={`/profile/${profile.id}`}
-                className="flex w-[76px] shrink-0 flex-col items-center text-center"
-              >
+              <Link key={profile.id} href={`/profile/${profile.id}`} className="flex w-[76px] shrink-0 flex-col items-center text-center">
                 <span className="relative grid size-[72px] place-items-center rounded-full bg-gradient-to-br from-[#8c45ff] via-[#d24ad7] to-[#ff4d9b] p-[2px]">
-                  <span className="relative block size-full overflow-hidden rounded-full border-2 border-white bg-[#eee]">
-                    <ProfileImage
-                      src={profile.image}
-                      alt={profile.name}
-                      fill
-                      sizes="72px"
-                      className="object-cover"
-                    />
-                  </span>
-                  {profile.online ? (
-                    <span
-                      className="absolute bottom-0 right-0 size-4 rounded-full border-2 border-white bg-[#2dd477]"
-                      aria-label="Online"
-                    />
-                  ) : null}
+                  <span className="relative block size-full overflow-hidden rounded-full border-2 border-white bg-[#eee]"><ProfileImage src={profile.image} alt={profile.name} fill sizes="72px" className="object-cover" /></span>
+                  {profile.online ? <span className="absolute bottom-0 right-0 size-4 rounded-full border-2 border-white bg-[#2dd477]" aria-label="Online" /> : null}
                 </span>
-                <strong className="mt-1.5 block w-full truncate text-[11px] font-semibold text-[#20242d]">
-                  {profile.name}
-                  {profile.age ? `, ${profile.age}` : ""}
-                </strong>
+                <strong className="mt-1.5 block w-full truncate text-[11px] font-semibold text-[#20242d]">{profile.name}{profile.age ? `, ${profile.age}` : ""}</strong>
               </Link>
             ))}
           </div>
         </section>
       ) : null}
 
-      <Link
-        href="/settings/edit-profile"
-        className="mt-5 flex min-h-[86px] items-center rounded-[22px] bg-gradient-to-r from-[#e7e3ff] to-[#f9e5fa] px-4 text-[#6534d7] shadow-[0_8px_24px_rgba(113,74,214,.11)]"
-      >
-        <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/85">
-          <Star size={16} className="size-4 fill-[#7448e8] text-[#7448e8]" />
+      <Link href="/settings/edit-profile" className="mt-5 flex h-[68px] items-center gap-3 rounded-[20px] border border-[#eadcff] bg-gradient-to-r from-[#f4efff] via-[#fbf4ff] to-[#fff0fa] px-3 shadow-[0_8px_24px_rgba(113,74,214,.08)]">
+        <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#7c3cff] to-[#e94db6] text-white shadow-[0_5px_14px_rgba(139,69,255,.22)]"><Star size={18} fill="currentColor" /></span>
+        <span className="min-w-0 flex-1">
+          <strong className="block truncate text-[14px] font-bold leading-tight text-[#20242d]">Complete your profile</strong>
+          <span className="mt-1 block truncate text-[11px] leading-tight text-[#6e6e73]">Add a few details to get better matches</span>
         </span>
-        <span className="ml-4 min-w-0 flex-1">
-          <strong className="block text-[17px] leading-tight">
-            Increase your chances!
-          </strong>
-          <span className="mt-1 block text-[14px] leading-tight">
-            Complete your profile to get better matches
+        <span className="flex w-[76px] shrink-0 items-center gap-2">
+          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#e9e3ef]">
+            <span className="block h-full rounded-full bg-gradient-to-r from-[#8c45ff] to-[#f34ca4]" style={{ width: `${safeCompletion}%` }} />
           </span>
+          <strong className="text-[11px] font-bold text-[#8c45ff]">{safeCompletion}%</strong>
         </span>
-        <span className="grid size-[48px] shrink-0 place-items-center rounded-full border-4 border-[#9146ee] border-l-white/60 bg-white/35 text-[14px] font-bold">
-          {completion}%
-        </span>
-        <span className="ml-2 text-2xl">›</span>
+        <span className="grid h-9 shrink-0 place-items-center rounded-full bg-gradient-to-r from-[#8c45ff] to-[#f34ca4] px-3 text-[11px] font-bold text-white">Complete ›</span>
       </Link>
 
-      {featured ? (
-        <FeaturedProfile
-          profile={featured}
-          liked={shortlisted.includes(featured.id)}
-          onShortlist={() => onShortlist(featured.id)}
-        />
-      ) : (
-        <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">
-          No profiles match this filter.
-        </div>
-      )}
+      {featured ? <FeaturedProfile profile={featured} liked={shortlisted.includes(featured.id)} onShortlist={() => onShortlist(featured.id)} /> : <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">No profiles match this filter.</div>}
     </div>
   );
 }
 
-function FilterPill({
-  icon,
-  label,
-  active = false,
-  onClick,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  active?: boolean;
-  onClick?: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419]"}`}
-    >
-      {icon}
-      {label}
-    </button>
-  );
+function FilterPill({ icon, label, active = false, onClick }: { icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void }) {
+  return <button type="button" onClick={onClick} aria-pressed={active} className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419]"}`}>{icon}{label}</button>;
 }
 
-function FeaturedProfile({
-  profile,
-  liked,
-  onShortlist,
-}: {
-  profile: DiscoverProfile;
-  liked: boolean;
-  onShortlist: () => void;
-}) {
+function FeaturedProfile({ profile, liked, onShortlist }: { profile: DiscoverProfile; liked: boolean; onShortlist: () => void }) {
   return (
     <article className="mt-5 overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)]">
       <div className="relative h-[440px] overflow-hidden">
-        <Link href={`/profile/${profile.id}`} className="absolute inset-0">
-          <ProfileImage
-            src={profile.image}
-            alt={profile.name}
-            fill
-            priority
-            sizes="(max-width: 767px) 100vw, 0px"
-            className="object-cover"
-          />
-        </Link>
+        <Link href={`/profile/${profile.id}`} className="absolute inset-0"><ProfileImage src={profile.image} alt={profile.name} fill priority sizes="(max-width: 767px) 100vw, 0px" className="object-cover" /></Link>
         <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        <span
-          className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[12px] font-medium ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}
-        >
-          ● {profile.online ? "Online" : "Offline"}
-        </span>
-        <button
-          type="button"
-          onClick={onShortlist}
-          aria-label={liked ? "Remove bookmark" : "Bookmark profile"}
-          className="absolute right-4 top-4 grid size-10 place-items-center rounded-[14px] bg-white text-[#0f1419] shadow-lg"
-        >
-          <Bookmark
-            size={25}
-            fill={liked ? "#8c45ff" : "none"}
-            className={liked ? "text-[#8c45ff]" : ""}
-          />
-        </button>
+        <span className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[12px] font-medium ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}>● {profile.online ? "Online" : "Offline"}</span>
+        <button type="button" onClick={onShortlist} aria-label={liked ? "Remove bookmark" : "Bookmark profile"} className="absolute right-4 top-4 grid size-10 place-items-center rounded-[14px] bg-white text-[#0f1419] shadow-lg"><Bookmark size={25} fill={liked ? "#8c45ff" : "none"} className={liked ? "text-[#8c45ff]" : ""} /></button>
         <div className="absolute inset-x-5 bottom-5 text-white">
-          <Link href={`/profile/${profile.id}`} className="inline-flex">
-            <h2 className="flex items-center gap-2 text-[31px] font-bold tracking-[-.03em]">
-              {profile.name}, {profile.age || "Age hidden"}
-              <BadgeCheck size={23} className="fill-[#ff4d9b] text-white" />
-            </h2>
-          </Link>
+          <Link href={`/profile/${profile.id}`} className="inline-flex"><h2 className="flex items-center gap-2 text-[31px] font-bold tracking-[-.03em]">{profile.name}, {profile.age || "Age hidden"}<BadgeCheck size={23} className="fill-[#ff4d9b] text-white" /></h2></Link>
           <p className="mt-1 text-[16px]">{profile.job}</p>
-          <p className="mt-2 flex items-center gap-2 text-[15px]">
-            <MapPin size={17} fill="white" />
-            {profile.city}
-          </p>
+          <p className="mt-2 flex items-center gap-2 text-[15px]"><MapPin size={17} fill="white" />{profile.city}</p>
         </div>
-        <span className="absolute bottom-5 right-5 rounded-full bg-black/60 px-3 py-1 text-[12px] text-white">
-          1/{Math.max(profile.photoCount, 1)}
-        </span>
+        <span className="absolute bottom-5 right-5 rounded-full bg-black/60 px-3 py-1 text-[12px] text-white">1/{Math.max(profile.photoCount, 1)}</span>
       </div>
       <div className="rounded-t-[28px] px-5 pb-7 pt-5">
         <div className="grid grid-cols-3 gap-3">
-          <Detail
-            icon={<GraduationCap size={20} />}
-            label="Education"
-            value={profile.education}
-          />
-          <Detail
-            icon={<BriefcaseBusiness size={19} />}
-            label="Profession"
-            value={profile.job}
-          />
-          <Detail
-            icon={<span className="text-[18px]">▥</span>}
-            label="Height"
-            value={profile.height}
-          />
+          <Detail icon={<GraduationCap size={20} />} label="Education" value={profile.education} />
+          <Detail icon={<BriefcaseBusiness size={19} />} label="Profession" value={profile.job} />
+          <Detail icon={<span className="text-[18px]">▥</span>} label="Height" value={profile.height} />
         </div>
-        <p className="mt-5 line-clamp-2 text-[15px] leading-6 text-[var(--text-secondary)]">
-          {profile.bio}
-        </p>
+        <p className="mt-5 line-clamp-2 text-[15px] leading-6 text-[var(--text-secondary)]">{profile.bio}</p>
       </div>
     </article>
   );
 }
 
-function Detail({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex min-w-0 gap-2">
-      <span className="mobile-profile-detail-icon grid size-8 shrink-0 place-items-center rounded-xl bg-[#f7f3ff] text-[#6d6890]">
-        {icon}
-      </span>
-      <span className="min-w-0">
-        <span className="mobile-profile-detail-text block text-[10px] text-[#8b93a1]">
-          {label}
-        </span>
-        <strong className="mobile-profile-detail-text mt-1 block truncate text-[10px] font-medium text-[var(--text-primary)]">
-          {value}
-        </strong>
-      </span>
-    </div>
-  );
+function Detail({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
+  return <div className="flex min-w-0 gap-2"><span className="mobile-profile-detail-icon grid size-8 shrink-0 place-items-center rounded-xl bg-[#f7f3ff] text-[#6d6890]">{icon}</span><span className="min-w-0"><span className="mobile-profile-detail-text block text-[10px] text-[#8b93a1]">{label}</span><strong className="mobile-profile-detail-text mt-1 block truncate text-[10px] font-medium text-[var(--text-primary)]">{value}</strong></span></div>;
 }
 
-function normalizeCity(value: string) {
-  return value.split(",")[0]?.trim().toLowerCase() ?? "";
-}
+function normalizeCity(value: string) { return value.split(",")[0]?.trim().toLowerCase() ?? ""; }
