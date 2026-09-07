@@ -35,6 +35,7 @@ type ProfilePhotoRow = {
   religion: string | null;
   mother_tongue: string | null;
   education: string | null;
+  created_at: string | null;
 };
 
 type OnlineStatusRow = { id: string; last_seen_at: string | null };
@@ -80,7 +81,7 @@ export default async function Page() {
         supabase
           .from("profiles")
           .select(
-            "id, avatar_url, photos, gender, city, state, country, marital_status, height, religion, mother_tongue, education",
+            "id, avatar_url, photos, gender, city, state, country, marital_status, height, religion, mother_tongue, education, created_at",
           )
           .in("id", recommendationIds),
         supabase
@@ -151,6 +152,7 @@ export default async function Page() {
           new Date(onlineByProfile.get(profile.id) as string).getTime() <
           120_000,
       ),
+      createdAt: storedPhotos?.created_at ?? null,
       relationship: getRelationshipState(relationship, user.id),
     };
   });
