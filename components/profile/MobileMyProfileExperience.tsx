@@ -62,6 +62,7 @@ export function MobileMyProfileExperience({
         {photos.map((photo, index) => {
           const isProfile = profile.avatar === photo;
           const open = photoMenu === photo;
+          const menuPosition = index === 0 ? "left-0" : "right-0";
           return <div key={photo} className={`${isProfile ? "is-primary" : ""} relative !overflow-visible ${open ? "z-[90]" : "z-10"}`}>
             <span className="absolute inset-0 overflow-hidden rounded-[inherit] bg-[#eee]"><ProfileImage src={photo} alt={`${profile.name} photo ${index + 1}`} fill sizes="90px" className="object-cover" /></span>
             <button
@@ -74,7 +75,7 @@ export function MobileMyProfileExperience({
               <MoreVertical size={14} />
             </button>
             {isProfile ? <span className="absolute bottom-1.5 right-1.5 z-20 grid size-6 place-items-center rounded-full bg-gradient-to-br from-[#8c45ff] to-[#f34ca4] text-white ring-2 ring-white"><Check size={14} strokeWidth={3} /></span> : null}
-            {open ? <div className="absolute right-0 top-9 z-[100] w-[150px] overflow-hidden rounded-xl bg-white py-1 text-left shadow-[0_14px_36px_rgba(42,35,70,.22)]">
+            {open ? <div className={`absolute top-[calc(100%+8px)] z-[100] w-[148px] overflow-hidden rounded-xl bg-white py-1 text-left shadow-[0_14px_36px_rgba(42,35,70,.22)] ${menuPosition}`}>
               <button
                 type="button"
                 disabled={isProfile}
