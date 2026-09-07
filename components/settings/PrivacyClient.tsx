@@ -99,7 +99,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <SettingsNavigation active="Settings & Privacy" />
           <div className="privacy-page h-full min-h-0 overflow-y-auto bg-white px-6 pb-10 max-md:px-0">
-            <div className="settings-mobile-header md:hidden">
+            <div className="settings-mobile-header sticky top-0 z-[90] md:hidden">
               <MobilePageHeader backHref="/my-profile" compact />
             </div>
             <div className="privacy-mobile-sheet mx-auto w-full max-w-[780px] bg-white py-6 md:py-8">
@@ -117,134 +117,38 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   icon={Eye}
                   title="Profile Visibility"
                   subtitle="Control who can see your profile"
-                  value={
-                    settings.profileVisibility === "everyone"
-                      ? "Everyone"
-                      : settings.profileVisibility === "matches"
-                        ? "Matches"
-                        : "Private"
-                  }
-                  onClick={() =>
-                    void update(
-                      "profileVisibility",
-                      settings.profileVisibility === "everyone"
-                        ? "matches"
-                        : settings.profileVisibility === "matches"
-                          ? "private"
-                          : "everyone",
-                    )
-                  }
+                  value={settings.profileVisibility === "everyone" ? "Everyone" : settings.profileVisibility === "matches" ? "Matches" : "Private"}
+                  onClick={() => void update("profileVisibility", settings.profileVisibility === "everyone" ? "matches" : settings.profileVisibility === "matches" ? "private" : "everyone")}
                 />
                 <ValueRow
                   icon={Clock3}
                   title="Last Seen"
                   subtitle="Control who can see your last seen time"
-                  value={
-                    settings.lastSeenVisibility === "matches"
-                      ? "Matches"
-                      : settings.lastSeenVisibility === "everyone"
-                        ? "Everyone"
-                        : "Nobody"
-                  }
-                  onClick={() =>
-                    void update(
-                      "lastSeenVisibility",
-                      settings.lastSeenVisibility === "matches"
-                        ? "everyone"
-                        : settings.lastSeenVisibility === "everyone"
-                          ? "nobody"
-                          : "matches",
-                    )
-                  }
+                  value={settings.lastSeenVisibility === "matches" ? "Matches" : settings.lastSeenVisibility === "everyone" ? "Everyone" : "Nobody"}
+                  onClick={() => void update("lastSeenVisibility", settings.lastSeenVisibility === "matches" ? "everyone" : settings.lastSeenVisibility === "everyone" ? "nobody" : "matches")}
                 />
-                <ToggleRow
-                  icon={MessageSquare}
-                  title="Read Receipts"
-                  subtitle="Let others know when you've read their messages"
-                  checked={settings.readReceipts}
-                  onChange={(value) => void update("readReceipts", value)}
-                />
-                <ToggleRow
-                  icon={Circle}
-                  title="Show Online Status"
-                  subtitle="Let others know when you are online"
-                  checked={settings.showOnlineStatus}
-                  onChange={(value) => void update("showOnlineStatus", value)}
-                />
-                <ToggleRow
-                  icon={LockKeyhole}
-                  title="Hide My Age"
-                  subtitle="Do not show my age on my profile"
-                  checked={settings.hideAge}
-                  onChange={(value) => void update("hideAge", value)}
-                />
+                <ToggleRow icon={MessageSquare} title="Read Receipts" subtitle="Let others know when you've read their messages" checked={settings.readReceipts} onChange={(value) => void update("readReceipts", value)} />
+                <ToggleRow icon={Circle} title="Show Online Status" subtitle="Let others know when you are online" checked={settings.showOnlineStatus} onChange={(value) => void update("showOnlineStatus", value)} />
+                <ToggleRow icon={LockKeyhole} title="Hide My Age" subtitle="Do not show my age on my profile" checked={settings.hideAge} onChange={(value) => void update("hideAge", value)} />
               </SettingsSection>
 
               <SettingsSection title="Data & Activity">
-                <ValueRow
-                  icon={Download}
-                  title="Download My Data"
-                  subtitle={
-                    downloading
-                      ? "Preparing your PDF…"
-                      : "Get a PDF copy of your account data"
-                  }
-                  value={downloading ? "Preparing" : undefined}
-                  onClick={() => void downloadMyData()}
-                  disabled={downloading}
-                />
-                <Link href="/settings/activity" className="block">
-                  <ValueRow
-                    icon={FileClock}
-                    title="Activity Log"
-                    subtitle="See your recent activity"
-                  />
-                </Link>
+                <ValueRow icon={Download} title="Download My Data" subtitle={downloading ? "Preparing your PDF…" : "Get a PDF copy of your account data"} value={downloading ? "Preparing" : undefined} onClick={() => void downloadMyData()} disabled={downloading} />
+                <Link href="/settings/activity" className="block"><ValueRow icon={FileClock} title="Activity Log" subtitle="See your recent activity" /></Link>
               </SettingsSection>
 
               <SettingsSection title="Safety">
-                <Link href="/settings/report-block" className="block">
-                  <ValueRow
-                    icon={Shield}
-                    title="Report / Block"
-                    subtitle="Report or block a member"
-                    highlighted
-                  />
-                </Link>
-                <form action="/api/auth/signout" method="post">
-                  <button type="submit" className="w-full text-left">
-                    <ValueRow
-                      icon={LogOut}
-                      title="Log Out"
-                      subtitle="Sign out of your Bandhanaa account"
-                      highlighted
-                    />
-                  </button>
-                </form>
+                <Link href="/settings/report-block" className="block"><ValueRow icon={Shield} title="Report / Block" subtitle="Report or block a member" highlighted /></Link>
+                <form action="/api/auth/signout" method="post"><button type="submit" className="w-full text-left"><ValueRow icon={LogOut} title="Log Out" subtitle="Sign out of your Bandhanaa account" highlighted /></button></form>
               </SettingsSection>
 
-              <Link
-                href="/settings/help"
-                className="privacy-control-banner md:hidden"
-              >
-                <span>
-                  <Shield />
-                </span>
-                <div>
-                  <strong>You’re in control</strong>
-                  <p>
-                    Manage your privacy and data to have a<br />
-                    safe and trusted experience.
-                  </p>
-                </div>
+              <Link href="/settings/help" className="privacy-control-banner md:hidden">
+                <span><Shield /></span>
+                <div><strong>You’re in control</strong><p>Manage your privacy and data to have a<br />safe and trusted experience.</p></div>
                 <ChevronRight className="ml-auto shrink-0" />
               </Link>
 
-              {error ? (
-                <p role="alert" className="mt-4 text-[11px] text-red-600">
-                  {error}
-                </p>
-              ) : null}
+              {error ? <p role="alert" className="mt-4 text-[11px] text-red-600">{error}</p> : null}
             </div>
           </div>
         </div>
@@ -253,113 +157,25 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
   );
 }
 
-function SettingsSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="privacy-section mt-9">
-      <h2 className="mb-3 text-[17px] font-semibold">{title}</h2>
-      <div className="privacy-section-card divide-y divide-[var(--border)] border-y border-[var(--border)] bg-white">
-        {children}
-      </div>
-    </section>
-  );
+function SettingsSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return <section className="privacy-section mt-9"><h2 className="mb-3 text-[17px] font-semibold">{title}</h2><div className="privacy-section-card divide-y divide-[var(--border)] border-y border-[var(--border)] bg-white">{children}</div></section>;
 }
 
-function ValueRow({
-  icon: Icon,
-  title,
-  subtitle,
-  value,
-  onClick,
-  highlighted = false,
-  disabled = false,
-}: {
-  icon: typeof Eye;
-  title: string;
-  subtitle: string;
-  value?: string;
-  onClick?: () => void;
-  highlighted?: boolean;
-  disabled?: boolean;
-}) {
-  const content = (
-    <div
-      className={`privacy-value-row flex min-h-[74px] items-center px-1 transition-colors hover:bg-[var(--app-hover)] ${highlighted ? "text-[var(--text-primary)]" : ""}`}
-    >
-      <span className="privacy-row-icon">
-        <Icon size={21} strokeWidth={1.8} />
-      </span>
-      <div className="ml-4 min-w-0 flex-1">
-        <strong className="block truncate text-[15px] font-normal">{title}</strong>
-        <p className="mt-0.5 truncate text-[12px] font-normal text-[var(--text-secondary)]">
-          {subtitle}
-        </p>
-      </div>
-      <div className="ml-3 flex shrink-0 items-center justify-end gap-2">
-        {value ? (
-          <span className="max-w-[92px] truncate text-right text-[13px] font-normal text-[var(--text-secondary)]">
-            {value}
-          </span>
-        ) : null}
-        <ChevronRight size={18} className="shrink-0 text-[#7b8190]" />
-      </div>
-    </div>
-  );
+function ValueRow({ icon: Icon, title, subtitle, value, onClick, highlighted = false, disabled = false }: { icon: typeof Eye; title: string; subtitle: string; value?: string; onClick?: () => void; highlighted?: boolean; disabled?: boolean }) {
+  const content = <div className={`privacy-value-row flex min-h-[74px] items-center px-1 transition-colors hover:bg-[var(--app-hover)] ${highlighted ? "text-[var(--text-primary)]" : ""}`}>
+    <span className="privacy-row-icon"><Icon size={21} strokeWidth={1.8} /></span>
+    <div className="ml-4 min-w-0 flex-1"><strong className="block truncate text-[15px] font-normal">{title}</strong><p className="mt-0.5 truncate text-[12px] font-normal text-[var(--text-secondary)]">{subtitle}</p></div>
+    <div className="ml-3 flex shrink-0 items-center justify-end gap-2">{value ? <span className="max-w-[92px] truncate text-right text-[13px] font-normal text-[var(--text-secondary)]">{value}</span> : null}<ChevronRight size={18} className="shrink-0 text-[#7b8190]" /></div>
+  </div>;
+  return onClick ? <button onClick={onClick} disabled={disabled} className="w-full text-left disabled:cursor-wait disabled:opacity-70">{content}</button> : content;
+}
 
-  return onClick ? (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className="w-full text-left disabled:cursor-wait disabled:opacity-70"
-    >
-      {content}
+function ToggleRow({ icon: Icon, title, subtitle, checked, onChange }: { icon: typeof Eye; title: string; subtitle: string; checked: boolean; onChange: (x: boolean) => void }) {
+  return <div className="privacy-toggle-row flex min-h-[74px] items-center px-1">
+    <span className="privacy-row-icon"><Icon size={21} strokeWidth={1.8} /></span>
+    <div className="ml-4 min-w-0 flex-1 pr-3"><strong className="block truncate text-[15px] font-normal">{title}</strong><p className="mt-0.5 truncate text-[12px] font-normal text-[var(--text-secondary)]">{subtitle}</p></div>
+    <button type="button" role="switch" aria-checked={checked} aria-label={title} onClick={() => onChange(!checked)} className={`relative ml-auto h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f34ca4] ${checked ? "bg-[#111111]" : "bg-[#d4d8df]"}`}>
+      <span className={`absolute left-0.5 top-1/2 size-5 -translate-y-1/2 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,.2)] transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`} />
     </button>
-  ) : (
-    content
-  );
-}
-
-function ToggleRow({
-  icon: Icon,
-  title,
-  subtitle,
-  checked,
-  onChange,
-}: {
-  icon: typeof Eye;
-  title: string;
-  subtitle: string;
-  checked: boolean;
-  onChange: (x: boolean) => void;
-}) {
-  return (
-    <div className="privacy-toggle-row flex min-h-[74px] items-center px-1">
-      <span className="privacy-row-icon">
-        <Icon size={21} strokeWidth={1.8} />
-      </span>
-      <div className="ml-4 min-w-0 flex-1 pr-3">
-        <strong className="block truncate text-[15px] font-normal">{title}</strong>
-        <p className="mt-0.5 truncate text-[12px] font-normal text-[var(--text-secondary)]">
-          {subtitle}
-        </p>
-      </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        aria-label={title}
-        onClick={() => onChange(!checked)}
-        className={`relative ml-auto h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f34ca4] ${checked ? "bg-[#111111]" : "bg-[#d4d8df]"}`}
-      >
-        <span
-          className={`absolute left-0.5 top-1/2 size-5 -translate-y-1/2 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,.2)] transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`}
-        />
-      </button>
-    </div>
-  );
+  </div>;
 }
