@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import {
   BadgeCheck,
   Bookmark,
@@ -14,6 +15,7 @@ import {
 } from "lucide-react";
 import { Brand } from "@/components/auth/Brand";
 import { ProfileImage } from "@/components/ui/ProfileImage";
+import { createClient } from "@/lib/supabase/client";
 import type { DiscoverProfile } from "./types";
 import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
 
@@ -30,19 +32,83 @@ type Props = {
   onShortlist: (id: string) => void;
 };
 
+type MobileFilterMode = "for-you" | "nearby" | "new" | "active";
+
+const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
 export function MobileDiscoverExperience({
   profiles,
   query,
   onQuery,
   filtersOpen,
   onFilters,
-  mode,
-  onMode,
   completion,
   shortlisted,
   onShortlist,
 }: Props) {
-  const featured = profiles[0];
+  const [filterMode, setFilterMode] = useState<MobileFilterMode>("for-you");
+  const [viewerCity, setViewerCity] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadViewerCity() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user || cancelled) return;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("city")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (!cancelled) setViewerCity(String(data?.city ?? "").trim());
+    }
+
+    void loadViewerCity();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filteredProfiles = useMemo(() => {
+    const byMatch = (items: DiscoverProfile[]) =>
+      [...items].sort((a, b) => b.match - a.match);
+
+    if (filterMode === "nearby") {
+      const currentCity = normalizeCity(viewerCity);
+      if (!currentCity) return [];
+      return byMatch(
+        profiles.filter((profile) => normalizeCity(profile.city) === currentCity),
+      );
+    }
+
+    if (filterMode === "new") {
+      const cutoff = Date.now() - NEW_PROFILE_WINDOW_MS;
+      return profiles
+        .filter((profile) => {
+          if (!profile.createdAt) return false;
+          const createdAt = new Date(profile.createdAt).getTime();
+          return Number.isFinite(createdAt) && createdAt >= cutoff;
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt ?? 0).getTime() -
+            new Date(a.createdAt ?? 0).getTime(),
+        );
+    }
+
+    if (filterMode === "active") {
+      return byMatch(profiles.filter((profile) => profile.online));
+    }
+
+    return byMatch(profiles);
+  }, [filterMode, profiles, viewerCity]);
+
+  const featured = filteredProfiles[0];
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
       <header className="grid grid-cols-[40px_1fr_40px] items-center">
@@ -82,16 +148,20 @@ export function MobileDiscoverExperience({
       </label>
       <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <FilterPill
-          active={mode === "all"}
-          onClick={() => onMode("all")}
+          active={filterMode === "for-you"}
+          onClick={() => setFilterMode("for-you")}
           icon={<Star size={17} />}
           label="For You"
         />
         <FilterPill
+          active={filterMode === "nearby"}
+          onClick={() => setFilterMode("nearby")}
           icon={<MapPin size={17} className="text-[#ff4da0]" />}
           label="Nearby"
         />
         <FilterPill
+          active={filterMode === "new"}
+          onClick={() => setFilterMode("new")}
           icon={
             <span className="mobile-new-badge rounded bg-[#ff4da0] font-bold text-white">
               NEW
@@ -100,8 +170,8 @@ export function MobileDiscoverExperience({
           label="New"
         />
         <FilterPill
-          active={mode === "online"}
-          onClick={() => onMode("online")}
+          active={filterMode === "active"}
+          onClick={() => setFilterMode("active")}
           icon={<span className="size-3 rounded-full bg-[#2dd477]" />}
           label="Active"
         />
@@ -141,10 +211,10 @@ export function MobileDiscoverExperience({
         />
       ) : (
         <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">
-          No profiles match your search.
+          No profiles match this filter.
         </div>
       )}
-      {profiles.length > 1 ? (
+      {filteredProfiles.length > 1 ? (
         <section className="mt-8">
           <div className="flex items-center justify-between">
             <h2 className="text-[20px] font-bold text-[var(--text-primary)]">
@@ -158,7 +228,7 @@ export function MobileDiscoverExperience({
             </Link>
           </div>
           <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {profiles.slice(1, 6).map((profile, index) => (
+            {filteredProfiles.slice(1, 6).map((profile, index) => (
               <Link
                 key={profile.id}
                 href={`/profile/${profile.id}`}
@@ -176,7 +246,9 @@ export function MobileDiscoverExperience({
                     ● Online
                   </span>
                 ) : null}
-                {index === 2 ? (
+                {profile.createdAt &&
+                Date.now() - new Date(profile.createdAt).getTime() <=
+                  NEW_PROFILE_WINDOW_MS ? (
                   <span className="mobile-new-badge absolute left-2 top-2 rounded-full bg-[#f85da6] font-semibold text-white">
                     New
                   </span>
@@ -321,4 +393,8 @@ function Detail({
       </span>
     </div>
   );
+}
+
+function normalizeCity(value: string) {
+  return value.split(",")[0]?.trim().toLowerCase() ?? "";
 }
