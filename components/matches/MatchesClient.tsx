@@ -45,12 +45,11 @@ export function MatchesClient({
   const mobileTabCounts = useMemo(
     () => ({
       all: profiles.length,
-      shortlisted: profiles.filter((profile) => shortlisted.includes(profile.id))
-        .length,
-      sent: profiles.filter((profile) => sentInterests.includes(profile.id)).length,
-      received: profiles.filter((profile) => receivedIds.includes(profile.id)).length,
+      shortlisted: new Set(shortlisted).size,
+      sent: new Set(sentInterests).size,
+      received: new Set(receivedIds).size,
     }),
-    [profiles, receivedIds, sentInterests, shortlisted],
+    [profiles.length, receivedIds, sentInterests, shortlisted],
   );
 
   async function sendInterest(profile: MatchProfile) {
