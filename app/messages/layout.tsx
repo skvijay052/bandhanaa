@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ChatProfilePictureEnhancer } from "@/components/messages/ChatProfilePictureEnhancer";
 
 export default function MessagesLayout({ children }: { children: ReactNode }) {
   return (
@@ -61,8 +62,13 @@ export default function MessagesLayout({ children }: { children: ReactNode }) {
           .messages-mobile-route section > div.relative + div {
             background: #fff !important;
           }
+
+          .messages-mobile-route section > header span.relative.size-12.overflow-hidden.rounded-full {
+            cursor: pointer;
+          }
         }
       `}</style>
+      <ChatProfilePictureEnhancer />
       {children}
     </div>
   );
