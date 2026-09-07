@@ -38,7 +38,7 @@ export function MobileBottomNavigation({
     return (
       <nav
         aria-label="Mobile navigation"
-        className="settings-bottom-nav fixed inset-x-0 bottom-0 z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
+        className="settings-bottom-nav fixed inset-x-0 bottom-0 z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border-t border-[#ececf0] bg-white px-2 shadow-[0_-8px_24px_rgba(15,20,25,.06)] md:hidden"
       >
         {settingsItems.map(({ label, href, icon: Icon, ...item }, index) => {
           const active =
@@ -52,7 +52,7 @@ export function MobileBottomNavigation({
               href={href}
               aria-label={label || "Requests"}
               aria-current={active ? "page" : undefined}
-              className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#ffffff]" : "text-[#737885]"}`}
+              className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#111111]" : "text-[#777b86]"}`}
             >
               {raised ? (
                   <span className="relative grid place-items-center">
@@ -76,7 +76,7 @@ export function MobileBottomNavigation({
   return (
     <nav
       aria-label="Mobile navigation"
-      className="fixed inset-x-0 bottom-0 z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border border-white/10 bg-[#050608] px-2 shadow-[0_12px_36px_rgba(0,0,0,.34)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-[100] grid h-[75px] grid-cols-5 rounded-[0px] border-t border-[#ececf0] bg-white px-2 shadow-[0_-8px_24px_rgba(15,20,25,.06)] md:hidden"
     >
       {defaultItems.map(({ label, href, icon: Icon, ...item }) => {
         const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -87,7 +87,7 @@ export function MobileBottomNavigation({
             key={label}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#ffffff]" : "text-[#737885]"}`}
+            className={`relative flex flex-col items-center justify-end gap-1 pb-3 text-[10px] font-medium ${active || raised ? "text-[#111111]" : "text-[#777b86]"}`}
           >
             {raised ? (
               <span className="relative grid place-items-center">
