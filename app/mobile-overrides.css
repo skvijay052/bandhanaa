@@ -3,4 +3,24 @@
     padding-bottom: calc(96px + env(safe-area-inset-bottom));
     scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom));
   }
+
+  /* Edit Profile: use Bandhanaa pink for the active mobile tab. */
+  .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] {
+    color: #f34ca4 !important;
+  }
+
+  .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] > span:first-of-type {
+    border-color: #f34ca4 !important;
+    background: #fff3f9 !important;
+  }
+
+  .edit-profile-shell nav.md\:hidden .bg-\[\#1d9bf0\] {
+    background: #f34ca4 !important;
+  }
+
+  /* Keep Save & Continue / Cancel above the fixed mobile bottom navigation. */
+  .edit-profile-shell > div.grid > div.overflow-y-auto {
+    padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
+    scroll-padding-bottom: calc(120px + env(safe-area-inset-bottom));
+  }
 }
