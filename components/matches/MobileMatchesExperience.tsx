@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   BadgeCheck,
+  Bell,
   Bookmark,
   BriefcaseBusiness,
   Eye,
@@ -64,11 +65,12 @@ export function MobileMatchesExperience({
         <span aria-hidden="true" />
         <div className="justify-self-end">
           <Link
-            href="/matches?tab=shortlisted"
-            aria-label="Shortlisted profiles"
-            className="grid size-9 place-items-center rounded-[13px] bg-white p-1 shadow-[0_8px_24px_rgba(44,33,80,.1)]"
+            href="/notifications"
+            aria-label="Notifications"
+            className="relative grid size-9 place-items-center rounded-[13px] bg-white p-1 shadow-[0_8px_24px_rgba(44,33,80,.1)]"
           >
-            <Heart size={17} />
+            <Bell size={17} />
+            <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#f34ca4] ring-2 ring-white" />
           </Link>
         </div>
       </header>
