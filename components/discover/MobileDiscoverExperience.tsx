@@ -175,12 +175,6 @@ export function MobileDiscoverExperience({
           icon={<span className="size-3 rounded-full bg-[#2dd477]" />}
           label="Active"
         />
-        <FilterPill
-          icon={
-            <BadgeCheck size={18} className="fill-[#8c45ff] text-[#8c45ff]" />
-          }
-          label="Verified"
-        />
       </div>
       <DiscoverBannerSlider mobile />
       <Link
