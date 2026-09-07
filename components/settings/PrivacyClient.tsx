@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   ChevronRight,
   Circle,
   Clock3,
@@ -14,18 +13,19 @@ import {
   LogOut,
   MessageSquare,
   Shield,
-  ShieldCheck,
 } from "lucide-react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { MobilePageHeader } from "@/components/layout/MobilePageHeader";
 import type { PrivacySettings } from "@/data/privacy";
 import { createClient } from "@/lib/supabase/client";
 import { SettingsNavigation } from "./SettingsNavigation";
+
 export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
   const router = useRouter();
   const [settings, setSettings] = useState(initial);
   const [error, setError] = useState("");
   const [downloading, setDownloading] = useState(false);
+
   async function downloadMyData() {
     if (downloading) return;
     setError("");
@@ -61,6 +61,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
       setDownloading(false);
     }
   }
+
   async function update<K extends keyof PrivacySettings>(
     key: K,
     value: PrivacySettings[K],
@@ -90,15 +91,18 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
         .eq("id", settings.userId);
     }
   }
+
   return (
-    <main className="fixed inset-0 overflow-hidden bg-[var(--app-bg)]">
+    <main className="fixed inset-0 overflow-hidden bg-[var(--app-bg)] max-md:bg-white">
       <div className="app-shell edit-profile-shell !h-full">
         <AppSidebar active="Settings" />
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <SettingsNavigation active="Settings & Privacy" />
-          <div className="privacy-page h-full min-h-0 overflow-y-auto px-6 pb-10 max-md:px-0">
-            <MobilePageHeader />
-            <div className="privacy-mobile-sheet mx-auto w-full max-w-[780px] py-6 md:py-8">
+          <div className="privacy-page h-full min-h-0 overflow-y-auto bg-white px-6 pb-10 max-md:px-0 max-md:[&>.settings-mobile-header_.mobile-page-header]:border-b-0 max-md:[&>.settings-mobile-header_.mobile-page-header]:bg-white max-md:[&>.settings-mobile-header_.mobile-page-header]:backdrop-blur-none">
+            <div className="settings-mobile-header md:hidden">
+              <MobilePageHeader />
+            </div>
+            <div className="privacy-mobile-sheet mx-auto w-full max-w-[780px] bg-white py-6 md:py-8">
               <header className="hidden md:block">
                 <h1 className="text-[24px] font-bold tracking-[-0.02em]">
                   Settings &amp; Privacy
@@ -107,6 +111,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   Manage your privacy, data and safety.
                 </p>
               </header>
+
               <SettingsSection title="Privacy">
                 <ValueRow
                   icon={Eye}
@@ -174,6 +179,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   onChange={(value) => void update("hideAge", value)}
                 />
               </SettingsSection>
+
               <SettingsSection title="Data & Activity">
                 <ValueRow
                   icon={Download}
@@ -195,6 +201,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   />
                 </Link>
               </SettingsSection>
+
               <SettingsSection title="Safety">
                 <Link href="/settings/report-block" className="block">
                   <ValueRow
@@ -215,6 +222,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                   </button>
                 </form>
               </SettingsSection>
+
               <Link
                 href="/settings/help"
                 className="privacy-control-banner md:hidden"
@@ -229,8 +237,9 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
                     safe and trusted experience.
                   </p>
                 </div>
-                <ChevronRight className="ml-auto" />
+                <ChevronRight className="ml-auto shrink-0" />
               </Link>
+
               {error ? (
                 <p role="alert" className="mt-4 text-[11px] text-red-600">
                   {error}
@@ -243,6 +252,7 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
     </main>
   );
 }
+
 function SettingsSection({
   title,
   children,
@@ -259,6 +269,7 @@ function SettingsSection({
     </section>
   );
 }
+
 function ValueRow({
   icon: Icon,
   title,
@@ -283,22 +294,23 @@ function ValueRow({
       <span className="privacy-row-icon">
         <Icon size={21} strokeWidth={1.8} />
       </span>
-      <div className="ml-4">
-        <strong className="text-[15px] font-normal">{title}</strong>
-        <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
+      <div className="ml-4 min-w-0 flex-1">
+        <strong className="block truncate text-[15px] font-normal">{title}</strong>
+        <p className="mt-0.5 truncate text-[12px] font-normal text-[var(--text-secondary)]">
           {subtitle}
         </p>
       </div>
-      <div className="ml-auto flex min-w-[112px] items-center justify-end gap-2">
+      <div className="ml-3 flex shrink-0 items-center justify-end gap-2">
         {value ? (
-          <span className="text-[13px] font-normal text-[var(--text-secondary)]">
+          <span className="max-w-[92px] truncate text-right text-[13px] font-normal text-[var(--text-secondary)]">
             {value}
           </span>
         ) : null}
-        <ChevronRight size={18} className="shrink-0" />
+        <ChevronRight size={18} className="shrink-0 text-[#7b8190]" />
       </div>
     </div>
   );
+
   return onClick ? (
     <button
       onClick={onClick}
@@ -311,6 +323,7 @@ function ValueRow({
     content
   );
 }
+
 function ToggleRow({
   icon: Icon,
   title,
@@ -329,9 +342,9 @@ function ToggleRow({
       <span className="privacy-row-icon">
         <Icon size={21} strokeWidth={1.8} />
       </span>
-      <div className="ml-4">
-        <strong className="text-[15px] font-normal">{title}</strong>
-        <p className="mt-0.5 text-[12px] font-normal text-[var(--text-secondary)]">
+      <div className="ml-4 min-w-0 flex-1 pr-3">
+        <strong className="block truncate text-[15px] font-normal">{title}</strong>
+        <p className="mt-0.5 truncate text-[12px] font-normal text-[var(--text-secondary)]">
           {subtitle}
         </p>
       </div>
@@ -341,10 +354,10 @@ function ToggleRow({
         aria-checked={checked}
         aria-label={title}
         onClick={() => onChange(!checked)}
-        className={`privacy-switch relative ml-auto h-7 w-12 shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black ${checked ? "bg-black" : "bg-[#cbd2df]"}`}
+        className={`relative ml-auto h-6 w-11 shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f34ca4] ${checked ? "bg-[#111111]" : "bg-[#d4d8df]"}`}
       >
         <span
-          className={`absolute left-1 top-1 size-5 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`}
+          className={`absolute left-0.5 top-1/2 size-5 -translate-y-1/2 rounded-full bg-white shadow-[0_1px_4px_rgba(0,0,0,.2)] transition-transform ${checked ? "translate-x-5" : "translate-x-0"}`}
         />
       </button>
     </div>
