@@ -32,6 +32,7 @@ type ProfilePhotoRow = {
   lifestyle: Record<string, string> | null;
   family: Record<string, string> | null;
   last_seen_at: string | null;
+  created_at: string | null;
 };
 
 function splitLocation(location: string | null) {
@@ -61,17 +62,19 @@ export default async function MatchesPage({
 
   if (!user) redirect("/login?next=/matches");
 
-  const [recommendations, interactions, shortlistResult] = await Promise.all([
-    supabase.rpc("get_recommended_profiles", { result_limit: 24 }),
-    supabase
-      .from("profile_likes")
-      .select("liker_id, liked_id, status")
-      .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
-    supabase
-      .from("profile_shortlists")
-      .select("profile_id")
-      .eq("user_id", user.id),
-  ]);
+  const [recommendations, interactions, shortlistResult, viewerProfile] =
+    await Promise.all([
+      supabase.rpc("get_recommended_profiles", { result_limit: 24 }),
+      supabase
+        .from("profile_likes")
+        .select("liker_id, liked_id, status")
+        .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
+      supabase
+        .from("profile_shortlists")
+        .select("profile_id")
+        .eq("user_id", user.id),
+      supabase.from("profiles").select("city").eq("id", user.id).maybeSingle(),
+    ]);
 
   if (recommendations.error) {
     console.error("Unable to load matches:", recommendations.error.message);
@@ -85,7 +88,7 @@ export default async function MatchesPage({
     ? await supabase
         .from("profiles")
         .select(
-          "id, avatar_url, photos, gender, company, height, religion, mother_tongue, education, lifestyle, family, last_seen_at",
+          "id, avatar_url, photos, gender, company, height, religion, mother_tongue, education, lifestyle, family, last_seen_at, created_at",
         )
         .in("id", recommendationIds)
     : { data: [] as ProfilePhotoRow[], error: null };
@@ -135,6 +138,7 @@ export default async function MatchesPage({
         details?.last_seen_at &&
         Date.now() - new Date(details.last_seen_at).getTime() < 120_000,
       ),
+      createdAt: details?.created_at ?? null,
     };
   });
 
@@ -158,6 +162,7 @@ export default async function MatchesPage({
       receivedIds={receivedIds}
       followingIds={followingIds}
       initialTab={initialTab}
+      viewerCity={String(viewerProfile.data?.city ?? "")}
     />
   );
 }
