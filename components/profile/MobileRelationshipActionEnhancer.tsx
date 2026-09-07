@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 type PendingAction = {
@@ -38,6 +40,9 @@ export function MobileRelationshipActionEnhancer() {
   const router = useRouter();
   const [pending, setPending] = useState<PendingAction | null>(null);
   const [busy, setBusy] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const normalizeButtons = () => {
@@ -120,52 +125,53 @@ export function MobileRelationshipActionEnhancer() {
     }
   }
 
-  if (!pending) return null;
+  if (!pending || !mounted) return null;
 
   const isFollowing = pending.kind === "following";
-  return (
-    <div className="md:hidden">
-      <button
-        type="button"
-        aria-label="Close relationship action"
-        className="fixed inset-0 z-[290] bg-black/35 backdrop-blur-[1px]"
-        onClick={() => !busy && setPending(null)}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="fixed inset-x-0 bottom-0 z-[300] rounded-t-[28px] bg-white px-5 pb-[calc(20px+env(safe-area-inset-bottom))] pt-3 shadow-[0_-18px_55px_rgba(15,20,25,.18)]"
-      >
-        <span className="mx-auto mb-4 block h-1.5 w-11 rounded-full bg-[#d9dde4]" />
-        <strong className="block text-[17px] font-semibold text-[#0f1419]">
+  const modal = (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="relationship-confirm-title"
+      className="fixed inset-0 z-[1000] grid place-items-end bg-black/45 p-4 backdrop-blur-[2px] md:place-items-center"
+      onMouseDown={(event) => event.target === event.currentTarget && !busy && setPending(null)}
+    >
+      <div className="w-full max-w-sm rounded-[26px] bg-white p-6 shadow-2xl">
+        <div className="mx-auto grid size-12 place-items-center rounded-full bg-[#fff0f5] text-[#e72c6c]">
+          <X size={22} />
+        </div>
+        <h2
+          id="relationship-confirm-title"
+          className="mt-4 text-center text-[20px] font-bold text-[#0f1419]"
+        >
+          {isFollowing ? `Unfollow ${pending.profileName}?` : "Cancel request?"}
+        </h2>
+        <p className="mt-2 text-center text-[14px] leading-5 text-[var(--text-secondary)]">
           {isFollowing
-            ? `Remove ${pending.profileName} from Following?`
-            : "Cancel follow request?"}
-        </strong>
-        <p className="mt-1.5 text-[13px] leading-5 text-[#687184]">
-          {isFollowing
-            ? `You will stop following ${pending.profileName}.`
-            : `Your request to ${pending.profileName} will be cancelled.`}
+            ? "You’ll stop following this profile."
+            : "Are you sure you want to cancel this request?"}
         </p>
-        <div className="mt-5 grid gap-2.5">
+        <div className="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
+            onClick={() => setPending(null)}
             disabled={busy}
-            onClick={() => void confirm()}
-            className="h-12 rounded-xl bg-[#fff0f7] text-[14px] font-semibold text-[#e33b91] disabled:opacity-60"
+            className="h-12 rounded-full border border-[#d8d4dc] font-semibold disabled:opacity-60"
           >
-            {busy ? "Please wait…" : isFollowing ? "Remove Following" : "Cancel Request"}
+            {isFollowing ? "Keep Following" : "Keep Request"}
           </button>
           <button
             type="button"
+            onClick={() => void confirm()}
             disabled={busy}
-            onClick={() => setPending(null)}
-            className="h-12 rounded-xl bg-[#f4f5f6] text-[14px] font-semibold text-[#0f1419] disabled:opacity-60"
+            className="h-12 rounded-full bg-[#e72c6c] font-semibold text-white disabled:opacity-60"
           >
-            Keep {isFollowing ? "Following" : "Request"}
+            {busy ? "Updating…" : isFollowing ? "Unfollow" : "Cancel Request"}
           </button>
         </div>
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }
