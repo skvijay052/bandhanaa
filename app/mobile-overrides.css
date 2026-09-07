@@ -5,123 +5,55 @@
   }
 
   /* Edit Profile: use Bandhanaa pink for every blue accent on mobile. */
-  .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] {
-    color: #f34ca4 !important;
-  }
+  .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] { color: #f34ca4 !important; }
+  .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] > span:first-of-type { border-color: #f34ca4 !important; background: #fff3f9 !important; }
+  .edit-profile-shell nav.md\:hidden .bg-\[\#1d9bf0\] { background: #f34ca4 !important; }
+  .edit-profile-shell .text-\[\#1d9bf0\], .edit-profile-shell .text-sky-500, .edit-profile-shell .text-sky-600, .edit-profile-shell .text-sky-700, .edit-profile-shell .text-sky-800, .edit-profile-shell .text-blue-500, .edit-profile-shell .text-blue-600, .edit-profile-shell .text-blue-700, .edit-profile-shell .text-blue-800 { color: #f34ca4 !important; }
+  .edit-profile-shell .bg-\[\#1d9bf0\], .edit-profile-shell .bg-sky-50, .edit-profile-shell .bg-sky-100, .edit-profile-shell .bg-blue-50, .edit-profile-shell .bg-blue-100 { background-color: #fff3f9 !important; }
+  .edit-profile-shell .bg-sky-500, .edit-profile-shell .bg-sky-600, .edit-profile-shell .bg-blue-500, .edit-profile-shell .bg-blue-600 { background-color: #f34ca4 !important; }
+  .edit-profile-shell .border-sky-200, .edit-profile-shell .border-sky-300, .edit-profile-shell .border-blue-200, .edit-profile-shell .border-blue-300 { border-color: #f7b4d5 !important; }
+  .edit-profile-shell input[type="checkbox"], .edit-profile-shell input[type="radio"], .edit-profile-shell input[type="range"] { accent-color: #f34ca4; }
+  .edit-profile-shell a { --tw-text-opacity: 1; }
+  .edit-profile-shell > div.grid > div.overflow-y-auto { padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important; scroll-padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header { position: relative; display: grid !important; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center !important; padding-top: 12px !important; padding-bottom: 14px !important; }
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > button:first-child { width: 40px !important; height: 40px !important; margin-right: 0 !important; border-radius: 13px !important; background: #fff !important; box-shadow: 0 7px 22px rgba(15, 20, 25, 0.07); }
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > button:first-child svg { width: 20px; height: 20px; stroke-width: 1.9; }
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > div { grid-column: 2; text-align: center; }
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > div h1 { font-size: 17px !important; line-height: 22px; letter-spacing: -0.015em; }
+  .edit-profile-shell > div.grid > div.overflow-y-auto > header > span { display: none !important; }
+  .edit-profile-shell nav.md\:hidden > button:last-child { position: relative; min-width: 74px !important; gap: 0.25rem !important; padding-bottom: 0.75rem !important; font-size: 12px !important; line-height: 1rem !important; color: inherit; }
+  .edit-profile-shell nav.md\:hidden > button:last-child > span:first-child { border-color: #e4e6ed !important; width: 36px; height: 36px; }
 
-  .edit-profile-shell nav.md\:hidden button.text-\[\#1d9bf0\] > span:first-of-type {
-    border-color: #f34ca4 !important;
-    background: #fff3f9 !important;
+  /* Profile View: tabs become edge-to-edge only after they reach the sticky top. */
+  .mobile-profile-sticky-scope .mobile-profile-tabs-enhanced {
+    transition: margin 180ms ease, border-radius 180ms ease, box-shadow 180ms ease, padding 180ms ease;
   }
-
-  .edit-profile-shell nav.md\:hidden .bg-\[\#1d9bf0\] {
-    background: #f34ca4 !important;
-  }
-
-  .edit-profile-shell .text-\[\#1d9bf0\],
-  .edit-profile-shell .text-sky-500,
-  .edit-profile-shell .text-sky-600,
-  .edit-profile-shell .text-sky-700,
-  .edit-profile-shell .text-sky-800,
-  .edit-profile-shell .text-blue-500,
-  .edit-profile-shell .text-blue-600,
-  .edit-profile-shell .text-blue-700,
-  .edit-profile-shell .text-blue-800 {
-    color: #f34ca4 !important;
-  }
-
-  .edit-profile-shell .bg-\[\#1d9bf0\],
-  .edit-profile-shell .bg-sky-50,
-  .edit-profile-shell .bg-sky-100,
-  .edit-profile-shell .bg-blue-50,
-  .edit-profile-shell .bg-blue-100 {
-    background-color: #fff3f9 !important;
-  }
-
-  .edit-profile-shell .bg-sky-500,
-  .edit-profile-shell .bg-sky-600,
-  .edit-profile-shell .bg-blue-500,
-  .edit-profile-shell .bg-blue-600 {
-    background-color: #f34ca4 !important;
-  }
-
-  .edit-profile-shell .border-sky-200,
-  .edit-profile-shell .border-sky-300,
-  .edit-profile-shell .border-blue-200,
-  .edit-profile-shell .border-blue-300 {
-    border-color: #f7b4d5 !important;
-  }
-
-  .edit-profile-shell input[type="checkbox"],
-  .edit-profile-shell input[type="radio"],
-  .edit-profile-shell input[type="range"] {
-    accent-color: #f34ca4;
-  }
-
-  .edit-profile-shell a {
-    --tw-text-opacity: 1;
-  }
-
-  /* Keep Save & Continue / Cancel above the fixed mobile bottom navigation. */
-  .edit-profile-shell > div.grid > div.overflow-y-auto {
-    padding-bottom: calc(120px + env(safe-area-inset-bottom)) !important;
-    scroll-padding-bottom: calc(120px + env(safe-area-inset-bottom));
-  }
-
-  /* Edit Profile mobile title row: centered title with the standard back-button treatment. */
-  .edit-profile-shell > div.grid > div.overflow-y-auto > header {
-    position: relative;
-    display: grid !important;
-    grid-template-columns: 44px minmax(0, 1fr) 44px;
-    align-items: center !important;
-    padding-top: 12px !important;
-    padding-bottom: 14px !important;
-  }
-
-  .edit-profile-shell > div.grid > div.overflow-y-auto > header > button:first-child {
-    width: 40px !important;
-    height: 40px !important;
+  .mobile-profile-sticky-scope .mobile-profile-tabs-stuck {
+    margin-left: 0 !important;
     margin-right: 0 !important;
-    border-radius: 13px !important;
-    background: #fff !important;
-    box-shadow: 0 7px 22px rgba(15, 20, 25, 0.07);
+    width: 100% !important;
+    border-radius: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: 0 8px 22px rgba(63,38,110,.08) !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
   }
 
-  .edit-profile-shell > div.grid > div.overflow-y-auto > header > button:first-child svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 1.9;
+  /* Profile View: bottom actions stay hidden at the top and slide in after scrolling. */
+  .mobile-profile-sticky-scope .mobile-profile-actions-enhanced {
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(110%);
+    transition: transform 220ms ease, opacity 180ms ease, visibility 180ms ease;
   }
-
-  .edit-profile-shell > div.grid > div.overflow-y-auto > header > div {
-    grid-column: 2;
-    text-align: center;
-  }
-
-  .edit-profile-shell > div.grid > div.overflow-y-auto > header > div h1 {
-    font-size: 17px !important;
-    line-height: 22px;
-    letter-spacing: -0.015em;
-  }
-
-  .edit-profile-shell > div.grid > div.overflow-y-auto > header > span {
-    display: none !important;
-  }
-
-  /* Make the More tab match the size, border and active state of every other tab. */
-  .edit-profile-shell nav.md\:hidden > button:last-child {
-    position: relative;
-    min-width: 74px !important;
-    gap: 0.25rem !important;
-    padding-bottom: 0.75rem !important;
-    font-size: 12px !important;
-    line-height: 1rem !important;
-    color: inherit;
-  }
-
-  .edit-profile-shell nav.md\:hidden > button:last-child > span:first-child {
-    border-color: #e4e6ed !important;
-    width: 36px;
-    height: 36px;
+  .mobile-profile-sticky-scope .mobile-profile-actions-enhanced.mobile-profile-actions-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
   }
 }
