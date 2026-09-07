@@ -76,7 +76,7 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
     .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
     .slice(0, 5), [profiles]);
 
-  const featured = filteredProfiles[0];
+  const largeCardProfiles = latestProfiles.length ? latestProfiles : filteredProfiles.slice(0, 5);
   const safeCompletion = Math.max(0, Math.min(100, completion));
 
   return (
@@ -139,7 +139,21 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
         <span className="grid h-9 shrink-0 place-items-center rounded-full bg-gradient-to-r from-[#8c45ff] to-[#f34ca4] px-3 text-[11px] font-bold text-white">Complete ›</span>
       </Link>
 
-      {featured ? <FeaturedProfile profile={featured} liked={shortlisted.includes(featured.id)} onShortlist={() => onShortlist(featured.id)} /> : <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">No profiles match this filter.</div>}
+      {largeCardProfiles.length ? (
+        <section className="mt-5 space-y-5" aria-label="Latest profile cards">
+          {largeCardProfiles.map((profile, index) => (
+            <FeaturedProfile
+              key={profile.id}
+              profile={profile}
+              liked={shortlisted.includes(profile.id)}
+              onShortlist={() => onShortlist(profile.id)}
+              priority={index === 0}
+            />
+          ))}
+        </section>
+      ) : (
+        <div className="py-16 text-center text-[15px] text-[var(--text-secondary)]">No profiles available yet.</div>
+      )}
     </div>
   );
 }
@@ -148,11 +162,11 @@ function FilterPill({ icon, label, active = false, onClick }: { icon: React.Reac
   return <button type="button" onClick={onClick} aria-pressed={active} className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419]"}`}>{icon}{label}</button>;
 }
 
-function FeaturedProfile({ profile, liked, onShortlist }: { profile: DiscoverProfile; liked: boolean; onShortlist: () => void }) {
+function FeaturedProfile({ profile, liked, onShortlist, priority = false }: { profile: DiscoverProfile; liked: boolean; onShortlist: () => void; priority?: boolean }) {
   return (
-    <article className="mt-5 overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)]">
+    <article className="overflow-hidden rounded-[26px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.13)]">
       <div className="relative h-[440px] overflow-hidden">
-        <Link href={`/profile/${profile.id}`} className="absolute inset-0"><ProfileImage src={profile.image} alt={profile.name} fill priority sizes="(max-width: 767px) 100vw, 0px" className="object-cover" /></Link>
+        <Link href={`/profile/${profile.id}`} className="absolute inset-0"><ProfileImage src={profile.image} alt={profile.name} fill priority={priority} sizes="(max-width: 767px) 100vw, 0px" className="object-cover" /></Link>
         <div className="absolute inset-x-0 bottom-0 h-52 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
         <span className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[12px] font-medium ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}>● {profile.online ? "Online" : "Offline"}</span>
         <button type="button" onClick={onShortlist} aria-label={liked ? "Remove bookmark" : "Bookmark profile"} className="absolute right-4 top-4 grid size-10 place-items-center rounded-[14px] bg-white text-[#0f1419] shadow-lg"><Bookmark size={25} fill={liked ? "#8c45ff" : "none"} className={liked ? "text-[#8c45ff]" : ""} /></button>
