@@ -18,7 +18,7 @@ export function NotificationFilters({
           <button
             key={filter}
             onClick={() => onChange(filter)}
-            className={`relative h-full whitespace-nowrap px-1 text-[14px] font-normal outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#1d9bf0]/40 ${active === filter ? "font-semibold text-[#1d9bf0] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#1d9bf0]" : "text-[var(--text-secondary)] hover:text-[#0f1419]"}`}
+            className={`relative h-full whitespace-nowrap px-1 text-[14px] font-normal outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#f34ca4]/40 ${active === filter ? "font-semibold text-[#f34ca4] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#f34ca4]" : "text-[var(--text-secondary)] hover:text-[#0f1419]"}`}
           >
             {filter}
           </button>
@@ -26,7 +26,7 @@ export function NotificationFilters({
       </div>
       <button
         onClick={onMarkAllRead}
-        className="ml-auto flex shrink-0 items-center gap-2 pl-6 text-[13px] font-medium text-[#1d9bf0] hover:text-[#1689df]"
+        className="ml-auto flex shrink-0 items-center gap-2 pl-6 text-[13px] font-medium text-[#f34ca4] hover:text-[#df368e]"
       >
         <Check size={15} /> Mark all as read
       </button>
@@ -47,7 +47,7 @@ export function MobileNotificationFilters({
         <button
           key={filter}
           onClick={() => onChange(filter)}
-          className={`relative h-full shrink-0 whitespace-nowrap px-1 text-[13px] font-normal ${active === filter ? "font-semibold text-[#1d9bf0] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#1d9bf0]" : "text-[var(--text-secondary)]"}`}
+          className={`relative h-full shrink-0 whitespace-nowrap px-1 text-[13px] font-normal ${active === filter ? "font-semibold text-[#f34ca4] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[#f34ca4]" : "text-[var(--text-secondary)]"}`}
         >
           {filter}
         </button>
