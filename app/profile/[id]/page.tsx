@@ -94,6 +94,18 @@ export default async function ProfilePage({
     (profileResult.data as ProfileRow | null) ??
     recommendedRows.find((candidate) => candidate.id === id);
   if (!row) notFound();
+
+  // Record the visit only after a real, viewable profile has been resolved.
+  // The database function de-duplicates repeat views from the same viewer
+  // within 30 minutes, so normal refreshes do not flood Recent Visitors.
+  const { error: profileViewError } = await supabase.rpc(
+    "log_profile_view_activity",
+    { viewed_user_id: row.id },
+  );
+  if (profileViewError) {
+    console.error("Unable to record profile view:", profileViewError.message);
+  }
+
   const privacyByProfile = await getProfilePrivacy(supabase, [
     row.id,
     ...recommendedRows.map((candidate) => candidate.id),
