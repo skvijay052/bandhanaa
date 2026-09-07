@@ -13,10 +13,10 @@ export function MobileHeader({ avatarUrl, name = "Your" }: { avatarUrl?: string;
         <button aria-label="Search">
           <Search size={21} strokeWidth={1.7} />
         </button>
-        <button aria-label="Notifications" className="relative">
+        <Link href="/notifications" aria-label="Notifications" className="relative">
           <Bell size={21} strokeWidth={1.7} />
           <span className="absolute -right-0.5 top-0 size-[6px] rounded-full bg-[#ff1682] ring-2 ring-white" />
-        </button>
+        </Link>
         <span className="relative size-8 overflow-hidden rounded-full">
           <ProfileImage
             src={avatarUrl ?? ""}
