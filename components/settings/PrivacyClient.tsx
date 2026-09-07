@@ -98,9 +98,9 @@ export function PrivacyClient({ initial }: { initial: PrivacySettings }) {
         <AppSidebar active="Settings" />
         <div className="grid h-full min-h-0 min-w-0 flex-1 md:grid-cols-[340px_minmax(0,1fr)]">
           <SettingsNavigation active="Settings & Privacy" />
-          <div className="privacy-page h-full min-h-0 overflow-y-auto bg-white px-6 pb-10 max-md:px-0 max-md:[&>.settings-mobile-header_.mobile-page-header]:border-b-0 max-md:[&>.settings-mobile-header_.mobile-page-header]:bg-white max-md:[&>.settings-mobile-header_.mobile-page-header]:backdrop-blur-none">
+          <div className="privacy-page h-full min-h-0 overflow-y-auto bg-white px-6 pb-10 max-md:px-0">
             <div className="settings-mobile-header md:hidden">
-              <MobilePageHeader />
+              <MobilePageHeader backHref="/my-profile" compact />
             </div>
             <div className="privacy-mobile-sheet mx-auto w-full max-w-[780px] bg-white py-6 md:py-8">
               <header className="hidden md:block">
