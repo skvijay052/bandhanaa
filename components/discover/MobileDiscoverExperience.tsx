@@ -108,10 +108,26 @@ export function MobileDiscoverExperience({
     return byMatch(profiles);
   }, [filterMode, profiles, viewerCity]);
 
+  const latestProfiles = useMemo(
+    () =>
+      [...profiles]
+        .filter((profile) => {
+          if (!profile.createdAt) return false;
+          return Number.isFinite(new Date(profile.createdAt).getTime());
+        })
+        .sort(
+          (a, b) =>
+            new Date(b.createdAt ?? 0).getTime() -
+            new Date(a.createdAt ?? 0).getTime(),
+        )
+        .slice(0, 5),
+    [profiles],
+  );
+
   const featured = filteredProfiles[0];
   return (
     <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-5 md:hidden">
-      <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center border-b border-black/5 bg-[#f8fafc]/95 px-4 py-3 backdrop-blur-xl">
+      <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center bg-white px-4 py-3">
         <Link href="/discover" className="" aria-label="Bandhanaa">
           <Brand compact />
         </Link>
@@ -208,7 +224,7 @@ export function MobileDiscoverExperience({
           No profiles match this filter.
         </div>
       )}
-      {filteredProfiles.length > 1 ? (
+      {latestProfiles.length ? (
         <section className="mt-8">
           <div className="flex items-center justify-between">
             <h2 className="text-[20px] font-bold text-[var(--text-primary)]">
@@ -221,12 +237,12 @@ export function MobileDiscoverExperience({
               View All
             </Link>
           </div>
-          <div className="-mx-4 mt-4 flex gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {filteredProfiles.slice(1, 6).map((profile, index) => (
+          <div className="-mx-4 mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {latestProfiles.map((profile) => (
               <Link
                 key={profile.id}
                 href={`/profile/${profile.id}`}
-                className="relative h-[145px] w-[128px] shrink-0 overflow-hidden rounded-[20px] bg-[#eee]"
+                className="relative h-[145px] w-[128px] shrink-0 snap-start overflow-hidden rounded-[20px] bg-[#eee]"
               >
                 <ProfileImage
                   src={profile.image}
@@ -235,7 +251,7 @@ export function MobileDiscoverExperience({
                   sizes="128px"
                   className="object-cover"
                 />
-                {index === 0 && profile.online ? (
+                {profile.online ? (
                   <span className="absolute left-2 top-2 rounded-full bg-[#075d2d]/85 px-2 py-1 text-[10px] text-[#50ef8d]">
                     ● Online
                   </span>
@@ -243,7 +259,7 @@ export function MobileDiscoverExperience({
                 {profile.createdAt &&
                 Date.now() - new Date(profile.createdAt).getTime() <=
                   NEW_PROFILE_WINDOW_MS ? (
-                  <span className="mobile-new-badge absolute left-2 top-2 rounded-full bg-[#f85da6] font-semibold text-white">
+                  <span className="mobile-new-badge absolute left-2 bottom-2 rounded-full bg-[#f85da6] font-semibold text-white">
                     New
                   </span>
                 ) : null}
