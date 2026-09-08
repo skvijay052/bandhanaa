@@ -1,4 +1,24 @@
 /* Public homepage visual calibration against the approved 1440px reference. Scoped with :has() so authenticated screens are untouched. */
+
+/* Use the exact same Bandhanaa logo asset used by the mobile login screen. */
+body:has(#about):has(#discover):has(#safety) > div > header img[alt="Bandhanaa"],
+body:has(#about):has(#discover):has(#safety) footer img[alt="Bandhanaa"],
+body:has(#about):has(#discover):has(#safety) #discover img[alt="Bandhanaa"] {
+  content: url("/bandhanaa-logo.png");
+  width: 126px !important;
+  height: auto !important;
+  max-width: 126px !important;
+  object-fit: contain !important;
+  object-position: left center !important;
+}
+
+/* Homepage hero/banner: use the existing premium registration artwork and crop it like the approved reference. */
+body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] {
+  content: url("/bandhanaa-register-hero-full.png");
+  object-fit: cover !important;
+  object-position: 54% center !important;
+}
+
 @media (min-width: 1024px) {
   body:has(#about):has(#discover):has(#safety) > div > header > div { height: 58px; max-width: 1240px; padding-left: 34px; padding-right: 34px; }
   body:has(#about):has(#discover):has(#safety) #about > div { max-width: 1240px; min-height: 552px; grid-template-columns: .91fr 1.09fr; }
@@ -6,6 +26,7 @@
   body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { min-height: 552px; }
   body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(54px,4.65vw,67px); line-height: .96; letter-spacing: -.058em; }
   body:has(#about):has(#discover):has(#safety) #about p { max-width: 455px; }
+  body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position: 58% center !important; }
   body:has(#about):has(#discover):has(#safety) #discover { padding-top: 64px; padding-bottom: 64px; }
   body:has(#about):has(#discover):has(#safety) #discover > div { max-width: 1240px; grid-template-columns: .35fr .65fr; gap: 38px; }
   body:has(#about):has(#discover):has(#safety) #how { padding-top: 58px; padding-bottom: 58px; }
@@ -26,6 +47,7 @@ body:has(#about):has(#discover):has(#safety) a:hover { opacity: .72; }
   body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(44px,13.2vw,58px); line-height: .98; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:first-child { padding-top: 42px; padding-bottom: 38px; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { min-height: 390px; }
+  body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position: 56% center !important; }
   body:has(#about):has(#discover):has(#safety) #discover { padding-top: 56px; padding-bottom: 56px; }
   body:has(#about):has(#discover):has(#safety) #how { padding-top: 56px; padding-bottom: 56px; }
   body:has(#about):has(#discover):has(#safety) #safety { background: #090a0b !important; }
