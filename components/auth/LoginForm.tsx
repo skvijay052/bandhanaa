@@ -77,7 +77,7 @@ export function LoginForm({ oauthError = false }: { oauthError?: boolean }) {
         return setError(friendly(authError.message));
       }
       setIsRedirecting(true);
-      router.replace("/dashboard");
+      router.replace("/discover");
       router.refresh();
     } catch {
       setIsRedirecting(false);
