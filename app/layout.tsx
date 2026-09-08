@@ -4,6 +4,7 @@ import { RouteProgressBar } from "@/components/layout/RouteProgressBar";
 import { MobileRelationshipActionEnhancer } from "@/components/profile/MobileRelationshipActionEnhancer";
 import "./globals.css";
 import "./mobile-overrides.css";
+import "./home-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
