@@ -1,0 +1,119 @@
+/* Final homepage CTA — calibrated to the supplied reference. */
+body:has(#about):has(#discover):has(#safety) #safety+section+section{
+  position:relative;
+  overflow:hidden;
+  min-height:250px;
+  padding:48px 20px 54px!important;
+  background:
+    radial-gradient(circle at 50% 14%,rgba(255,255,255,.72),transparent 32%),
+    linear-gradient(180deg,#fff4f8 0%,#fff7fa 100%)!important;
+  text-align:center;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section>div{
+  position:relative;
+  z-index:3;
+  max-width:1180px;
+  margin:0 auto;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section p:first-child{
+  margin-bottom:14px!important;
+  font-size:10px!important;
+  font-weight:700!important;
+  letter-spacing:.26em!important;
+  color:#e83e78!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section h2{
+  margin:0 auto;
+  max-width:980px;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:clamp(42px,4.3vw,64px)!important;
+  font-weight:400!important;
+  line-height:.98!important;
+  letter-spacing:-.045em!important;
+  color:#101012!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section h2 em{
+  font-style:italic!important;
+  font-weight:400!important;
+  color:#e83e78!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section h2+div{
+  margin-top:28px!important;
+  gap:28px!important;
+  font-size:13px!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/register"]{
+  min-height:52px!important;
+  padding:0 28px!important;
+  border-radius:999px!important;
+  background:#111!important;
+  color:#fff!important;
+  font-size:13px!important;
+  font-weight:600!important;
+  box-shadow:0 12px 26px rgba(0,0,0,.18)!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/register"] span{
+  margin-left:12px!important;
+  color:#e6a8bf!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/login"]{
+  color:#111!important;
+  font-weight:600!important;
+  text-decoration-thickness:1px!important;
+  text-underline-offset:3px!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section::before{
+  content:"";
+  position:absolute;
+  z-index:1;
+  left:-4vw;
+  right:-4vw;
+  bottom:38px;
+  height:94px;
+  border-top:2px solid rgba(232,62,120,.55);
+  border-radius:50%;
+  transform:rotate(.7deg);
+  pointer-events:none;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section::after{
+  content:"♥";
+  position:absolute;
+  z-index:2;
+  right:10.5%;
+  bottom:70px;
+  font-size:42px;
+  line-height:1;
+  color:#f20d66;
+  filter:drop-shadow(0 5px 8px rgba(232,62,120,.2));
+  transform:rotate(-8deg);
+  pointer-events:none;
+}
+@media(max-width:767px){
+  body:has(#about):has(#discover):has(#safety) #safety+section+section{
+    min-height:300px;
+    padding:44px 20px 62px!important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section h2{
+    max-width:330px;
+    font-size:38px!important;
+    line-height:1!important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section h2+div{
+    flex-direction:column;
+    gap:16px!important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/register"]{
+    width:100%;
+    max-width:320px;
+    justify-content:center;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section::before{
+    bottom:26px;
+    height:72px;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section::after{
+    right:8%;
+    bottom:48px;
+    font-size:30px;
+  }
+}
