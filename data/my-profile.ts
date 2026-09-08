@@ -8,6 +8,7 @@ export interface MyProfileData {
   age: number;
   profession: string;
   company: string;
+  annualIncome: string;
   city: string;
   state: string;
   country: string;
@@ -35,6 +36,7 @@ export interface MyProfileData {
 }
 export const profileDefaults = {
   company: "TechNova",
+  annualIncome: "Not added",
   religion: "Hindu",
   education: "B.Tech",
   height: `5'6"`,
