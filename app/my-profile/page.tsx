@@ -20,6 +20,7 @@ type ProfileRow = {
   birth_date: string | null;
   profession: string | null;
   company: string | null;
+  annual_income: string | null;
   city: string | null;
   state: string | null;
   country: string | null;
@@ -71,7 +72,7 @@ export default async function MyProfilePage() {
     supabase
       .from("profiles")
       .select(
-        "id, display_name, avatar_url, age, birth_date, profession, company, city, state, country, gender, weight, religion, education, height, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, profile_visibility, profile_completion, compatibility, is_discoverable, created_at",
+        "id, display_name, avatar_url, age, birth_date, profession, company, annual_income, city, state, country, gender, weight, religion, education, height, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, profile_visibility, profile_completion, compatibility, is_discoverable, created_at",
       )
       .eq("id", user.id)
       .single(),
@@ -95,6 +96,7 @@ export default async function MyProfilePage() {
         year: "numeric",
       })
     : profileDefaults.memberSince;
+  const baseLifestyle = detailItems(row?.lifestyle, lifestyleLabels);
   const profile: MyProfileData = {
     id: user.id,
     name:
@@ -104,6 +106,7 @@ export default async function MyProfilePage() {
     birthDate: row?.birth_date ? new Date(`${row.birth_date}T00:00:00`).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "Not added",
     profession: row?.profession ?? "Not added",
     company: row?.company ?? "Not added",
+    annualIncome: row?.annual_income ?? "Not added",
     city: row?.city ?? "Not added",
     state: row?.state ?? "",
     country: row?.country ?? "",
@@ -123,7 +126,7 @@ export default async function MyProfilePage() {
     photos,
     memberSince,
     visibility: row?.profile_visibility ?? "everyone",
-    lifestyle: detailItems(row?.lifestyle, lifestyleLabels),
+    lifestyle: [{ label: "Annual Income", value: row?.annual_income ?? "Not added" }, ...baseLifestyle],
     family: detailItems(row?.family, familyLabels),
     preferences: detailItems(
       row?.partner_preferences,
