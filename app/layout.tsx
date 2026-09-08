@@ -6,11 +6,7 @@ import { HomepageMotion } from "@/components/home/HomepageMotion";
 import { HomepageProfilePhotos } from "@/components/home/HomepageProfilePhotos";
 import "./globals.css";
 import "./mobile-overrides.css";
-import "./home-reference.css";
-import "./home-horoscope-reference.css";
-import "./discover-showcase.css";
-import "./home-full-reference.css";
-import "./home-cta-reference.css";
+import "./home-approved-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
