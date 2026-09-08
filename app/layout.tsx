@@ -10,6 +10,7 @@ import "./home-reference.css";
 import "./home-horoscope-reference.css";
 import "./discover-showcase.css";
 import "./home-full-reference.css";
+import "./home-cta-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
