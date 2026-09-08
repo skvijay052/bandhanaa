@@ -2,13 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { RouteProgressBar } from "@/components/layout/RouteProgressBar";
 import { MobileRelationshipActionEnhancer } from "@/components/profile/MobileRelationshipActionEnhancer";
-import { HomepageMotion } from "@/components/home/HomepageMotion";
-import { HomepageProfilePhotos } from "@/components/home/HomepageProfilePhotos";
 import "./globals.css";
 import "./mobile-overrides.css";
-import "./home-approved-reference.css";
-import "./home-middle-reference.css";
-import "./home-lower-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
@@ -34,8 +29,6 @@ export default function RootLayout({
           <RouteProgressBar />
         </Suspense>
         <MobileRelationshipActionEnhancer />
-        <HomepageMotion />
-        <HomepageProfilePhotos />
         {children}
       </body>
     </html>
