@@ -1,26 +1,30 @@
 /* Lower homepage reference: Four Steps -> Horoscope -> Safety. Homepage only. */
 @media (min-width:1024px){
 body:has(#about):has(#discover):has(#safety) #how{
-  padding-bottom:28px!important;
+  padding-bottom:18px!important;
   background:linear-gradient(112deg,#fff 0 74%,#fff3f7 100%)!important;
 }
 body:has(#about):has(#discover):has(#safety) #how .mt-10{margin-bottom:0!important}
 body:has(#about):has(#discover):has(#safety) #how+section{
   margin-top:0!important;
-  padding-top:18px!important;
+  padding-top:0!important;
   padding-bottom:0!important;
   min-height:0!important;
   background:linear-gradient(105deg,#fff 0 48%,#fff2f7 100%)!important;
 }
 body:has(#about):has(#discover):has(#safety) #how+section>div{
   max-width:1280px!important;
-  min-height:420px!important;
+  min-height:0!important;
   grid-template-columns:55% 45%!important;
   gap:66px!important;
-  align-items:end!important;
+  align-items:center!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  margin-top:0!important;
 }
 body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child{
-  align-self:end!important;
+  align-self:center!important;
+  margin-top:0!important;
   margin-bottom:0!important;
   border-radius:18px!important;
   box-shadow:0 24px 55px rgba(0,0,0,.13)!important;
@@ -28,7 +32,9 @@ body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child{
 }
 body:has(#about):has(#discover):has(#safety) #how+section>div>div:last-child{
   align-self:center!important;
-  padding-bottom:22px!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  margin-top:0!important;
 }
 body:has(#about):has(#discover):has(#safety) #how+section::before{
   content:""!important;
@@ -45,7 +51,7 @@ body:has(#about):has(#discover):has(#safety) #how+section::after{
   content:""!important;
   position:absolute!important;
   right:24px!important;
-  top:76px!important;
+  top:38px!important;
   width:150px!important;
   height:150px!important;
   border-radius:50%!important;
@@ -95,19 +101,25 @@ body:has(#about):has(#discover):has(#safety) #safety>div>div:last-child::after{
 }
 
 @media (max-width:1023px){
-body:has(#about):has(#discover):has(#safety) #how{padding-bottom:24px!important}
+body:has(#about):has(#discover):has(#safety) #how{padding-bottom:14px!important}
 body:has(#about):has(#discover):has(#safety) #how+section{
   margin-top:0!important;
-  padding-top:14px!important;
+  padding-top:0!important;
   padding-bottom:0!important;
+  min-height:0!important;
 }
-body:has(#about):has(#discover):has(#safety) #how+section>div{gap:22px!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div{
+  min-height:0!important;
+  margin-top:0!important;
+  padding-top:0!important;
+  gap:22px!important;
+}
 body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child{margin:0!important}
 body:has(#about):has(#discover):has(#safety) #safety{margin-top:0!important}
 }
 
 @media (max-width:767px){
-body:has(#about):has(#discover):has(#safety) #how{padding-bottom:20px!important}
-body:has(#about):has(#discover):has(#safety) #how+section{padding:12px 20px 0!important}
+body:has(#about):has(#discover):has(#safety) #how{padding-bottom:12px!important}
+body:has(#about):has(#discover):has(#safety) #how+section{padding:0 20px!important}
 body:has(#about):has(#discover):has(#safety) #how+section>div{gap:20px!important}
 }
