@@ -1,119 +1,181 @@
-/* Final homepage CTA — calibrated to the supplied reference. */
+/* Final homepage CTA — isolated and calibrated to the supplied reference. */
 body:has(#about):has(#discover):has(#safety) #safety+section+section{
-  position:relative;
-  overflow:hidden;
-  min-height:250px;
-  padding:48px 20px 54px!important;
+  position:relative!important;
+  isolation:isolate;
+  overflow:hidden!important;
+  min-height:294px!important;
+  padding:43px 24px 58px!important;
   background:
-    radial-gradient(circle at 50% 14%,rgba(255,255,255,.72),transparent 32%),
-    linear-gradient(180deg,#fff4f8 0%,#fff7fa 100%)!important;
-  text-align:center;
+    radial-gradient(ellipse at 51% 7%,rgba(255,255,255,.92) 0%,rgba(255,255,255,.25) 31%,transparent 52%),
+    linear-gradient(180deg,#fff3f8 0%,#fff7fa 100%)!important;
+  text-align:center!important;
 }
-body:has(#about):has(#discover):has(#safety) #safety+section+section>div{
-  position:relative;
-  z-index:3;
-  max-width:1180px;
-  margin:0 auto;
+/* Remove the old large circular decoration from the previous CTA design. */
+body:has(#about):has(#discover):has(#safety) #safety+section+section>div.absolute{
+  display:none!important;
 }
-body:has(#about):has(#discover):has(#safety) #safety+section+section p:first-child{
-  margin-bottom:14px!important;
-  font-size:10px!important;
+body:has(#about):has(#discover):has(#safety) #safety+section+section>div.relative{
+  position:relative!important;
+  z-index:4!important;
+  width:100%!important;
+  max-width:1180px!important;
+  margin:0 auto!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section>div.relative>p:first-child{
+  margin:0 0 14px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif!important;
+  font-size:11px!important;
   font-weight:700!important;
-  letter-spacing:.26em!important;
+  line-height:1!important;
+  letter-spacing:.24em!important;
+  text-transform:uppercase!important;
   color:#e83e78!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section h2{
-  margin:0 auto;
-  max-width:980px;
+  max-width:1050px!important;
+  margin:0 auto!important;
   font-family:Georgia,"Times New Roman",serif!important;
-  font-size:clamp(42px,4.3vw,64px)!important;
+  font-size:clamp(46px,4.1vw,63px)!important;
   font-weight:400!important;
-  line-height:.98!important;
-  letter-spacing:-.045em!important;
+  line-height:1.02!important;
+  letter-spacing:-.047em!important;
   color:#101012!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section h2 em{
+  font-family:Georgia,"Times New Roman",serif!important;
   font-style:italic!important;
   font-weight:400!important;
-  color:#e83e78!important;
+  color:#e52f75!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section h2+div{
-  margin-top:28px!important;
-  gap:28px!important;
+  position:relative!important;
+  z-index:5!important;
+  margin-top:30px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:34px!important;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif!important;
   font-size:13px!important;
+  color:#202024!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/register"]{
-  min-height:52px!important;
-  padding:0 28px!important;
+  display:inline-flex!important;
+  min-height:56px!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 32px!important;
+  border:1px solid rgba(255,255,255,.08)!important;
   border-radius:999px!important;
-  background:#111!important;
+  background:linear-gradient(180deg,#1b1b1d 0%,#0b0b0c 100%)!important;
   color:#fff!important;
   font-size:13px!important;
   font-weight:600!important;
-  box-shadow:0 12px 26px rgba(0,0,0,.18)!important;
+  letter-spacing:-.01em!important;
+  box-shadow:0 14px 26px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.12)!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/register"] span{
-  margin-left:12px!important;
-  color:#e6a8bf!important;
+  margin-left:13px!important;
+  color:#dba1b6!important;
+  font-size:18px!important;
+  font-weight:400!important;
+}
+body:has(#about):has(#discover):has(#safety) #safety+section+section h2+div>span{
+  color:#252529!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/login"]{
-  color:#111!important;
+  color:#222226!important;
   font-weight:600!important;
+  text-decoration:underline!important;
   text-decoration-thickness:1px!important;
   text-underline-offset:3px!important;
 }
+/* Reference wave: a low left arc flowing behind the CTA and rising on the right. */
 body:has(#about):has(#discover):has(#safety) #safety+section+section::before{
-  content:"";
-  position:absolute;
-  z-index:1;
-  left:-4vw;
-  right:-4vw;
-  bottom:38px;
-  height:94px;
-  border-top:2px solid rgba(232,62,120,.55);
-  border-radius:50%;
-  transform:rotate(.7deg);
-  pointer-events:none;
+  content:""!important;
+  position:absolute!important;
+  z-index:1!important;
+  left:-5%!important;
+  bottom:30px!important;
+  width:61%!important;
+  height:142px!important;
+  border:3px solid transparent!important;
+  border-top-color:#ef6f91!important;
+  border-radius:50%!important;
+  transform:rotate(8deg)!important;
+  opacity:.9!important;
+  pointer-events:none!important;
 }
 body:has(#about):has(#discover):has(#safety) #safety+section+section::after{
-  content:"♥";
+  content:"♥"!important;
+  position:absolute!important;
+  z-index:3!important;
+  right:9.2%!important;
+  bottom:73px!important;
+  font-family:Arial,sans-serif!important;
+  font-size:45px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  color:#f20d66!important;
+  text-shadow:0 5px 12px rgba(242,13,102,.18)!important;
+  transform:rotate(-6deg)!important;
+  pointer-events:none!important;
+}
+/* Second half of the wave, drawn without another DOM element. */
+body:has(#about):has(#discover):has(#safety) #safety+section+section>div.relative::after{
+  content:"";
   position:absolute;
-  z-index:2;
-  right:10.5%;
-  bottom:70px;
-  font-size:42px;
-  line-height:1;
-  color:#f20d66;
-  filter:drop-shadow(0 5px 8px rgba(232,62,120,.2));
-  transform:rotate(-8deg);
+  z-index:-1;
+  left:46%;
+  top:142px;
+  width:68%;
+  height:122px;
+  border-bottom:3px solid rgba(239,111,145,.9);
+  border-radius:50%;
+  transform:rotate(-6deg);
   pointer-events:none;
 }
 @media(max-width:767px){
   body:has(#about):has(#discover):has(#safety) #safety+section+section{
-    min-height:300px;
-    padding:44px 20px 62px!important;
+    min-height:340px!important;
+    padding:42px 20px 68px!important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section>div.relative>p:first-child{
+    margin-bottom:13px!important;
+    font-size:9px!important;
   }
   body:has(#about):has(#discover):has(#safety) #safety+section+section h2{
-    max-width:330px;
-    font-size:38px!important;
-    line-height:1!important;
+    max-width:345px!important;
+    font-size:39px!important;
+    line-height:1.02!important;
   }
   body:has(#about):has(#discover):has(#safety) #safety+section+section h2+div{
-    flex-direction:column;
+    margin-top:27px!important;
+    flex-direction:column!important;
     gap:16px!important;
   }
   body:has(#about):has(#discover):has(#safety) #safety+section+section a[href="/register"]{
-    width:100%;
-    max-width:320px;
-    justify-content:center;
+    width:100%!important;
+    max-width:320px!important;
+    min-height:54px!important;
   }
   body:has(#about):has(#discover):has(#safety) #safety+section+section::before{
-    bottom:26px;
-    height:72px;
+    left:-26%!important;
+    bottom:16px!important;
+    width:90%!important;
+    height:92px!important;
+    border-top-width:2px!important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety+section+section>div.relative::after{
+    left:42%;
+    top:218px;
+    width:90%;
+    height:92px;
+    border-bottom-width:2px;
   }
   body:has(#about):has(#discover):has(#safety) #safety+section+section::after{
-    right:8%;
-    bottom:48px;
-    font-size:30px;
+    right:8%!important;
+    bottom:45px!important;
+    font-size:31px!important;
   }
 }
