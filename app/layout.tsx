@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { RouteProgressBar } from "@/components/layout/RouteProgressBar";
 import { MobileRelationshipActionEnhancer } from "@/components/profile/MobileRelationshipActionEnhancer";
+import { HomepageMotion } from "@/components/home/HomepageMotion";
 import "./globals.css";
 import "./mobile-overrides.css";
 import "./home-reference.css";
@@ -30,6 +31,7 @@ export default function RootLayout({
           <RouteProgressBar />
         </Suspense>
         <MobileRelationshipActionEnhancer />
+        <HomepageMotion />
         {children}
       </body>
     </html>
