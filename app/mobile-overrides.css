@@ -9,6 +9,35 @@
 }
 
 @media (max-width: 767px) {
+  /* Mobile pages use a clean white canvas instead of decorative gradient/tinted backgrounds. */
+  body {
+    background: #fff !important;
+  }
+
+  /* Login / Register / Forgot Password / Reset Password / Verify Email. */
+  main.min-h-dvh {
+    background-color: #fff !important;
+    background-image: none !important;
+  }
+  main.min-h-dvh > section {
+    background-color: #fff !important;
+    background-image: none !important;
+  }
+  main.min-h-dvh > section > .pointer-events-none.absolute.rounded-full {
+    display: none !important;
+  }
+
+  /* Settings pages: keep the mobile page canvas pure white. */
+  .app-shell.edit-profile-shell,
+  .app-shell.edit-profile-shell > div.grid,
+  .app-shell.edit-profile-shell > div.grid > div,
+  .privacy-page,
+  .privacy-mobile-sheet,
+  .settings-mobile-header {
+    background-color: #fff !important;
+    background-image: none !important;
+  }
+
   section[aria-label="Advanced profile filters"] {
     padding-bottom: calc(96px + env(safe-area-inset-bottom));
     scroll-padding-bottom: calc(96px + env(safe-area-inset-bottom));
