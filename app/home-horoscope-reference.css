@@ -1,0 +1,131 @@
+/* Homepage horoscope section — scoped to the section immediately after #how. */
+body:has(#about):has(#discover):has(#safety) #how + section {
+  position: relative;
+  overflow: hidden;
+  background: #fff !important;
+  padding: 72px 20px 84px !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section::before {
+  content: "";
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  right: 9%;
+  top: -205px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 48% 55%, rgba(255,224,238,.78), rgba(255,244,248,.5) 48%, rgba(255,255,255,0) 72%);
+  pointer-events: none;
+}
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child {
+  position: relative;
+  z-index: 1;
+  max-width: 1240px !important;
+  display: grid !important;
+  grid-template-columns: .43fr .57fr !important;
+  gap: 70px !important;
+  align-items: center !important;
+}
+/* Put the editorial copy on the left, product mockup on the right. */
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child { order: 2; }
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:last-child { order: 1; }
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:last-child > p:first-child {
+  margin-bottom: 12px;
+  color: #e83e78 !important;
+  font-size: 11px !important;
+  font-weight: 600;
+  letter-spacing: .22em !important;
+  text-transform: uppercase;
+}
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:last-child > h2 {
+  max-width: 500px;
+  font-family: -apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif !important;
+  font-size: clamp(44px,4.2vw,62px) !important;
+  font-weight: 600 !important;
+  line-height: .98 !important;
+  letter-spacing: -.052em !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:last-child > p:nth-of-type(2) {
+  max-width: 470px !important;
+  margin-top: 20px !important;
+  color: #6e6e73 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section ul {
+  margin-top: 24px !important;
+  display: grid;
+  gap: 12px !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section li {
+  display: grid !important;
+  grid-template-columns: 44px 1fr;
+  align-items: center;
+  gap: 14px !important;
+  min-height: 44px;
+  color: #1d1d1f !important;
+  font-size: 14px !important;
+  font-weight: 500;
+}
+body:has(#about):has(#discover):has(#safety) #how + section li > span {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff0f6;
+  color: #e83e78 !important;
+  font-size: 15px;
+}
+/* Product/dashboard mockup */
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child {
+  position: relative;
+  border: 1px solid rgba(0,0,0,.06) !important;
+  border-radius: 22px !important;
+  background: rgba(255,255,255,.94) !important;
+  padding: 22px !important;
+  box-shadow: 0 22px 55px rgba(31,31,35,.10) !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child::before {
+  content: "Bandhanaa     Overview     Horoscope     Preferences";
+  display: block;
+  margin: -2px 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eeeeef;
+  color: #6e6e73;
+  font-size: 10px;
+  font-weight: 500;
+  word-spacing: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child > div {
+  gap: 20px !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section [class*="aspect-square"] {
+  border-color: #d2d2d7 !important;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,.05);
+}
+body:has(#about):has(#discover):has(#safety) #how + section [class*="bg-[#fbfbfd]"] {
+  background: #f7f7f8 !important;
+}
+body:has(#about):has(#discover):has(#safety) #how + section [class*="w-[82%]"] {
+  background: #e83e78 !important;
+}
+
+@media (max-width: 1023px) {
+  body:has(#about):has(#discover):has(#safety) #how + section { padding: 58px 20px 66px !important; }
+  body:has(#about):has(#discover):has(#safety) #how + section > div:last-child {
+    grid-template-columns: 1fr !important;
+    gap: 42px !important;
+  }
+  body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child { order: 2; }
+  body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:last-child { order: 1; }
+}
+@media (max-width: 767px) {
+  body:has(#about):has(#discover):has(#safety) #how + section { padding: 52px 20px 58px !important; }
+  body:has(#about):has(#discover):has(#safety) #how + section::before { width: 430px; height: 430px; right: -190px; top: 150px; }
+  body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:last-child > h2 { font-size: clamp(38px,11vw,47px) !important; }
+  body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child { border-radius: 18px !important; padding: 16px !important; }
+  body:has(#about):has(#discover):has(#safety) #how + section > div:last-child > div:first-child::before { font-size: 8px; word-spacing: 7px; }
+}
