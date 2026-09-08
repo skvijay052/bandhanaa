@@ -1,140 +1,91 @@
 /* Public homepage visual calibration against the approved 1440px reference. */
-body:has(#about):has(#discover):has(#safety) > div {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
-  font-synthesis: none;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: clip !important;
-  overflow-y: visible !important;
+body:has(#about):has(#discover):has(#safety) > div { font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif!important; font-synthesis:none; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:clip!important; overflow-y:visible!important; }
+body:has(#about):has(#discover):has(#safety) h1,body:has(#about):has(#discover):has(#safety) h2,body:has(#about):has(#discover):has(#safety) h3,body:has(#about):has(#discover):has(#safety) p,body:has(#about):has(#discover):has(#safety) a,body:has(#about):has(#discover):has(#safety) span,body:has(#about):has(#discover):has(#safety) button { font-family:inherit!important; }
+body:has(#about):has(#discover):has(#safety) h1,body:has(#about):has(#discover):has(#safety) h2 { font-weight:600; letter-spacing:-.045em; }
+body:has(#about):has(#discover):has(#safety) main section h2 { font-size:clamp(40px,3.8vw,54px)!important; line-height:1.02!important; text-wrap:balance; }
+body:has(#about):has(#discover):has(#safety) main section p { font-size:15px; line-height:1.47; letter-spacing:-.01em; }
+body:has(#about):has(#discover):has(#safety) header,body:has(#about):has(#discover):has(#safety) footer { letter-spacing:-.01em; }
+body:has(#about):has(#discover):has(#safety)>div>header,.bandhanaa-home>header { position:sticky!important;top:0!important;inset-block-start:0!important;z-index:999!important;width:100%;background:rgba(255,255,255,.94)!important;border-bottom:1px solid rgba(0,0,0,.06)!important;-webkit-backdrop-filter:saturate(180%) blur(18px);backdrop-filter:saturate(180%) blur(18px);box-shadow:0 1px 0 rgba(0,0,0,.02); }
+.home-motion-ready .home-reveal { opacity:0;transform:translate3d(0,34px,0);transition:opacity .82s cubic-bezier(.22,.61,.36,1) var(--home-reveal-delay,0ms),transform .82s cubic-bezier(.22,.61,.36,1) var(--home-reveal-delay,0ms);will-change:opacity,transform; }
+.home-motion-ready .home-reveal.is-visible { opacity:1;transform:translate3d(0,0,0); }
+.home-motion-ready #discover img.home-reveal,.home-motion-ready #safety img.home-reveal { transform:translate3d(0,22px,0) scale(1.025); }
+.home-motion-ready #discover img.home-reveal.is-visible,.home-motion-ready #safety img.home-reveal.is-visible { transform:translate3d(0,0,0) scale(1); }
+body:has(#about):has(#discover):has(#safety)>div>header img[alt="Bandhanaa"],body:has(#about):has(#discover):has(#safety) footer img[alt="Bandhanaa"],body:has(#about):has(#discover):has(#safety) #discover img[alt="Bandhanaa"] { content:url("/bandhanaa-logo.png");width:126px!important;height:auto!important;max-width:126px!important;object-fit:contain!important;object-position:left center!important; }
+body:has(#about):has(#discover):has(#safety) #about { width:100%;overflow:hidden; }
+body:has(#about):has(#discover):has(#safety) #about>div { width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important; }
+body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { content:url("/bandhanaa-register-hero-full.png");object-fit:cover!important;object-position:54% center!important; }
+html { scroll-behavior:smooth; }
+
+/* Four-step journey: same Apple/SF typography scale as the rest of the homepage. */
+body:has(#about):has(#discover):has(#safety) #how { background:#fff!important; }
+body:has(#about):has(#discover):has(#safety) #how>div:first-child { display:none; }
+body:has(#about):has(#discover):has(#safety) #how>div:last-child>p:first-child { margin-bottom:10px;font-size:10px!important;letter-spacing:.26em; }
+body:has(#about):has(#discover):has(#safety) #how>div:last-child>h2 { max-width:1080px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif!important;font-size:clamp(40px,3.8vw,54px)!important;font-weight:600!important;line-height:1.02!important;letter-spacing:-.045em!important; }
+body:has(#about):has(#discover):has(#safety) #how>div:last-child>h2::after { content:"A thoughtful process, designed to help you find people who truly align with your values.";display:block;margin-top:14px;max-width:760px;font:400 15px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;letter-spacing:-.01em;color:#6e6e73; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10 { margin-top:38px; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div { border:0!important;padding:0 24px 0 0!important; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child { position:relative;width:164px;height:164px;display:flex;align-items:flex-start;justify-content:flex-start;padding:15px;border-radius:999px;background-size:cover;background-repeat:no-repeat;background-position:center; }
+/* Use the cleaner portrait crops already used by Bandhanaa profile/discover experiences. */
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:nth-child(1)>div:first-child { background-image:url("/discover-female-portrait-default.png");background-position:50% 25%; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:nth-child(2)>div:first-child { background-image:url("/discover-male-portrait-default.png");background-position:50% 22%; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:nth-child(3)>div:first-child { background-image:url("/discover-female-default.png");background-position:50% 20%; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:nth-child(4)>div:first-child { background-image:url("/bandhanaa-login-hero-desktop.png");background-position:64% center; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>span:first-child { display:grid;place-items:center;width:54px;height:54px;margin:-15px 0 0 -15px;border-radius:999px;background:#fff1f6;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif!important;font-size:20px!important;font-weight:500;line-height:1;color:#111;letter-spacing:-.03em; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>svg { position:absolute;right:-10px;bottom:8px;box-sizing:content-box;width:23px;height:23px;padding:13px;border-radius:999px;background:#fff;color:#111!important;filter:drop-shadow(0 7px 12px rgba(0,0,0,.13)); }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>h3 { margin-top:20px;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif!important;font-size:18px;font-weight:600;line-height:1.15;letter-spacing:-.035em; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>p { margin-top:8px;max-width:245px!important;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif!important;font-size:13px!important;line-height:1.48!important;color:#6e6e73; }
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>span:last-child { display:none!important; }
+
+@media (min-width:1024px) {
+ body:has(#about):has(#discover):has(#safety)>div>header>div { height:58px;max-width:1240px;padding-left:34px;padding-right:34px; }
+ body:has(#about):has(#discover):has(#safety)>div>header nav { font-size:12px; }
+ body:has(#about):has(#discover):has(#safety) #about>div { min-height:552px;grid-template-columns:minmax(430px,44%) minmax(0,56%); }
+ body:has(#about):has(#discover):has(#safety) #about>div>div:first-child { padding-left:max(40px,calc((100vw - 1240px)/2 + 34px));padding-right:38px;padding-top:48px;padding-bottom:48px; }
+ body:has(#about):has(#discover):has(#safety) #about>div>div:last-child { min-height:552px;width:100%; }
+ body:has(#about):has(#discover):has(#safety) #about h1 { font-size:clamp(58px,4.8vw,72px)!important;line-height:.96!important;letter-spacing:-.055em!important;font-weight:600; }
+ body:has(#about):has(#discover):has(#safety) #about p { max-width:455px; }
+ body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position:55% center!important; }
+ body:has(#about):has(#discover):has(#safety) #discover { padding-top:64px;padding-bottom:64px; }
+ body:has(#about):has(#discover):has(#safety) #discover>div { max-width:1240px;grid-template-columns:.35fr .65fr;gap:38px; }
+ body:has(#about):has(#discover):has(#safety) #how { padding-top:64px;padding-bottom:72px; }
+ body:has(#about):has(#discover):has(#safety) #how>div:last-child { max-width:1240px; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10 { grid-template-columns:repeat(4,minmax(0,1fr));gap:28px!important; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div:not(:last-child)::after { content:"";position:absolute;top:78px;left:164px;width:calc(100% - 142px);height:50px;border-top:1px solid #e9b8ca;border-radius:50%;opacity:.8;pointer-events:none; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div:not(:last-child)::before { content:"";position:absolute;z-index:2;top:75px;right:4px;width:7px;height:7px;border-radius:50%;background:#cf1f65; }
+ body:has(#about):has(#discover):has(#safety) #safety>div { max-width:1240px;grid-template-columns:.56fr .44fr; }
+ body:has(#about):has(#discover):has(#safety) #safety>div>div:first-child { padding:56px 34px; }
 }
-body:has(#about):has(#discover):has(#safety) h1,
-body:has(#about):has(#discover):has(#safety) h2,
-body:has(#about):has(#discover):has(#safety) h3,
-body:has(#about):has(#discover):has(#safety) p,
-body:has(#about):has(#discover):has(#safety) a,
-body:has(#about):has(#discover):has(#safety) span,
-body:has(#about):has(#discover):has(#safety) button { font-family: inherit !important; }
-body:has(#about):has(#discover):has(#safety) h1,
-body:has(#about):has(#discover):has(#safety) h2 { font-weight: 600; letter-spacing: -0.045em; }
-body:has(#about):has(#discover):has(#safety) main section h2 { font-size: clamp(40px, 3.8vw, 54px) !important; line-height: 1.02 !important; text-wrap: balance; }
-body:has(#about):has(#discover):has(#safety) main section p { font-size: 15px; line-height: 1.47; letter-spacing: -0.01em; }
-body:has(#about):has(#discover):has(#safety) header,
-body:has(#about):has(#discover):has(#safety) footer { letter-spacing: -0.01em; }
-
-body:has(#about):has(#discover):has(#safety) > div > header,
-.bandhanaa-home > header {
-  position: sticky !important;
-  top: 0 !important;
-  inset-block-start: 0 !important;
-  z-index: 999 !important;
-  width: 100%;
-  background: rgba(255,255,255,.94) !important;
-  border-bottom: 1px solid rgba(0,0,0,.06) !important;
-  -webkit-backdrop-filter: saturate(180%) blur(18px);
-  backdrop-filter: saturate(180%) blur(18px);
-  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+@media (max-width:1023px) {
+ body:has(#about):has(#discover):has(#safety) #about>div { display:block!important; }
+ body:has(#about):has(#discover):has(#safety) #about>div>div:last-child { display:none!important; }
+ body:has(#about):has(#discover):has(#safety) #safety>div { display:block!important; }
+ body:has(#about):has(#discover):has(#safety) #safety>div>div:last-child,body:has(#about):has(#discover):has(#safety) #safety img { display:none!important; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div { display:grid;grid-template-columns:132px 1fr;column-gap:22px;align-items:center; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child { grid-row:1/span 2;width:132px;height:132px; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div>h3 { margin-top:0; }
 }
-
-.home-motion-ready .home-reveal {
-  opacity: 0;
-  transform: translate3d(0, 34px, 0);
-  transition: opacity .82s cubic-bezier(.22,.61,.36,1) var(--home-reveal-delay, 0ms), transform .82s cubic-bezier(.22,.61,.36,1) var(--home-reveal-delay, 0ms);
-  will-change: opacity, transform;
+body:has(#about):has(#discover):has(#safety) main section { scroll-margin-top:70px; }
+body:has(#about):has(#discover):has(#safety) a,body:has(#about):has(#discover):has(#safety) button { transition:opacity .22s ease,transform .22s ease,background-color .22s ease; }
+body:has(#about):has(#discover):has(#safety) a:hover { opacity:.72; }
+body:has(#about):has(#discover):has(#safety) main a[class*="rounded-full"]:hover { opacity:1;transform:translateY(-2px); }
+@media (max-width:767px) {
+ body:has(#about):has(#discover):has(#safety) { background:#fff!important; }
+ body:has(#about):has(#discover):has(#safety) #about { background:#fbfbfd!important; }
+ body:has(#about):has(#discover):has(#safety) #about>div { width:100%!important;max-width:none!important; }
+ body:has(#about):has(#discover):has(#safety) #about h1 { font-size:clamp(42px,12vw,50px)!important;line-height:.98!important;letter-spacing:-.05em!important; }
+ body:has(#about):has(#discover):has(#safety) main section h2 { font-size:clamp(34px,9.6vw,43px)!important;line-height:1.04!important; }
+ body:has(#about):has(#discover):has(#safety) main section p { font-size:14px;line-height:1.5; }
+ body:has(#about):has(#discover):has(#safety) #about>div>div:first-child { padding-top:42px;padding-bottom:38px; }
+ body:has(#about):has(#discover):has(#safety) #discover { padding-top:56px;padding-bottom:56px; }
+ body:has(#about):has(#discover):has(#safety) #how { padding-top:54px;padding-bottom:58px; }
+ body:has(#about):has(#discover):has(#safety) #how>div:last-child>h2 { font-size:clamp(34px,9.6vw,43px)!important; }
+ body:has(#about):has(#discover):has(#safety) #how>div:last-child>h2::after { font-size:14px;line-height:1.5; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10 { gap:34px; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div { grid-template-columns:112px 1fr;column-gap:18px; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child { width:112px;height:112px; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>span:first-child { width:45px;height:45px;font-size:17px!important; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div>h3 { font-size:17px; }
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div>p { font-size:12px!important; }
+ body:has(#about):has(#discover):has(#safety) #safety { background:#090a0b!important; }
 }
-.home-motion-ready .home-reveal.is-visible { opacity: 1; transform: translate3d(0, 0, 0); }
-.home-motion-ready #discover img.home-reveal,
-.home-motion-ready #safety img.home-reveal { transform: translate3d(0, 22px, 0) scale(1.025); }
-.home-motion-ready #discover img.home-reveal.is-visible,
-.home-motion-ready #safety img.home-reveal.is-visible { transform: translate3d(0, 0, 0) scale(1); }
-
-body:has(#about):has(#discover):has(#safety) > div > header img[alt="Bandhanaa"],
-body:has(#about):has(#discover):has(#safety) footer img[alt="Bandhanaa"],
-body:has(#about):has(#discover):has(#safety) #discover img[alt="Bandhanaa"] {
-  content: url("/bandhanaa-logo.png"); width: 126px !important; height: auto !important; max-width: 126px !important; object-fit: contain !important; object-position: left center !important;
-}
-
-body:has(#about):has(#discover):has(#safety) #about { width: 100%; overflow: hidden; }
-body:has(#about):has(#discover):has(#safety) #about > div { width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
-body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { content: url("/bandhanaa-register-hero-full.png"); object-fit: cover !important; object-position: 54% center !important; }
-html { scroll-behavior: smooth; }
-
-/* Editorial four-step journey inspired by the supplied reference. */
-body:has(#about):has(#discover):has(#safety) #how { background: #fff !important; }
-body:has(#about):has(#discover):has(#safety) #how > div:first-child { display: none; }
-body:has(#about):has(#discover):has(#safety) #how > div:last-child > p:first-child { margin-bottom: 8px; font-size: 11px !important; letter-spacing: .24em; }
-body:has(#about):has(#discover):has(#safety) #how > div:last-child > h2 { max-width: 1040px; font-family: Georgia, "Times New Roman", serif !important; font-weight: 500; letter-spacing: -.035em !important; }
-body:has(#about):has(#discover):has(#safety) #how > div:last-child > h2::after { content: "A thoughtful process, designed to help you find people who truly align with your values."; display: block; margin-top: 14px; font-family: -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif; font-size: 15px; font-weight: 400; line-height: 1.5; letter-spacing: -.01em; color: #6e6e73; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 { margin-top: 34px; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div { border: 0 !important; padding: 0 24px 0 0 !important; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > div:first-child { position: relative; width: 164px; height: 164px; display: flex; align-items: flex-start; justify-content: flex-start; padding: 15px; border-radius: 999px; background-size: cover; background-position: center; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div:nth-child(1) > div:first-child,
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div:nth-child(3) > div:first-child { background-image: url("/avatar-female-default.png"); }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div:nth-child(2) > div:first-child { background-image: url("/avatar-male-default.png"); }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div:nth-child(4) > div:first-child { background-image: url("/bandhanaa-login-hero-desktop.png"); background-position: 65% center; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > div:first-child > span:first-child { display: grid; place-items: center; width: 54px; height: 54px; margin: -15px 0 0 -15px; border-radius: 999px; background: #fff1f6; font-family: Georgia,"Times New Roman",serif !important; font-size: 23px !important; line-height: 1; color: #111; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > div:first-child > svg { position: absolute; right: -10px; bottom: 8px; box-sizing: content-box; width: 23px; height: 23px; padding: 13px; border-radius: 999px; background: #fff; color: #111 !important; filter: drop-shadow(0 7px 12px rgba(0,0,0,.13)); }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > h3 { margin-top: 20px; font-family: Georgia,"Times New Roman",serif !important; font-size: 20px; font-weight: 600; letter-spacing: -.025em; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > p { margin-top: 7px; max-width: 235px !important; font-size: 13px !important; line-height: 1.45 !important; color: #6e6e73; }
-body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > span:last-child { display: none !important; }
-
-@media (min-width: 1024px) {
-  body:has(#about):has(#discover):has(#safety) > div > header > div { height: 58px; max-width: 1240px; padding-left: 34px; padding-right: 34px; }
-  body:has(#about):has(#discover):has(#safety) > div > header nav { font-size: 12px; }
-  body:has(#about):has(#discover):has(#safety) #about > div { min-height: 552px; grid-template-columns: minmax(430px, 44%) minmax(0, 56%); }
-  body:has(#about):has(#discover):has(#safety) #about > div > div:first-child { padding-left: max(40px, calc((100vw - 1240px) / 2 + 34px)); padding-right: 38px; padding-top: 48px; padding-bottom: 48px; }
-  body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { min-height: 552px; width: 100%; }
-  body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(58px,4.8vw,72px) !important; line-height: .96 !important; letter-spacing: -.055em !important; font-weight: 600; }
-  body:has(#about):has(#discover):has(#safety) #about p { max-width: 455px; }
-  body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position: 55% center !important; }
-  body:has(#about):has(#discover):has(#safety) #discover { padding-top: 64px; padding-bottom: 64px; }
-  body:has(#about):has(#discover):has(#safety) #discover > div { max-width: 1240px; grid-template-columns: .35fr .65fr; gap: 38px; }
-  body:has(#about):has(#discover):has(#safety) #how { padding-top: 64px; padding-bottom: 72px; }
-  body:has(#about):has(#discover):has(#safety) #how > div:last-child { max-width: 1240px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 { grid-template-columns: repeat(4,minmax(0,1fr)); gap: 28px !important; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div:not(:last-child)::after { content: ""; position: absolute; top: 78px; left: 164px; width: calc(100% - 142px); height: 50px; border-top: 1px solid #e9b8ca; border-radius: 50%; opacity: .8; pointer-events: none; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div:not(:last-child)::before { content: ""; position: absolute; z-index: 2; top: 75px; right: 4px; width: 7px; height: 7px; border-radius: 50%; background: #cf1f65; }
-  body:has(#about):has(#discover):has(#safety) #safety > div { max-width: 1240px; grid-template-columns: .56fr .44fr; }
-  body:has(#about):has(#discover):has(#safety) #safety > div > div:first-child { padding: 56px 34px; }
-}
-
-@media (max-width: 1023px) {
-  body:has(#about):has(#discover):has(#safety) #about > div { display: block !important; }
-  body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { display: none !important; }
-  body:has(#about):has(#discover):has(#safety) #safety > div { display: block !important; }
-  body:has(#about):has(#discover):has(#safety) #safety > div > div:last-child,
-  body:has(#about):has(#discover):has(#safety) #safety img { display: none !important; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div { display: grid; grid-template-columns: 132px 1fr; column-gap: 22px; align-items: center; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > div:first-child { grid-row: 1 / span 2; width: 132px; height: 132px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > h3 { margin-top: 0; }
-}
-
-body:has(#about):has(#discover):has(#safety) main section { scroll-margin-top: 70px; }
-body:has(#about):has(#discover):has(#safety) a,
-body:has(#about):has(#discover):has(#safety) button { transition: opacity .22s ease, transform .22s ease, background-color .22s ease; }
-body:has(#about):has(#discover):has(#safety) a:hover { opacity: .72; }
-body:has(#about):has(#discover):has(#safety) main a[class*="rounded-full"]:hover { opacity: 1; transform: translateY(-2px); }
-
-@media (max-width: 767px) {
-  body:has(#about):has(#discover):has(#safety) { background: #fff !important; }
-  body:has(#about):has(#discover):has(#safety) #about { background: #fbfbfd !important; }
-  body:has(#about):has(#discover):has(#safety) #about > div { width: 100% !important; max-width: none !important; }
-  body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(42px,12vw,50px) !important; line-height: .98 !important; letter-spacing: -.05em !important; }
-  body:has(#about):has(#discover):has(#safety) main section h2 { font-size: clamp(34px,9.6vw,43px) !important; line-height: 1.04 !important; }
-  body:has(#about):has(#discover):has(#safety) main section p { font-size: 14px; line-height: 1.5; }
-  body:has(#about):has(#discover):has(#safety) #about > div > div:first-child { padding-top: 42px; padding-bottom: 38px; }
-  body:has(#about):has(#discover):has(#safety) #discover { padding-top: 56px; padding-bottom: 56px; }
-  body:has(#about):has(#discover):has(#safety) #how { padding-top: 54px; padding-bottom: 58px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 { gap: 34px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div { grid-template-columns: 112px 1fr; column-gap: 18px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > div:first-child { width: 112px; height: 112px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > div:first-child > span:first-child { width: 45px; height: 45px; font-size: 19px !important; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > h3 { font-size: 18px; }
-  body:has(#about):has(#discover):has(#safety) #how .mt-10 > div > p { font-size: 12px !important; }
-  body:has(#about):has(#discover):has(#safety) #safety { background: #090a0b !important; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto !important; }
-  .home-motion-ready .home-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
-  body:has(#about):has(#discover):has(#safety) * { scroll-behavior: auto !important; }
-}
+@media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto!important}.home-motion-ready .home-reveal{opacity:1!important;transform:none!important;transition:none!important}body:has(#about):has(#discover):has(#safety) *{scroll-behavior:auto!important} }
