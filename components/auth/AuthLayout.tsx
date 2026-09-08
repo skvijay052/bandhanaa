@@ -18,15 +18,20 @@ export function AuthLayout({
       >
         <div className="pointer-events-none absolute -left-28 -top-24 size-[430px] rounded-full bg-[#dff9f3]/80 blur-2xl md:hidden" />
         <div className="pointer-events-none absolute -right-40 top-8 size-[420px] rounded-full bg-[#eee7ff]/80 blur-2xl md:hidden" />
-        <div className="absolute left-4 top-5 z-20 lg:left-[5.5%] lg:top-10 lg:[&_img]:brightness-0 lg:[&_img]:invert">
+
+        <div className="sticky top-0 z-50 flex h-[72px] w-full items-center justify-between border-b border-black/[0.05] bg-white/95 px-4 backdrop-blur-md lg:hidden">
+          <Brand compact />
+          <Link
+            href={login ? "/register" : "/login"}
+            className="flex h-10 items-center rounded-full bg-white px-4 text-[12px] font-semibold text-[#8b3de8] shadow-[0_5px_18px_rgba(63,38,110,.10)]"
+          >
+            {login ? "Create account" : "Sign in"}
+          </Link>
+        </div>
+
+        <div className="absolute left-[5.5%] top-10 z-20 hidden lg:block lg:[&_img]:brightness-0 lg:[&_img]:invert">
           <Brand compact />
         </div>
-        <Link
-          href={login ? "/register" : "/login"}
-          className="absolute right-4 top-5 z-20 flex h-11 items-center rounded-full bg-white/90 px-5 text-[12px] font-semibold text-[#8b3de8] shadow-[0_7px_22px_rgba(63,38,110,.10)] md:hidden"
-        >
-          {login ? "Create account" : "Sign in"}
-        </Link>
 
         <div className="relative hidden min-h-dvh overflow-hidden lg:block">
           <div className="absolute inset-0">
@@ -75,7 +80,7 @@ export function AuthLayout({
         </div>
 
         <div
-          className={`relative flex min-w-0 flex-col justify-start px-4 pb-8 pt-[96px] items-stretch sm:px-8 lg:h-dvh lg:items-center lg:overflow-y-auto lg:bg-[radial-gradient(circle_at_85%_40%,#f8eefe_0,transparent_38%),radial-gradient(circle_at_15%_20%,#fdf2f8_0,transparent_32%),#faf9ff] lg:px-[5%] lg:pb-12 lg:pt-20`}
+          className={`relative flex min-w-0 flex-col items-stretch justify-start px-4 pb-8 pt-6 sm:px-8 lg:h-dvh lg:items-center lg:overflow-y-auto lg:bg-[radial-gradient(circle_at_85%_40%,#f8eefe_0,transparent_38%),radial-gradient(circle_at_15%_20%,#fdf2f8_0,transparent_32%),#faf9ff] lg:px-[5%] lg:pb-12 lg:pt-20`}
         >
           <p
             className={`absolute right-[9%] top-[34px] z-20 hidden text-[13px] text-muted lg:block`}
@@ -90,7 +95,7 @@ export function AuthLayout({
           </p>
 
           <div
-            className={`w-full min-w-0 shrink-0 rounded-[26px] border border-white/90 bg-white/95 px-5 py-6 shadow-[0_14px_38px_rgba(63,38,110,.10)] mx-auto max-w-[820px] lg:px-9 lg:py-7 lg:shadow-[0_18px_60px_rgba(66,32,104,.10)]`}
+            className={`mx-auto w-full min-w-0 max-w-[820px] shrink-0 rounded-[26px] border border-white/90 bg-white/95 px-5 py-6 shadow-[0_14px_38px_rgba(63,38,110,.10)] lg:px-9 lg:py-7 lg:shadow-[0_18px_60px_rgba(66,32,104,.10)]`}
           >
             {children}
           </div>
