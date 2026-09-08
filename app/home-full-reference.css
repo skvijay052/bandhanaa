@@ -1,0 +1,106 @@
+/* Full homepage calibration for the approved tall reference. Scoped to the public homepage. */
+body:has(#about):has(#discover):has(#safety)>div{background:#fff;color:#111;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif!important}
+body:has(#about):has(#discover):has(#safety) main>section{position:relative}
+body:has(#about):has(#discover):has(#safety) main>section h1,body:has(#about):has(#discover):has(#safety) main>section h2{font-family:Georgia,"Times New Roman",serif!important;font-weight:400!important;letter-spacing:-.045em!important;color:#111}
+body:has(#about):has(#discover):has(#safety) main>section em{font-family:Georgia,"Times New Roman",serif!important;font-weight:400!important;color:#e83e78}
+body:has(#about):has(#discover):has(#safety) main>section p{color:#66666b}
+body:has(#about):has(#discover):has(#safety)>div>header{height:58px;background:rgba(255,255,255,.96)!important;border-bottom:1px solid rgba(0,0,0,.045)!important}
+body:has(#about):has(#discover):has(#safety)>div>header>div{height:58px!important;max-width:1280px!important;padding-inline:34px!important}
+body:has(#about):has(#discover):has(#safety)>div>header nav{gap:30px!important;font-size:11px!important}
+body:has(#about):has(#discover):has(#safety)>div>header a[href="/register"]{min-height:36px!important;padding-inline:18px!important;font-size:11px!important}
+
+/* Hero */
+body:has(#about):has(#discover):has(#safety) #about{background:#fff!important}
+body:has(#about):has(#discover):has(#safety) #about>div{min-height:520px!important;grid-template-columns:43% 57%!important}
+body:has(#about):has(#discover):has(#safety) #about>div>div:first-child{padding-left:max(34px,calc((100vw - 1280px)/2 + 34px))!important;padding-right:38px!important;padding-top:46px!important;padding-bottom:42px!important;background:#fff}
+body:has(#about):has(#discover):has(#safety) #about h1{font-size:clamp(54px,4.7vw,70px)!important;line-height:.94!important;letter-spacing:-.055em!important}
+body:has(#about):has(#discover):has(#safety) #about h1 span{font-style:italic}
+body:has(#about):has(#discover):has(#safety) #about>div>div:last-child{min-height:520px!important}
+body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"]{object-position:54% 42%!important}
+body:has(#about):has(#discover):has(#safety) #about>div>div:last-child::after{content:"Real  ♡\A People\A Meaningful\A Connections";white-space:pre;position:absolute;z-index:4;right:7%;top:78px;font:500 18px/1.03 cursive;color:#27272a;transform:rotate(-7deg);text-align:left}
+body:has(#about):has(#discover):has(#safety) #about>div>div:last-child::before{content:"";position:absolute;z-index:4;right:7%;top:160px;width:86px;border-bottom:2px solid #e83e78;transform:rotate(-9deg)}
+body:has(#about):has(#discover):has(#safety) #about .absolute.bottom-7{right:7%!important;bottom:48px!important;width:230px!important;border-radius:13px!important;padding:12px!important}
+
+/* Meaningful approach */
+body:has(#about):has(#discover):has(#safety) #about+section{overflow:hidden;min-height:420px;padding-top:60px!important;padding-bottom:58px!important;text-align:left!important;background:linear-gradient(100deg,#fff 0 57%,#fff7fa 100%)}
+body:has(#about):has(#discover):has(#safety) #about+section>*{position:relative;z-index:2;max-width:1280px;margin-left:auto;margin-right:auto}
+body:has(#about):has(#discover):has(#safety) #about+section>p,body:has(#about):has(#discover):has(#safety) #about+section>h2,body:has(#about):has(#discover):has(#safety) #about+section>p:nth-of-type(2),body:has(#about):has(#discover):has(#safety) #about+section>div{width:calc(100% - 68px);max-width:1280px}
+body:has(#about):has(#discover):has(#safety) #about+section h2{font-size:clamp(43px,4vw,58px)!important;line-height:.96!important}
+body:has(#about):has(#discover):has(#safety) #about+section>p:nth-of-type(2){margin-top:16px!important;margin-left:auto;margin-right:auto;max-width:1280px!important;padding-right:54%;font-size:13px!important;line-height:1.45!important}
+body:has(#about):has(#discover):has(#safety) #about+section>div{margin-top:30px!important;margin-left:auto;margin-right:auto;max-width:590px!important;margin-inline-start:max(34px,calc((100vw - 1280px)/2 + 34px))!important}
+body:has(#about):has(#discover):has(#safety) #about+section::after{content:"Same\A Values       Long-term\A              Goals\A Similar\A Lifestyle";white-space:pre;position:absolute;right:8%;top:80px;width:420px;height:260px;padding:56px 60px;border-radius:18px;background:linear-gradient(145deg,#fff,#ffeef5);box-shadow:0 18px 50px rgba(221,113,153,.16);transform:rotate(-8deg);font:500 17px/1.7 cursive;color:#555}
+
+/* Discover */
+body:has(#about):has(#discover):has(#safety) #discover{min-height:510px!important;padding-top:58px!important;padding-bottom:60px!important;background:linear-gradient(90deg,#fff 0 72%,#fff5f8 100%)!important}
+body:has(#about):has(#discover):has(#safety) #discover>div{max-width:1280px!important;grid-template-columns:35% 65%!important;gap:26px!important}
+body:has(#about):has(#discover):has(#safety) #discover h2{font-size:clamp(42px,3.8vw,55px)!important;line-height:.97!important}
+body:has(#about):has(#discover):has(#safety) #discover>div>div:nth-child(2){transform:rotate(-1deg);transform-origin:center bottom}
+
+/* Compatibility */
+body:has(#about):has(#discover):has(#safety) #discover+section{padding-top:55px!important;padding-bottom:55px!important;background:linear-gradient(110deg,#fff 0 46%,#fff8fb 100%)}
+body:has(#about):has(#discover):has(#safety) #discover+section>div{max-width:1280px!important;grid-template-columns:39% 61%!important;gap:44px!important}
+body:has(#about):has(#discover):has(#safety) #discover+section h2{font-size:clamp(42px,3.6vw,53px)!important;line-height:.96!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child{gap:18px 0!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child>div{padding:18px 6px;border-radius:14px;background:rgba(255,246,250,.72)}
+body:has(#about):has(#discover):has(#safety) #discover+section svg{color:#d92f70}
+
+/* Four steps */
+body:has(#about):has(#discover):has(#safety) #how{padding-top:48px!important;padding-bottom:56px!important;background:linear-gradient(105deg,#fff 0 72%,#fff2f7 100%)!important}
+body:has(#about):has(#discover):has(#safety) #how>div:last-child{max-width:1280px!important}
+body:has(#about):has(#discover):has(#safety) #how h2{font-size:clamp(40px,3.6vw,52px)!important;line-height:1!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10{margin-top:28px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div{min-height:145px;padding:18px 18px!important;border:1px solid #f0e7eb!important;border-radius:14px;background:rgba(255,255,255,.72);box-shadow:0 10px 26px rgba(179,104,131,.06)}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child{width:auto!important;height:auto!important;padding:0!important;background:none!important;border-radius:0!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>span:first-child{width:auto!important;height:auto!important;margin:0!important;background:none!important;font-family:Georgia,"Times New Roman",serif!important;font-size:38px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>svg{position:static!important;width:25px!important;height:25px!important;padding:0!important;margin-left:10px;border-radius:0!important;background:none!important;color:#e83e78!important;filter:none!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>h3{margin-top:12px!important;font-size:13px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>p{font-size:11px!important;line-height:1.42!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:not(:last-child)::after{display:none!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:not(:last-child)::before{content:"→"!important;top:56px!important;right:-18px!important;width:auto!important;height:auto!important;background:none!important;color:#e83e78;font-size:18px}
+
+/* Horoscope */
+body:has(#about):has(#discover):has(#safety) #how+section{min-height:420px;padding-top:52px!important;padding-bottom:52px!important;background:radial-gradient(circle at 18% 75%,#f7fff9 0 9%,transparent 28%),linear-gradient(110deg,#fff 0 50%,#fff1f7 100%)!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div{max-width:1240px!important;grid-template-columns:54% 46%!important;gap:52px!important}
+body:has(#about):has(#discover):has(#safety) #how+section h2{font-size:clamp(42px,3.8vw,56px)!important;line-height:.96!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child{transform:rotate(-1deg);box-shadow:0 18px 45px rgba(0,0,0,.10)!important}
+
+/* Safety */
+body:has(#about):has(#discover):has(#safety) #safety{background:#070707!important}
+body:has(#about):has(#discover):has(#safety) #safety>div{max-width:100%!important;grid-template-columns:56% 44%!important}
+body:has(#about):has(#discover):has(#safety) #safety>div>div:first-child{padding-left:max(34px,calc((100vw - 1280px)/2 + 34px))!important;padding-top:52px!important;padding-bottom:52px!important}
+body:has(#about):has(#discover):has(#safety) #safety h2{font-size:clamp(45px,4vw,58px)!important;line-height:.92!important;color:#fff!important}
+body:has(#about):has(#discover):has(#safety) #safety>div>div:last-child{min-height:390px!important}
+body:has(#about):has(#discover):has(#safety) #safety img{opacity:.82!important;object-position:center 35%!important}
+
+/* Free access + final CTA + footer */
+body:has(#about):has(#discover):has(#safety) #safety+section{padding-top:46px!important;padding-bottom:46px!important;background:linear-gradient(100deg,#fff 0 70%,#fff9fb 100%)}
+body:has(#about):has(#discover):has(#safety) #safety+section>div{max-width:1180px!important}
+body:has(#about):has(#discover):has(#safety) #safety+section h2{font-size:clamp(40px,3.4vw,50px)!important}
+body:has(#about):has(#discover):has(#safety) #safety+section+section{padding-top:60px!important;padding-bottom:60px!important;background:linear-gradient(180deg,#fff4f8,#fff9fb)!important}
+body:has(#about):has(#discover):has(#safety) #safety+section+section::after{content:"";position:absolute;left:-4%;right:-4%;bottom:32px;height:70px;border-top:2px solid rgba(232,62,120,.45);border-radius:50%;transform:rotate(1deg);pointer-events:none}
+body:has(#about):has(#discover):has(#safety) #safety+section+section h2{font-size:clamp(40px,3.8vw,54px)!important}
+body:has(#about):has(#discover):has(#safety) footer{padding-top:24px!important;padding-bottom:24px!important;background:#fff!important}
+body:has(#about):has(#discover):has(#safety) footer>div{max-width:1280px!important}
+
+@media(max-width:1023px){
+ body:has(#about):has(#discover):has(#safety) #about>div{display:block!important;min-height:auto!important}
+ body:has(#about):has(#discover):has(#safety) #about>div>div:last-child{display:none!important}
+ body:has(#about):has(#discover):has(#safety) #about+section{text-align:center!important;min-height:auto}
+ body:has(#about):has(#discover):has(#safety) #about+section>p:nth-of-type(2){padding-right:0!important;max-width:700px!important}
+ body:has(#about):has(#discover):has(#safety) #about+section>div{margin-inline:auto!important}
+ body:has(#about):has(#discover):has(#safety) #about+section::after{display:none}
+ body:has(#about):has(#discover):has(#safety) #discover>div,body:has(#about):has(#discover):has(#safety) #discover+section>div,body:has(#about):has(#discover):has(#safety) #how+section>div{grid-template-columns:1fr!important}
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div{display:block!important}
+ body:has(#about):has(#discover):has(#safety) #how .mt-10>div:not(:last-child)::before{display:none!important}
+ body:has(#about):has(#discover):has(#safety) #safety>div{display:block!important}
+ body:has(#about):has(#discover):has(#safety) #safety>div>div:last-child,body:has(#about):has(#discover):has(#safety) #safety img{display:none!important}
+}
+@media(max-width:767px){
+ body:has(#about):has(#discover):has(#safety)>div>header>div{padding-inline:18px!important}
+ body:has(#about):has(#discover):has(#safety) #about>div>div:first-child{padding:42px 20px 38px!important}
+ body:has(#about):has(#discover):has(#safety) #about h1{font-size:46px!important}
+ body:has(#about):has(#discover):has(#safety) #about+section,body:has(#about):has(#discover):has(#safety) #discover,body:has(#about):has(#discover):has(#safety) #discover+section,body:has(#about):has(#discover):has(#safety) #how,body:has(#about):has(#discover):has(#safety) #how+section{padding-left:20px!important;padding-right:20px!important}
+ body:has(#about):has(#discover):has(#safety) #about+section>p,body:has(#about):has(#discover):has(#safety) #about+section>h2,body:has(#about):has(#discover):has(#safety) #about+section>p:nth-of-type(2),body:has(#about):has(#discover):has(#safety) #about+section>div{width:100%}
+ body:has(#about):has(#discover):has(#safety) #about+section h2,body:has(#about):has(#discover):has(#safety) #discover h2,body:has(#about):has(#discover):has(#safety) #discover+section h2,body:has(#about):has(#discover):has(#safety) #how h2,body:has(#about):has(#discover):has(#safety) #how+section h2{font-size:38px!important}
+ body:has(#about):has(#discover):has(#safety) #safety>div>div:first-child{padding:46px 20px!important}
+}
