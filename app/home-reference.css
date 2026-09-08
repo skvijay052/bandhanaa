@@ -1,11 +1,12 @@
-/* Public homepage visual calibration against the approved 1440px reference. Scoped so authenticated screens are untouched. */
-
-/* Apple-style system typography. On Apple platforms this resolves to San Francisco; elsewhere it uses the closest native system sans. */
+/* Public homepage visual calibration against the approved 1440px reference. */
 body:has(#about):has(#discover):has(#safety) > div {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* overflow:hidden on the homepage wrapper prevented sticky positioning. */
+  overflow-x: clip !important;
+  overflow-y: visible !important;
 }
 body:has(#about):has(#discover):has(#safety) h1,
 body:has(#about):has(#discover):has(#safety) h2,
@@ -21,84 +22,55 @@ body:has(#about):has(#discover):has(#safety) main section p { font-size: 15px; l
 body:has(#about):has(#discover):has(#safety) header,
 body:has(#about):has(#discover):has(#safety) footer { letter-spacing: -0.01em; }
 
-/* Persistent homepage navigation while scrolling. */
-body:has(#about):has(#discover):has(#safety) > div > header {
+/* Persistent homepage navigation. */
+body:has(#about):has(#discover):has(#safety) > div > header,
+.bandhanaa-home > header {
   position: sticky !important;
   top: 0 !important;
-  z-index: 100 !important;
+  inset-block-start: 0 !important;
+  z-index: 999 !important;
   width: 100%;
-  background: rgba(255,255,255,.92) !important;
-  border-bottom: 1px solid rgba(0,0,0,.055) !important;
+  background: rgba(255,255,255,.94) !important;
+  border-bottom: 1px solid rgba(0,0,0,.06) !important;
   -webkit-backdrop-filter: saturate(180%) blur(18px);
   backdrop-filter: saturate(180%) blur(18px);
-  box-shadow: 0 1px 0 rgba(0,0,0,.015);
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+
+/* Reliable IntersectionObserver reveals. Elements stay normal until JS has mounted. */
+.home-motion-ready .home-reveal {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0);
+  transition:
+    opacity .82s cubic-bezier(.22,.61,.36,1) var(--home-reveal-delay, 0ms),
+    transform .82s cubic-bezier(.22,.61,.36,1) var(--home-reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.home-motion-ready .home-reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+.home-motion-ready #discover img.home-reveal,
+.home-motion-ready #safety img.home-reveal {
+  transform: translate3d(0, 22px, 0) scale(1.025);
+}
+.home-motion-ready #discover img.home-reveal.is-visible,
+.home-motion-ready #safety img.home-reveal.is-visible {
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 /* Use the exact same Bandhanaa logo asset used by the mobile login screen. */
 body:has(#about):has(#discover):has(#safety) > div > header img[alt="Bandhanaa"],
 body:has(#about):has(#discover):has(#safety) footer img[alt="Bandhanaa"],
 body:has(#about):has(#discover):has(#safety) #discover img[alt="Bandhanaa"] {
-  content: url("/bandhanaa-logo.png");
-  width: 126px !important;
-  height: auto !important;
-  max-width: 126px !important;
-  object-fit: contain !important;
-  object-position: left center !important;
+  content: url("/bandhanaa-logo.png"); width: 126px !important; height: auto !important; max-width: 126px !important; object-fit: contain !important; object-position: left center !important;
 }
 
 /* Full-bleed homepage hero. */
 body:has(#about):has(#discover):has(#safety) #about { width: 100%; overflow: hidden; }
 body:has(#about):has(#discover):has(#safety) #about > div { width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; }
-body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] {
-  content: url("/bandhanaa-register-hero-full.png");
-  object-fit: cover !important;
-  object-position: 54% center !important;
-}
-
-/* Smooth in-page navigation. */
+body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { content: url("/bandhanaa-register-hero-full.png"); object-fit: cover !important; object-position: 54% center !important; }
 html { scroll-behavior: smooth; }
-
-/* Progressive scroll reveals inspired by the reference site's motion language, while keeping Bandhanaa restrained. */
-@keyframes bandhanaa-section-reveal {
-  from { opacity: .18; transform: translateY(34px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes bandhanaa-content-reveal {
-  from { opacity: .12; transform: translateY(22px) scale(.992); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes bandhanaa-image-reveal {
-  from { opacity: .45; transform: scale(1.035); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@supports (animation-timeline: view()) {
-  body:has(#about):has(#discover):has(#safety) main > section:not(#about) {
-    animation-name: bandhanaa-section-reveal;
-    animation-duration: 1ms;
-    animation-fill-mode: both;
-    animation-timing-function: cubic-bezier(.22,.61,.36,1);
-    animation-timeline: view();
-    animation-range: entry 4% cover 30%;
-  }
-  body:has(#about):has(#discover):has(#safety) main > section:not(#about) > div {
-    animation-name: bandhanaa-content-reveal;
-    animation-duration: 1ms;
-    animation-fill-mode: both;
-    animation-timing-function: cubic-bezier(.22,.61,.36,1);
-    animation-timeline: view();
-    animation-range: entry 8% cover 34%;
-  }
-  body:has(#about):has(#discover):has(#safety) #discover img,
-  body:has(#about):has(#discover):has(#safety) #safety img {
-    animation-name: bandhanaa-image-reveal;
-    animation-duration: 1ms;
-    animation-fill-mode: both;
-    animation-timing-function: ease-out;
-    animation-timeline: view();
-    animation-range: entry 0% cover 36%;
-  }
-}
 
 @media (min-width: 1024px) {
   body:has(#about):has(#discover):has(#safety) > div > header > div { height: 58px; max-width: 1240px; padding-left: 34px; padding-right: 34px; }
@@ -116,7 +88,6 @@ html { scroll-behavior: smooth; }
   body:has(#about):has(#discover):has(#safety) #safety > div { max-width: 1240px; grid-template-columns: .56fr .44fr; }
   body:has(#about):has(#discover):has(#safety) #safety > div > div:first-child { padding: 56px 34px; }
 }
-
 body:has(#about):has(#discover):has(#safety) main section { scroll-margin-top: 70px; }
 body:has(#about):has(#discover):has(#safety) a,
 body:has(#about):has(#discover):has(#safety) button { transition: opacity .22s ease, transform .22s ease, background-color .22s ease; }
@@ -140,13 +111,6 @@ body:has(#about):has(#discover):has(#safety) main a[class*="rounded-full"]:hover
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto !important; }
-  body:has(#about):has(#discover):has(#safety) *,
-  body:has(#about):has(#discover):has(#safety) *::before,
-  body:has(#about):has(#discover):has(#safety) *::after {
-    scroll-behavior: auto !important;
-    transition: none !important;
-    animation: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-  }
+  .home-motion-ready .home-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  body:has(#about):has(#discover):has(#safety) * { scroll-behavior: auto !important; }
 }
