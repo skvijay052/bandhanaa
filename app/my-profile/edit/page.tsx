@@ -67,7 +67,7 @@ export default async function EditProfilePage() {
   const { data, error } = await supabase
     .from("profiles")
     .select(
-      "id, display_name, avatar_url, gender, birth_date, age, weight, profession, company, city, state, country, religion, education, height, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, profile_visibility, visibility_details, profile_completion, registration_status",
+      "id, display_name, avatar_url, gender, birth_date, age, weight, profession, company, annual_income, city, state, country, religion, education, height, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, profile_visibility, visibility_details, profile_completion, registration_status",
     )
     .eq("id", user.id)
     .single();
@@ -105,6 +105,7 @@ export default async function EditProfilePage() {
     education: String(row.education ?? profileDefaults.education),
     profession: String(row.profession ?? ""),
     company: String(row.company ?? profileDefaults.company),
+    annualIncome: String(row.annual_income ?? ""),
     about: String(row.bio ?? profileDefaults.about),
     photos: Array.isArray(row.photos)
       ? row.photos.filter((photo): photo is string => typeof photo === "string")
