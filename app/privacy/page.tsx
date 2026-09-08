@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { PublicLegalHeader } from "@/components/public/PublicLegalHeader";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -27,12 +27,7 @@ const sections = [
 export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-dvh bg-white text-[#151515]">
-      <header className="border-b border-[#e8e8eb] bg-white">
-        <div className="mx-auto flex max-w-[1040px] items-center justify-between px-5 py-5 sm:px-8">
-          <Link href="/" className="text-[21px] font-bold tracking-[-0.035em]">Bandhanaa</Link>
-          <Link href="/login" className="rounded-full border border-[#dedee3] px-4 py-2 text-[13px] font-semibold transition hover:bg-[#f7f7f8]">Sign in</Link>
-        </div>
-      </header>
+      <PublicLegalHeader />
 
       <article className="mx-auto max-w-[820px] px-5 pb-20 pt-12 sm:px-8 sm:pt-16">
         <div className="border-b border-[#e8e8eb] pb-10">
