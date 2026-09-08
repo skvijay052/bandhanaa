@@ -25,6 +25,7 @@ export interface EditProfileData {
   education: string;
   profession: string;
   company: string;
+  annualIncome: string;
   about: string;
   photos: string[];
   lifestyle: DetailItem[];
