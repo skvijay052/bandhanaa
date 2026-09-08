@@ -9,6 +9,7 @@ import "./mobile-overrides.css";
 import "./home-reference.css";
 import "./home-horoscope-reference.css";
 import "./discover-showcase.css";
+import "./home-full-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
