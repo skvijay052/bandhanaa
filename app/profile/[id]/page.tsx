@@ -19,6 +19,7 @@ type ProfileRow = {
   birth_date: string | null;
   profession: string | null;
   company: string | null;
+  annual_income: string | null;
   city: string | null;
   state: string | null;
   country: string | null;
@@ -70,7 +71,7 @@ export default async function ProfilePage({
       supabase
         .from("profiles")
         .select(
-          "id, display_name, avatar_url, age, birth_date, profession, company, city, state, country, gender, weight, height, religion, education, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, compatibility, created_at",
+          "id, display_name, avatar_url, age, birth_date, profession, company, annual_income, city, state, country, gender, weight, height, religion, education, mother_tongue, marital_status, bio, photos, lifestyle, family, partner_preferences, horoscope, compatibility, created_at",
         )
         .eq("id", id)
         .maybeSingle(),
@@ -95,9 +96,6 @@ export default async function ProfilePage({
     recommendedRows.find((candidate) => candidate.id === id);
   if (!row) notFound();
 
-  // Record the visit only after a real, viewable profile has been resolved.
-  // The database function de-duplicates repeat views from the same viewer
-  // within 30 minutes, so normal refreshes do not flood Recent Visitors.
   const { error: profileViewError } = await supabase.rpc(
     "log_profile_view_activity",
     { viewed_user_id: row.id },
@@ -145,6 +143,7 @@ export default async function ProfilePage({
           : "Not added",
     occupation: row.profession ?? "Not added",
     company: row.company ?? "",
+    annualIncome: row.annual_income ?? "Not added",
     location: location || "Location not added",
     gender: row.gender ?? "Not added",
     weight: row.weight ?? "Not added",
@@ -166,7 +165,7 @@ export default async function ProfilePage({
     image,
     photos,
     interests: [],
-    lifestyle: detailItems(row.lifestyle),
+    lifestyle: [{ label: "Annual Income", value: row.annual_income ?? "Not added" }, ...detailItems(row.lifestyle)],
     family: detailItems(row.family),
     preferences: detailItems(row.partner_preferences),
     horoscope: generatedHoroscopeItems(
