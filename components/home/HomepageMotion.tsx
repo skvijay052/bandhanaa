@@ -4,10 +4,14 @@ import { useEffect } from "react";
 
 export function HomepageMotion() {
   useEffect(() => {
-    const root = document.querySelector<HTMLElement>(".bandhanaa-home");
-    if (!root) return;
+    const about = document.getElementById("about");
+    const discover = document.getElementById("discover");
+    const safety = document.getElementById("safety");
+    if (!about || !discover || !safety) return;
 
-    root.classList.add("home-motion-ready");
+    const root = about.closest("body > div") as HTMLElement | null;
+    if (!root) return;
+    root.classList.add("bandhanaa-home", "home-motion-ready");
 
     const targets = Array.from(
       root.querySelectorAll<HTMLElement>(
@@ -33,7 +37,7 @@ export function HomepageMotion() {
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -10% 0px", threshold: 0.08 }
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.06 }
     );
 
     targets.forEach((element) => observer.observe(element));
