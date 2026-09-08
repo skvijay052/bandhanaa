@@ -1,4 +1,40 @@
-/* Public homepage visual calibration against the approved 1440px reference. Scoped with :has() so authenticated screens are untouched. */
+/* Public homepage visual calibration against the approved 1440px reference. Scoped so authenticated screens are untouched. */
+
+/* Apple-style system typography. On Apple platforms this resolves to San Francisco; elsewhere it uses the closest native system sans. */
+body:has(#about):has(#discover):has(#safety) > div {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif !important;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+body:has(#about):has(#discover):has(#safety) h1,
+body:has(#about):has(#discover):has(#safety) h2,
+body:has(#about):has(#discover):has(#safety) h3,
+body:has(#about):has(#discover):has(#safety) p,
+body:has(#about):has(#discover):has(#safety) a,
+body:has(#about):has(#discover):has(#safety) span,
+body:has(#about):has(#discover):has(#safety) button {
+  font-family: inherit !important;
+}
+body:has(#about):has(#discover):has(#safety) h1,
+body:has(#about):has(#discover):has(#safety) h2 {
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+body:has(#about):has(#discover):has(#safety) main section h2 {
+  font-size: clamp(40px, 3.8vw, 54px) !important;
+  line-height: 1.02 !important;
+  text-wrap: balance;
+}
+body:has(#about):has(#discover):has(#safety) main section p {
+  font-size: 15px;
+  line-height: 1.47;
+  letter-spacing: -0.01em;
+}
+body:has(#about):has(#discover):has(#safety) header,
+body:has(#about):has(#discover):has(#safety) footer {
+  letter-spacing: -0.01em;
+}
 
 /* Use the exact same Bandhanaa logo asset used by the mobile login screen. */
 body:has(#about):has(#discover):has(#safety) > div > header img[alt="Bandhanaa"],
@@ -21,10 +57,11 @@ body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] 
 
 @media (min-width: 1024px) {
   body:has(#about):has(#discover):has(#safety) > div > header > div { height: 58px; max-width: 1240px; padding-left: 34px; padding-right: 34px; }
+  body:has(#about):has(#discover):has(#safety) > div > header nav { font-size: 12px; }
   body:has(#about):has(#discover):has(#safety) #about > div { max-width: 1240px; min-height: 552px; grid-template-columns: .91fr 1.09fr; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:first-child { padding-left: 34px; padding-top: 48px; padding-bottom: 48px; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { min-height: 552px; }
-  body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(54px,4.65vw,67px); line-height: .96; letter-spacing: -.058em; }
+  body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(58px,4.8vw,72px) !important; line-height: .96 !important; letter-spacing: -.055em !important; font-weight: 600; }
   body:has(#about):has(#discover):has(#safety) #about p { max-width: 455px; }
   body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position: 58% center !important; }
   body:has(#about):has(#discover):has(#safety) #discover { padding-top: 64px; padding-bottom: 64px; }
@@ -35,8 +72,6 @@ body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] 
   body:has(#about):has(#discover):has(#safety) #safety > div > div:first-child { padding: 56px 34px; }
 }
 
-/* Reference uses compact editorial type rather than oversized landing-page typography. */
-body:has(#about):has(#discover):has(#safety) main section h2 { text-wrap: balance; }
 body:has(#about):has(#discover):has(#safety) main section { scroll-margin-top: 58px; }
 body:has(#about):has(#discover):has(#safety) a, body:has(#about):has(#discover):has(#safety) button { transition: opacity .18s ease, transform .18s ease, background-color .18s ease; }
 body:has(#about):has(#discover):has(#safety) a:hover { opacity: .72; }
@@ -44,7 +79,9 @@ body:has(#about):has(#discover):has(#safety) a:hover { opacity: .72; }
 @media (max-width: 767px) {
   body:has(#about):has(#discover):has(#safety) { background: #fff !important; }
   body:has(#about):has(#discover):has(#safety) #about { background: #fbfbfd !important; }
-  body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(44px,13.2vw,58px); line-height: .98; }
+  body:has(#about):has(#discover):has(#safety) #about h1 { font-size: clamp(42px,12vw,50px) !important; line-height: .98 !important; letter-spacing: -.05em !important; }
+  body:has(#about):has(#discover):has(#safety) main section h2 { font-size: clamp(34px,9.6vw,43px) !important; line-height: 1.04 !important; }
+  body:has(#about):has(#discover):has(#safety) main section p { font-size: 14px; line-height: 1.5; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:first-child { padding-top: 42px; padding-bottom: 38px; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { min-height: 390px; }
   body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position: 56% center !important; }
