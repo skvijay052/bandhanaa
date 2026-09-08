@@ -28,6 +28,7 @@ export interface ProfileDetail {
   birthDate: string;
   occupation: string;
   company: string;
+  annualIncome: string;
   location: string;
   gender: string;
   weight: string;
