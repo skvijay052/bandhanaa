@@ -6,6 +6,7 @@ import { HomepageMotion } from "@/components/home/HomepageMotion";
 import "./globals.css";
 import "./mobile-overrides.css";
 import "./home-reference.css";
+import "./home-horoscope-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
