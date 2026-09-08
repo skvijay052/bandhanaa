@@ -7,6 +7,7 @@ import "./globals.css";
 import "./mobile-overrides.css";
 import "./home-reference.css";
 import "./home-horoscope-reference.css";
+import "./discover-showcase.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
