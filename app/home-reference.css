@@ -88,6 +88,24 @@ html { scroll-behavior: smooth; }
   body:has(#about):has(#discover):has(#safety) #safety > div { max-width: 1240px; grid-template-columns: .56fr .44fr; }
   body:has(#about):has(#discover):has(#safety) #safety > div > div:first-child { padding: 56px 34px; }
 }
+
+/* Mobile + tablet: keep the content clean and remove decorative photography. */
+@media (max-width: 1023px) {
+  body:has(#about):has(#discover):has(#safety) #about > div {
+    display: block !important;
+  }
+  body:has(#about):has(#discover):has(#safety) #about > div > div:last-child {
+    display: none !important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety > div {
+    display: block !important;
+  }
+  body:has(#about):has(#discover):has(#safety) #safety > div > div:last-child,
+  body:has(#about):has(#discover):has(#safety) #safety img {
+    display: none !important;
+  }
+}
+
 body:has(#about):has(#discover):has(#safety) main section { scroll-margin-top: 70px; }
 body:has(#about):has(#discover):has(#safety) a,
 body:has(#about):has(#discover):has(#safety) button { transition: opacity .22s ease, transform .22s ease, background-color .22s ease; }
@@ -102,8 +120,6 @@ body:has(#about):has(#discover):has(#safety) main a[class*="rounded-full"]:hover
   body:has(#about):has(#discover):has(#safety) main section h2 { font-size: clamp(34px,9.6vw,43px) !important; line-height: 1.04 !important; }
   body:has(#about):has(#discover):has(#safety) main section p { font-size: 14px; line-height: 1.5; }
   body:has(#about):has(#discover):has(#safety) #about > div > div:first-child { padding-top: 42px; padding-bottom: 38px; }
-  body:has(#about):has(#discover):has(#safety) #about > div > div:last-child { min-height: 390px; width: 100vw; }
-  body:has(#about):has(#discover):has(#safety) #about img[alt="Bandhanaa member"] { object-position: 56% center !important; }
   body:has(#about):has(#discover):has(#safety) #discover { padding-top: 56px; padding-bottom: 56px; }
   body:has(#about):has(#discover):has(#safety) #how { padding-top: 56px; padding-bottom: 56px; }
   body:has(#about):has(#discover):has(#safety) #safety { background: #090a0b !important; }
