@@ -1,0 +1,59 @@
+/* Exact middle-page calibration from the approved Bandhanaa reference. Homepage-only selectors. */
+@media (min-width:1024px){
+body:has(#about):has(#discover):has(#safety) #discover+section{padding:46px max(40px,calc((100vw - 1280px)/2 + 34px)) 38px!important;background:linear-gradient(112deg,#fff 0 54%,#fff5f9 100%)!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div{max-width:1280px!important;grid-template-columns:41% 59%!important;gap:56px!important;align-items:center!important}
+body:has(#about):has(#discover):has(#safety) #discover+section h2{max-width:480px;font:400 clamp(43px,3.55vw,53px)/.98 Georgia,"Times New Roman",serif!important;letter-spacing:-.052em!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:first-child>p:last-child{max-width:430px;margin-top:17px!important;font-size:14px!important;line-height:1.48!important;color:#555!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px 25px!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child>div{min-height:104px;padding:14px 7px 11px!important;border:0!important;border-radius:18px!important;background:rgba(255,255,255,.74)!important;box-shadow:0 13px 32px rgba(194,96,132,.075)!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child svg{width:31px!important;height:31px!important;margin-bottom:11px!important;stroke-width:1.65!important;color:#dc3474!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child p{font-size:11px!important;font-weight:600!important;color:#27272a!important}
+
+body:has(#about):has(#discover):has(#safety) #how{position:relative;padding:37px max(40px,calc((100vw - 1280px)/2 + 34px)) 47px!important;background:linear-gradient(112deg,#fff 0 73%,#fff0f6 100%)!important;overflow:hidden}
+body:has(#about):has(#discover):has(#safety) #how::after{content:"";position:absolute;right:-105px;bottom:-135px;width:330px;height:330px;border:22px solid rgba(232,62,120,.10);border-radius:50%;filter:blur(1px);pointer-events:none}
+body:has(#about):has(#discover):has(#safety) #how>div:last-child{max-width:1280px!important}
+body:has(#about):has(#discover):has(#safety) #how>div:last-child>p:first-child{margin-bottom:9px!important;font-size:10px!important;font-weight:700!important;letter-spacing:.25em!important;color:#e83e78!important}
+body:has(#about):has(#discover):has(#safety) #how h2{max-width:none!important;font:400 clamp(42px,3.6vw,54px)/.98 Georgia,"Times New Roman",serif!important;letter-spacing:-.052em!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;margin-top:29px!important;gap:31px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div{position:relative!important;min-height:156px!important;padding:18px 20px 16px!important;border:1px solid rgba(232,62,120,.055)!important;border-radius:16px!important;background:rgba(255,255,255,.78)!important;box-shadow:0 14px 34px rgba(176,88,120,.07)!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child{display:flex!important;align-items:center!important;width:auto!important;height:auto!important;padding:0!important;background:none!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>span:first-child{display:block!important;width:auto!important;height:auto!important;margin:0!important;background:none!important;font:400 39px/1 Georgia,"Times New Roman",serif!important;color:#111!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>svg{position:static!important;width:27px!important;height:27px!important;margin-left:14px!important;padding:0!important;background:none!important;color:#e83e78!important;filter:none!important;stroke-width:1.55!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>h3{margin-top:14px!important;font-size:13px!important;font-weight:700!important;line-height:1.2!important;letter-spacing:-.02em!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>p{margin-top:7px!important;max-width:225px!important;font-size:11px!important;line-height:1.43!important;color:#6e6e73!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>span:last-child{display:none!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div:not(:last-child)::after{content:"→"!important;position:absolute!important;z-index:4!important;top:60px!important;right:-23px!important;width:auto!important;height:auto!important;border:0!important;background:none!important;color:#d93675!important;font:500 22px/1 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif!important}
+
+body:has(#about):has(#discover):has(#safety) #how+section{position:relative;overflow:hidden;padding:48px max(40px,calc((100vw - 1280px)/2 + 34px)) 50px!important;background:linear-gradient(105deg,#fff 0 47%,#fff2f7 100%)!important}
+body:has(#about):has(#discover):has(#safety) #how+section::before{content:"";position:absolute;left:-80px;bottom:-125px;width:315px;height:315px;border-radius:50%;background:radial-gradient(circle at 60% 45%,rgba(70,129,72,.14),rgba(70,129,72,.035) 44%,transparent 68%);pointer-events:none}
+body:has(#about):has(#discover):has(#safety) #how+section::after{content:"";position:absolute;right:-20px;top:42px;width:185px;height:185px;border:1px solid rgba(180,126,92,.20);border-radius:50%;box-shadow:inset 0 0 0 14px rgba(206,164,137,.05);transform:rotate(-14deg);pointer-events:none}
+body:has(#about):has(#discover):has(#safety) #how+section>div{position:relative;z-index:1;max-width:1280px!important;grid-template-columns:55% 45%!important;gap:66px!important;align-items:center!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child{position:relative!important;border:1px solid #eee!important;border-radius:17px!important;background:#fff!important;box-shadow:0 24px 55px rgba(0,0,0,.13)!important;transform:perspective(1400px) rotateX(1.5deg) rotateY(1deg) rotateZ(-.6deg)!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child::before{content:"";position:absolute;left:-112px;bottom:-35px;width:135px;height:205px;background:radial-gradient(ellipse at 80% 75%,rgba(54,108,57,.18),transparent 62%);filter:blur(2px);pointer-events:none}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:last-child>p:first-child{margin-bottom:10px!important;font-size:10px!important;font-weight:700!important;letter-spacing:.25em!important;color:#e83e78!important}
+body:has(#about):has(#discover):has(#safety) #how+section h2{font:400 clamp(44px,3.75vw,57px)/.94 Georgia,"Times New Roman",serif!important;letter-spacing:-.052em!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:last-child>p:nth-of-type(2){max-width:520px!important;margin-top:17px!important;font-size:14px!important;line-height:1.5!important;color:#6e6e73!important}
+body:has(#about):has(#discover):has(#safety) #how+section ul{margin-top:20px!important;gap:9px!important}
+body:has(#about):has(#discover):has(#safety) #how+section li{font-size:13px!important;font-weight:500!important;color:#4a4a4e!important}
+body:has(#about):has(#discover):has(#safety) #how+section li span:first-child{color:#e83e78!important;font-weight:800!important}
+}
+
+@media (max-width:1023px){
+body:has(#about):has(#discover):has(#safety) #discover+section{padding:48px 22px!important;background:linear-gradient(145deg,#fff,#fff7fa)!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div{gap:32px!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+body:has(#about):has(#discover):has(#safety) #discover+section>div>div:last-child>div{min-height:104px;border-radius:16px!important;background:#fff!important;box-shadow:0 10px 26px rgba(176,92,123,.07)!important}
+body:has(#about):has(#discover):has(#safety) #how{padding:48px 22px 52px!important;background:linear-gradient(145deg,#fff,#fff4f8)!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;margin-top:27px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div{display:block!important;min-height:0!important;padding:18px!important;border:1px solid #f1e7eb!important;border-radius:16px!important;background:#fff!important;box-shadow:0 10px 26px rgba(176,92,123,.06)!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child{display:flex!important;width:auto!important;height:auto!important;align-items:center!important;background:none!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>span:first-child{display:block!important;width:auto!important;height:auto!important;margin:0!important;background:none!important;font:400 34px/1 Georgia,"Times New Roman",serif!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>div:first-child>svg{position:static!important;width:25px!important;height:25px!important;margin-left:12px!important;padding:0!important;background:none!important;color:#e83e78!important;filter:none!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>h3{margin-top:12px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div>p{margin-top:6px!important}
+body:has(#about):has(#discover):has(#safety) #how .mt-10>div::after{display:none!important}
+body:has(#about):has(#discover):has(#safety) #how+section{padding:48px 22px!important;background:linear-gradient(145deg,#fff,#fff4f8)!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div{display:flex!important;flex-direction:column!important;gap:34px!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:first-child{order:1!important;border-radius:16px!important;box-shadow:0 18px 42px rgba(0,0,0,.11)!important}
+body:has(#about):has(#discover):has(#safety) #how+section>div>div:last-child{order:2!important}
+}
