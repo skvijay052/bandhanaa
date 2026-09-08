@@ -7,6 +7,7 @@ import { HomepageProfilePhotos } from "@/components/home/HomepageProfilePhotos";
 import "./globals.css";
 import "./mobile-overrides.css";
 import "./home-approved-reference.css";
+import "./home-middle-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
