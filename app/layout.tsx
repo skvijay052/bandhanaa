@@ -8,6 +8,7 @@ import "./globals.css";
 import "./mobile-overrides.css";
 import "./home-approved-reference.css";
 import "./home-middle-reference.css";
+import "./home-lower-reference.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
