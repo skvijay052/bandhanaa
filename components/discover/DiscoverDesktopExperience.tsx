@@ -294,7 +294,7 @@ function InsightCard({
 
   return (
     <article className="min-h-[190px] rounded-[18px] border border-[#f1e7ec] bg-white p-5 shadow-[0_8px_24px_rgba(30,22,26,.035)]">
-      <span className="grid size-11 place-items-center rounded-full bg-[#fff0f7] text-[#ed3f8f]">
+      <span className="grid size-11 place-items-center rounded-full border border-[#f8cfe2] bg-[#fff3f9] text-[#e83e78]">
         {icon}
       </span>
       <h2 className="mt-4 max-w-[190px] text-[17px] font-bold leading-[1.15] tracking-[-.02em] text-[#171717]">
