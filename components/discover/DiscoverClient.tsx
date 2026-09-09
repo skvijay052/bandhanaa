@@ -5,7 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { createClient } from "@/lib/supabase/client";
 import { AdvancedDiscoverFilters } from "./AdvancedDiscoverFilters";
+import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
 import { DiscoverDesktopExperience } from "./DiscoverDesktopExperience";
+import { DiscoverTopControls } from "./DiscoverTopControls";
 import { MobileDiscoverExperience } from "./MobileDiscoverExperience";
 import type { DiscoverProfile } from "./types";
 
@@ -257,6 +259,15 @@ export function DiscoverClient({
               shortlisted={shortlisted}
               onShortlist={(id) => void toggleShortlist(id)}
             />
+
+            <DiscoverTopControls
+              query={query}
+              onQuery={setQuery}
+              open={showFilters}
+              onToggle={() => setShowFilters((value) => !value)}
+              suggestions={filteredProfiles}
+            />
+            <DiscoverBannerSlider />
 
             <DiscoverDesktopExperience
               profiles={filteredProfiles}
