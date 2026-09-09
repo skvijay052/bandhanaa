@@ -21,6 +21,7 @@ import {
   UserRound,
   UsersRound,
 } from "lucide-react";
+import { HomeShowcaseTabs } from "@/components/home/HomeShowcaseTabs";
 import styles from "./homepage.module.css";
 
 export const metadata: Metadata = {
@@ -79,13 +80,6 @@ const privacyItems = [
   { icon: Ban, label: "Report & Block" },
   { icon: LockKeyhole, label: "Privacy settings" },
 ];
-const showcaseMenu = [
-  { icon: BookHeart, label: "Discover", href: "/discover" },
-  { icon: UsersRound, label: "Matches", href: "/matches" },
-  { icon: UserRound, label: "Profile", href: "/my-profile" },
-  { icon: MessageSquare, label: "Requests", href: "/requests" },
-  { icon: MessageSquare, label: "Messages", href: "/messages" },
-];
 
 // Each scene has its own high-resolution PNG with a genuine alpha channel.
 // Use responsive image delivery without flattening transparency onto a background.
@@ -97,10 +91,6 @@ const homeArtwork = {
   values: {
     src: "/home/shared-values.png",
     sizes: "(max-width: 899px) 100vw, 45vw",
-  },
-  product: {
-    src: "/home/product-devices.png",
-    sizes: "(max-width: 899px) 100vw, 65vw",
   },
   horoscope: {
     src: "/home/horoscope-tablet.png",
@@ -299,44 +289,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section
-          id="discover"
-          className={styles.showcase}
-          aria-labelledby="showcase-title"
-        >
-          <div className={styles.showcaseCopy}>
-            <p className={styles.eyebrow}>A closer look</p>
-            <h2 id="showcase-title" className={styles.sectionTitle}>
-              Thoughtfully designed
-              <br />
-              for your journey.
-            </h2>
-            <p className={styles.body}>
-              Explore, connect and communicate in a clean, modern and
-              distraction-free space built for meaningful relationships.
-            </p>
-            <nav
-              className={styles.menu}
-              aria-label="Explore Bandhanaa features"
-            >
-              {showcaseMenu.map(({ icon: Icon, label, href }, index) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className={`${styles.menuItem} ${index === 0 ? styles.menuItemActive : ""}`}
-                >
-                  <Icon aria-hidden="true" strokeWidth={1.5} />
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <HomeArtwork
-            asset="product"
-            className={styles.productArtwork}
-            alt="Illustrative desktop Discover screen and mobile profile, showing three member cards and a profile preview."
-          />
-        </section>
+        <HomeShowcaseTabs />
 
         <section className={styles.compat} aria-labelledby="compat-title">
           <div className={styles.compatCopy}>
