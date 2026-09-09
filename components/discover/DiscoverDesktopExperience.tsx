@@ -4,13 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowRight,
-  ChevronDown,
   Eye,
-  Grid2X2,
   Heart,
-  List,
-  Search,
-  SlidersHorizontal,
   Star,
   Target,
 } from "lucide-react";
@@ -22,7 +17,6 @@ import { ProfileCard } from "./ProfileCard";
 import type { DiscoverProfile } from "./types";
 
 type DesktopFilter = "all" | "nearby" | "new" | "verified";
-type SortMode = "recommended" | "newest" | "age";
 
 type RecentVisitorRow = {
   id: string;
@@ -41,10 +35,6 @@ type InsightPerson = {
 type Props = {
   profiles: DiscoverProfile[];
   allProfiles: DiscoverProfile[];
-  query: string;
-  onQuery: (value: string) => void;
-  filtersOpen: boolean;
-  onFilters: () => void;
   shortlisted: string[];
   relationshipStates: Record<string, DiscoverProfile["relationship"]>;
   onShortlist: (id: string) => void;
@@ -56,18 +46,12 @@ const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 export function DiscoverDesktopExperience({
   profiles,
   allProfiles,
-  query,
-  onQuery,
-  filtersOpen,
-  onFilters,
   shortlisted,
   relationshipStates,
   onShortlist,
   onRelationshipAction,
 }: Props) {
   const [filter, setFilter] = useState<DesktopFilter>("all");
-  const [sort, setSort] = useState<SortMode>("recommended");
-  const [gridView, setGridView] = useState(true);
   const [viewerCity, setViewerCity] = useState("");
   const [recentVisitors, setRecentVisitors] = useState<InsightPerson[]>([]);
 
@@ -137,6 +121,7 @@ export function DiscoverDesktopExperience({
           new Date(b.createdAt ?? 0).getTime() -
           new Date(a.createdAt ?? 0).getTime(),
       );
+
     return recent.length
       ? recent
       : [...allProfiles].sort(
@@ -148,12 +133,14 @@ export function DiscoverDesktopExperience({
 
   const visibleProfiles = useMemo(() => {
     let items = [...profiles];
+
     if (filter === "nearby") {
       const city = normalizeCity(viewerCity);
       items = city
         ? items.filter((profile) => normalizeCity(profile.city) === city)
         : [];
     }
+
     if (filter === "new") {
       const cutoff = Date.now() - NEW_PROFILE_WINDOW_MS;
       items = items.filter((profile) => {
@@ -163,19 +150,8 @@ export function DiscoverDesktopExperience({
       });
     }
 
-    if (sort === "newest") {
-      items.sort(
-        (a, b) =>
-          new Date(b.createdAt ?? 0).getTime() -
-          new Date(a.createdAt ?? 0).getTime(),
-      );
-    } else if (sort === "age") {
-      items.sort((a, b) => (a.age || 999) - (b.age || 999));
-    } else {
-      items.sort((a, b) => b.match - a.match);
-    }
-    return items;
-  }, [filter, profiles, sort, viewerCity]);
+    return items.sort((a, b) => b.match - a.match);
+  }, [filter, profiles, viewerCity]);
 
   const toPeople = (items: DiscoverProfile[]): InsightPerson[] =>
     items.map((profile) => ({
@@ -235,106 +211,37 @@ export function DiscoverDesktopExperience({
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-end gap-2">
-            <div className="flex items-center gap-1 rounded-full bg-[#fafafa] p-1">
-              <FilterPill
-                active={filter === "all"}
-                onClick={() => setFilter("all")}
-              >
-                All
-              </FilterPill>
-              <FilterPill
-                active={filter === "nearby"}
-                onClick={() => setFilter("nearby")}
-              >
-                Near you
-              </FilterPill>
-              <FilterPill
-                active={filter === "new"}
-                onClick={() => setFilter("new")}
-              >
-                New members
-              </FilterPill>
-              <FilterPill
-                active={filter === "verified"}
-                onClick={() => setFilter("verified")}
-              >
-                Verified
-              </FilterPill>
-            </div>
-
-            <label className="flex h-10 w-[190px] items-center gap-2 rounded-xl border border-[#e7e7e7] bg-white px-3 text-[#777] focus-within:border-[#f4a8cb]">
-              <Search size={15} />
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => onQuery(event.target.value)}
-                placeholder="Search"
-                className="min-w-0 flex-1 bg-transparent text-[12px] text-[#111] outline-none placeholder:text-[#9b9b9b]"
-              />
-            </label>
-
-            <button
-              type="button"
-              onClick={onFilters}
-              aria-expanded={filtersOpen}
-              aria-label="Advanced filters"
-              className="grid size-10 place-items-center rounded-xl border border-[#e7e7e7] bg-white text-[#313131] transition hover:bg-[#fafafa]"
+          <div className="flex items-center gap-1 rounded-full bg-[#fafafa] p-1">
+            <FilterPill active={filter === "all"} onClick={() => setFilter("all")}>
+              All
+            </FilterPill>
+            <FilterPill
+              active={filter === "nearby"}
+              onClick={() => setFilter("nearby")}
             >
-              <SlidersHorizontal size={16} />
-            </button>
-
-            <label className="relative flex h-10 min-w-[132px] items-center rounded-xl border border-[#e7e7e7] bg-white px-3 text-[12px] text-[#303030]">
-              <span className="mr-2 text-[#777]">Sort by</span>
-              <select
-                value={sort}
-                onChange={(event) => setSort(event.target.value as SortMode)}
-                className="min-w-0 flex-1 appearance-none bg-transparent pr-5 font-semibold outline-none"
-                aria-label="Sort profiles"
-              >
-                <option value="recommended">Recommended</option>
-                <option value="newest">Newest</option>
-                <option value="age">Age</option>
-              </select>
-              <ChevronDown
-                size={14}
-                className="pointer-events-none absolute right-3"
-              />
-            </label>
-
-            <div className="flex h-10 items-center rounded-xl border border-[#e7e7e7] bg-white p-1">
-              <button
-                type="button"
-                onClick={() => setGridView(true)}
-                aria-label="Grid view"
-                aria-pressed={gridView}
-                className={`grid size-8 place-items-center rounded-lg transition ${gridView ? "bg-[#111] text-white" : "text-[#727272] hover:bg-[#f6f6f6]"}`}
-              >
-                <Grid2X2 size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={() => setGridView(false)}
-                aria-label="List view"
-                aria-pressed={!gridView}
-                className={`grid size-8 place-items-center rounded-lg transition ${!gridView ? "bg-[#111] text-white" : "text-[#727272] hover:bg-[#f6f6f6]"}`}
-              >
-                <List size={16} />
-              </button>
-            </div>
+              Near you
+            </FilterPill>
+            <FilterPill active={filter === "new"} onClick={() => setFilter("new")}>
+              New members
+            </FilterPill>
+            <FilterPill
+              active={filter === "verified"}
+              onClick={() => setFilter("verified")}
+            >
+              Verified
+            </FilterPill>
           </div>
         </div>
 
         {visibleProfiles.length ? (
-          <div
-            className={`mt-5 grid gap-4 ${gridView ? "grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" : "grid-cols-1 2xl:grid-cols-2"}`}
-          >
+          <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
             {visibleProfiles.map((profile) => {
               const currentProfile = {
                 ...profile,
                 relationship:
                   relationshipStates[profile.id] ?? profile.relationship,
               };
+
               return (
                 <ProfileCard
                   key={profile.id}
@@ -342,7 +249,6 @@ export function DiscoverDesktopExperience({
                   liked={shortlisted.includes(profile.id)}
                   onLike={() => onShortlist(profile.id)}
                   onRelationshipAction={() => onRelationshipAction(currentProfile)}
-                  listView={!gridView}
                 />
               );
             })}
