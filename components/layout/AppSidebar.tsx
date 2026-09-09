@@ -19,6 +19,10 @@ import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { SidebarNavItem } from "@/components/navigation/SidebarNavItem";
 import { createClient } from "@/lib/supabase/client";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
+import {
+  playIncomingMessageSound,
+  unlockIncomingMessageSound,
+} from "@/lib/message-notification-sound";
 
 const items = [
   { label: "Discover", href: "/discover", icon: UserRoundSearch },
@@ -70,6 +74,10 @@ export function AppSidebar({
 
   useEffect(() => {
     let activeRequest = true;
+    const unlockSound = () => unlockIncomingMessageSound();
+    window.addEventListener("pointerdown", unlockSound, { once: true });
+    window.addEventListener("keydown", unlockSound, { once: true });
+
     async function loadSidebar() {
       const supabase = createClient();
       const {
@@ -166,7 +174,17 @@ export function AppSidebar({
         .on(
           "postgres_changes",
           { event: "*", schema: "public", table: "messages" },
-          () => void loadCounts(),
+          (payload) => {
+            void loadCounts();
+            const row = payload.new as { sender_id?: string };
+            if (
+              payload.eventType === "INSERT" &&
+              row.sender_id &&
+              row.sender_id !== userId
+            ) {
+              playIncomingMessageSound();
+            }
+          },
         )
         .on(
           "postgres_changes",
@@ -192,6 +210,8 @@ export function AppSidebar({
     });
     return () => {
       activeRequest = false;
+      window.removeEventListener("pointerdown", unlockSound);
+      window.removeEventListener("keydown", unlockSound);
       removeRealtime?.();
     };
   }, []);
