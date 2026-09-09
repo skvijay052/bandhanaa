@@ -7,10 +7,10 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import styles from "./HomeHeader.module.css";
 
 const navItems = [
-  { label: "Discover", href: "#discover" },
-  { label: "How it works", href: "#how" },
-  { label: "Safety", href: "#safety" },
-  { label: "About", href: "#about" },
+  { label: "Discover", href: "/#discover" },
+  { label: "How it works", href: "/#how" },
+  { label: "Safety", href: "/#safety" },
+  { label: "About", href: "/about" },
 ];
 
 export function HomeHeader() {
