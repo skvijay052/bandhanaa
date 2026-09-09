@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { AboutHeader } from "@/components/public/AboutHeader";
+import { HomeHeader } from "@/components/home/HomeHeader";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { getCanonicalUrl } from "@/lib/seo";
 import styles from "./about.module.css";
@@ -106,7 +106,7 @@ export default function AboutPage() {
   return (
     <div className={styles.page}>
       <StructuredData data={structuredData} id="about-page-structured-data" />
-      <AboutHeader />
+      <HomeHeader />
 
       <div className={styles.shell}>
         <main>
