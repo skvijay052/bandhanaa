@@ -62,7 +62,7 @@ export function RouteProgressBar() {
       className={`route-progress ${visible ? "route-progress-visible" : ""}`}
       style={{
         transform: `scaleX(${progress / 100})`,
-        height: "4px",
+        height: "5px",
         background: "linear-gradient(90deg, #e83e78 0%, #f06292 48%, #111111 100%)",
         boxShadow: "0 0 10px rgba(232, 62, 120, 0.32)",
       }}
