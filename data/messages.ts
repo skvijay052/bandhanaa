@@ -27,4 +27,5 @@ export type ChatMessage = {
   time: string;
   createdAt: string;
   seen?: boolean;
+  replyToId?: string | null;
 };
