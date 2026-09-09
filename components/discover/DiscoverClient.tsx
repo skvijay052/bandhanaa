@@ -267,15 +267,13 @@ export function DiscoverClient({
               onToggle={() => setShowFilters((value) => !value)}
               suggestions={filteredProfiles}
             />
-            <DiscoverBannerSlider />
+            <div className="mb-8 max-md:hidden">
+              <DiscoverBannerSlider />
+            </div>
 
             <DiscoverDesktopExperience
               profiles={filteredProfiles}
               allProfiles={profiles}
-              query={query}
-              onQuery={setQuery}
-              filtersOpen={showFilters}
-              onFilters={() => setShowFilters(true)}
               shortlisted={shortlisted}
               relationshipStates={relationshipStates}
               onShortlist={(id) => void toggleShortlist(id)}
