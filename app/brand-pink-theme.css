@@ -154,6 +154,10 @@
 
 /* Replace common light-blue arbitrary surfaces with soft Bandhanaa pink. */
 :where(
+  [class~="bg-[#edf8fe]"],
+  [class~="bg-[#edf8ff]"],
+  [class~="bg-[#eef8ff]"],
+  [class~="bg-[#edf7fe]"],
   [class~="bg-[#f5fbff]"],
   [class~="bg-[#f0f9ff]"],
   [class~="bg-[#eff6ff]"],
@@ -166,8 +170,28 @@
   background-color: #fff3f9 !important;
 }
 
+[class*="bg-[#edf8fe]"],
+[class*="bg-[#edf8ff]"],
+[class*="bg-[#eef8ff]"],
+[class*="bg-[#edf7fe]"] {
+  background-color: #fff3f9 !important;
+}
+
+[class*="hover:bg-[#edf8fe]"]:hover,
+[class*="hover:bg-[#edf8ff]"]:hover,
+[class*="hover:bg-[#eef8ff]"]:hover,
+[class*="hover:bg-[#edf7fe]"]:hover,
 [class*="hover:bg-[#e8f5fe]"]:hover,
 [class*="hover:bg-[#eff8ff]"]:hover {
+  background-color: #ffe8f3 !important;
+}
+
+/* Catch legacy inline styles that used the same pale-blue surface. */
+[style*="background-color: #edf8fe" i],
+[style*="background-color:#edf8fe" i],
+[style*="background: #edf8fe" i],
+[style*="background:#edf8fe" i],
+[style*="background-color: rgb(237, 248, 254)" i] {
   background-color: #fff3f9 !important;
 }
 
