@@ -21,7 +21,7 @@ export function ProfileProgress({
       </div>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[#e8e9ef]">
         <div
-          className="h-full rounded-full bg-[#1d9bf0]"
+          className="h-full rounded-full bg-[#f34ca4]"
           style={{ width: `${value}%` }}
         />
       </div>
