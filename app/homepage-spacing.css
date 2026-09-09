@@ -16,7 +16,7 @@ body:has(#about):has(#discover):has(#safety) main > section:not(#about):not(#saf
   scroll-margin-left: 0;
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1900px) {
   body:has(#about):has(#discover):has(#safety) > div:has(> header + main) {
     max-width: 1400px !important;
     margin-inline: auto !important;
