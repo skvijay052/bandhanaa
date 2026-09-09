@@ -63,7 +63,7 @@ export function DetailCard({
     <section className="rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]">
       <div className="flex justify-between">
         <h2 className="text-[18px] font-bold">{title}</h2>
-        <Link href={`/settings/edit-profile?section=${encodeURIComponent(editSection ?? title)}`} className="flex h-7 items-center gap-1 rounded-lg border border-[#1d9bf0] px-3 text-[13px] font-semibold text-[#1d9bf0] hover:bg-[#e8f5fe] max-md:!border-[#e33d92] max-md:!bg-[#fff0f7] max-md:!text-[#e33d92] max-md:hover:!bg-[#ffe5f1]">
+        <Link href={`/settings/edit-profile?section=${encodeURIComponent(editSection ?? title)}`} className="flex h-7 items-center gap-1 rounded-lg border border-[#e33d92] bg-[#fff0f7] px-3 text-[13px] font-semibold text-[#e33d92] transition-colors hover:bg-[#ffe5f1] focus-visible:bg-[#ffe5f1]">
           <Pencil size={10} />
           Edit
         </Link>
@@ -74,7 +74,7 @@ export function DetailCard({
         {items.map((item) => {
           const Icon = iconForLabel(item.label, title);
           return <div key={item.label} className="flex gap-2">
-            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#e8f5fe] text-[#1d9bf0] max-md:bg-[#ffe7f2] max-md:text-[#e83f92]">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[#ffe7f2] text-[#e83f92]">
               <Icon size={14} />
             </span>
             <div>
