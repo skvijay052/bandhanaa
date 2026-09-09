@@ -1,0 +1,12 @@
+/* Homepage-only hero heading calibration. Keep the existing type scale and line breaks,
+   but give the banner title a slightly wider visual measure. */
+body:has(#hero-title) #hero-title {
+  letter-spacing: -0.025em !important;
+}
+
+@media (min-width: 900px) {
+  body:has(#hero-title) #hero-title {
+    transform: scaleX(1.025);
+    transform-origin: left center;
+  }
+}
