@@ -44,16 +44,16 @@ export function ProfileTabs({
           <button
             key={label}
             onClick={() => selectTab(label)}
-            className={`relative flex h-[68px] flex-col items-center justify-center gap-1 text-[12px] ${active === label ? "text-[#1d9bf0]" : "text-[#30354c]"}`}
+            className={`relative flex h-[68px] flex-col items-center justify-center gap-1 text-[12px] ${active === label ? "text-[#f34ca4]" : "text-[#30354c]"}`}
           >
             <span
-              className={`grid size-8 place-items-center rounded-full ${active === label ? "bg-[#e8f5fe]" : ""}`}
+              className={`grid size-8 place-items-center rounded-full ${active === label ? "bg-[#fff3f9]" : ""}`}
             >
               <Icon size={15} />
             </span>
             {label}
             {active === label ? (
-              <span className="absolute inset-x-3 bottom-0 h-0.5 bg-[#1d9bf0]" />
+              <span className="absolute inset-x-3 bottom-0 h-0.5 bg-[#f34ca4]" />
             ) : null}
           </button>
         ))}
@@ -69,7 +69,7 @@ export function ProfileTabs({
         <button
           key={label}
           onClick={() => selectTab(label)}
-          className={`relative h-full px-4 text-[14px] font-semibold transition-colors ${active === label ? "text-[#1d9bf0] after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-[#1d9bf0]" : "text-[#363b52] hover:text-[#1d9bf0]"}`}
+          className={`relative h-full px-4 text-[14px] font-semibold transition-colors ${active === label ? "text-[#f34ca4] after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-[#f34ca4]" : "text-[#363b52] hover:text-[#f34ca4]"}`}
         >
           {label}
         </button>
