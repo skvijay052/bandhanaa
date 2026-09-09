@@ -2,18 +2,16 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowRight,
-  Eye,
-  Heart,
-  Star,
-  Target,
-} from "lucide-react";
+import { ArrowRight, Eye, Heart, Star, Target } from "lucide-react";
 
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { createClient } from "@/lib/supabase/client";
 import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import { ProfileCard } from "./ProfileCard";
+import {
+  RecentVisitorProfileModal,
+  type RecentVisitorPopupProfile,
+} from "./RecentVisitorProfileModal";
 import type { DiscoverProfile } from "./types";
 
 type DesktopFilter = "all" | "nearby" | "new" | "verified";
@@ -21,9 +19,21 @@ type DesktopFilter = "all" | "nearby" | "new" | "verified";
 type RecentVisitorRow = {
   id: string;
   display_name: string | null;
+  profession: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
   avatar_url: string | null;
   photos: string[] | null;
   gender: string | null;
+  last_seen_at: string | null;
+  viewed_at: string;
+};
+
+type RelationshipRow = {
+  liker_id: string;
+  liked_id: string;
+  status: string;
 };
 
 type InsightPerson = {
@@ -53,7 +63,12 @@ export function DiscoverDesktopExperience({
 }: Props) {
   const [filter, setFilter] = useState<DesktopFilter>("all");
   const [viewerCity, setViewerCity] = useState("");
-  const [recentVisitors, setRecentVisitors] = useState<InsightPerson[]>([]);
+  const [recentVisitors, setRecentVisitors] = useState<
+    RecentVisitorPopupProfile[]
+  >([]);
+  const [selectedRecentIndex, setSelectedRecentIndex] = useState<number | null>(
+    null,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -65,38 +80,112 @@ export function DiscoverDesktopExperience({
       } = await supabase.auth.getUser();
       if (!user || cancelled) return;
 
-      const [viewerResult, visitorResult] = await Promise.all([
+      const [viewerResult, visitorResult, relationshipResult] = await Promise.all([
         supabase.from("profiles").select("city").eq("id", user.id).maybeSingle(),
         supabase.rpc("get_recent_profile_visitors", { result_limit: 12 }),
+        supabase
+          .from("profile_likes")
+          .select("liker_id,liked_id,status")
+          .or(`liker_id.eq.${user.id},liked_id.eq.${user.id}`),
       ]);
 
       if (!cancelled) {
         setViewerCity(String(viewerResult.data?.city ?? "").trim());
       }
 
-      if (!cancelled && !visitorResult.error && visitorResult.data) {
-        setRecentVisitors(
-          (visitorResult.data as RecentVisitorRow[]).map((visitor) => ({
-            id: visitor.id,
-            name: visitor.display_name?.trim() || "Member",
-            image: resolveProfilePhoto(
-              {
-                avatar_url: visitor.avatar_url,
-                photos: visitor.photos,
-                gender: visitor.gender,
-              },
-              genderDiscoverPhoto(visitor.gender),
-            ),
-          })),
-        );
+      if (cancelled || visitorResult.error || !visitorResult.data) return;
+
+      const relationshipByProfile = new Map<
+        string,
+        DiscoverProfile["relationship"]
+      >();
+
+      for (const relationship of (relationshipResult.data ?? []) as RelationshipRow[]) {
+        const otherId =
+          relationship.liker_id === user.id
+            ? relationship.liked_id
+            : relationship.liker_id;
+        const state: DiscoverProfile["relationship"] =
+          relationship.status === "accepted"
+            ? "following"
+            : relationship.liker_id === user.id
+              ? "outgoing_pending"
+              : "incoming_pending";
+        relationshipByProfile.set(otherId, state);
       }
+
+      const knownProfiles = new Map(
+        allProfiles.map((profile) => [profile.id, profile]),
+      );
+
+      setRecentVisitors(
+        (visitorResult.data as RecentVisitorRow[]).map((visitor) => {
+          const known = knownProfiles.get(visitor.id);
+          const image = resolveProfilePhoto(
+            {
+              avatar_url: visitor.avatar_url,
+              photos: visitor.photos,
+              gender: visitor.gender,
+            },
+            genderDiscoverPhoto(visitor.gender),
+          );
+          const gallery = Array.from(
+            new Set(
+              [visitor.avatar_url, ...(visitor.photos ?? [])].filter(
+                (photo): photo is string => Boolean(photo),
+              ),
+            ),
+          );
+
+          return {
+            id: visitor.id,
+            name: visitor.display_name?.trim() || known?.name || "Member",
+            image,
+            photos: gallery,
+            profession: known?.job || visitor.profession?.trim() || "Professional",
+            location:
+              known?.city ||
+              [visitor.city, visitor.state, visitor.country]
+                .filter(Boolean)
+                .join(", ") ||
+              "India",
+            age: known?.age ? known.age : undefined,
+            height:
+              known?.height && known.height !== "Not added"
+                ? known.height
+                : undefined,
+            religion:
+              known?.religion && known.religion !== "Not added"
+                ? known.religion
+                : undefined,
+            motherTongue:
+              known?.motherTongue && known.motherTongue !== "Not added"
+                ? known.motherTongue
+                : undefined,
+            education:
+              known?.education && known.education !== "Not added"
+                ? known.education
+                : undefined,
+            maritalStatus:
+              known?.maritalStatus && known.maritalStatus !== "Not added"
+                ? known.maritalStatus
+                : undefined,
+            bio: known?.bio || undefined,
+            match: known?.match,
+            relationship:
+              relationshipByProfile.get(visitor.id) ??
+              known?.relationship ??
+              "none",
+          };
+        }),
+      );
     }
 
     void loadInsights();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [allProfiles]);
 
   const shortlistedProfiles = useMemo(
     () => allProfiles.filter((profile) => shortlisted.includes(profile.id)),
@@ -160,6 +249,33 @@ export function DiscoverDesktopExperience({
       image: profile.image,
     }));
 
+  function openRecentVisitors() {
+    if (recentVisitors.length) setSelectedRecentIndex(0);
+  }
+
+  function handleRecentInterest(profile: RecentVisitorPopupProfile) {
+    const relationship = relationshipStates[profile.id] ?? profile.relationship;
+    onRelationshipAction({
+      id: profile.id,
+      name: profile.name,
+      age: profile.age ?? 0,
+      job: profile.profession,
+      city: profile.location,
+      maritalStatus: profile.maritalStatus ?? "Not added",
+      height: profile.height ?? "Not added",
+      religion: profile.religion ?? "Not added",
+      motherTongue: profile.motherTongue ?? "Not added",
+      education: profile.education ?? "Not added",
+      bio: profile.bio ?? "",
+      image: profile.image,
+      photoCount: Math.max(profile.photos.length, 1),
+      match: profile.match ?? 0,
+      online: false,
+      createdAt: null,
+      relationship,
+    });
+  }
+
   return (
     <div className="hidden md:block">
       <section
@@ -172,7 +288,8 @@ export function DiscoverDesktopExperience({
           description="See who recently viewed your profile."
           people={recentVisitors}
           count={recentVisitors.length}
-          href="/settings/activity"
+          href={recentVisitors.length ? undefined : "/settings/activity"}
+          onOpen={recentVisitors.length ? openRecentVisitors : undefined}
         />
         <InsightCard
           icon={<Heart size={22} />}
@@ -268,6 +385,19 @@ export function DiscoverDesktopExperience({
           </div>
         )}
       </section>
+
+      {selectedRecentIndex !== null && recentVisitors.length ? (
+        <RecentVisitorProfileModal
+          profiles={recentVisitors}
+          index={Math.min(selectedRecentIndex, recentVisitors.length - 1)}
+          onIndex={setSelectedRecentIndex}
+          onClose={() => setSelectedRecentIndex(null)}
+          shortlisted={shortlisted}
+          relationshipStates={relationshipStates}
+          onShortlist={onShortlist}
+          onInterest={handleRecentInterest}
+        />
+      ) : null}
     </div>
   );
 }
@@ -293,7 +423,19 @@ function InsightCard({
     "grid size-10 shrink-0 place-items-center rounded-full border border-[#ededed] bg-white text-[#222] shadow-[0_5px_14px_rgba(17,17,17,.06)] transition hover:-translate-y-0.5 hover:border-[#f6c6dc] hover:text-[#e83e78]";
 
   return (
-    <article className="min-h-[190px] rounded-[18px] border border-[#f1e7ec] bg-white p-5 shadow-[0_8px_24px_rgba(30,22,26,.035)]">
+    <article
+      className={`min-h-[190px] rounded-[18px] border border-[#f1e7ec] bg-white p-5 shadow-[0_8px_24px_rgba(30,22,26,.035)] transition ${onOpen ? "cursor-pointer hover:-translate-y-0.5 hover:border-[#f6c6dc] hover:shadow-[0_14px_32px_rgba(30,22,26,.07)]" : ""}`}
+      onClick={onOpen}
+      onKeyDown={(event) => {
+        if (onOpen && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
+      role={onOpen ? "button" : undefined}
+      tabIndex={onOpen ? 0 : undefined}
+      aria-label={onOpen ? `Open ${title}` : undefined}
+    >
       <span className="grid size-11 place-items-center rounded-full border border-[#f8cfe2] bg-[#fff3f9] text-[#e83e78]">
         {icon}
       </span>
@@ -314,7 +456,10 @@ function InsightCard({
         ) : (
           <button
             type="button"
-            onClick={onOpen}
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpen?.();
+            }}
             aria-label={`Open ${title}`}
             className={actionClass}
           >
