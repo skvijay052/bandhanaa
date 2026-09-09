@@ -313,3 +313,24 @@ body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"][a
     font-size: 13px !important;
   }
 }
+
+/* Public member View Profile: relationship actions use the same light-pink
+   treatment on desktop and mobile, and the duplicate bottom interest CTA is
+   removed from the visible page. */
+main:has(.profile-action-row) > section[class*="bg-[#f5fbff]"][class*="md:flex"] {
+  display: none !important;
+}
+
+@media (max-width: 767px) {
+  main:has(.profile-action-row) button[class*="bg-gradient-to-r"][class*="from-[#873df1]"] {
+    border: 1px solid #f7b4d5 !important;
+    background: #fff3f9 !important;
+    background-image: none !important;
+    color: #e33d92 !important;
+  }
+
+  main:has(.profile-action-row) button[class*="bg-gradient-to-r"][class*="from-[#873df1]"]:hover,
+  main:has(.profile-action-row) button[class*="bg-gradient-to-r"][class*="from-[#873df1]"]:focus-visible {
+    background: #ffe8f3 !important;
+  }
+}
