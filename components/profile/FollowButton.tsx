@@ -22,26 +22,27 @@ export function FollowButton({ status, profileName, onFollow, onCancelRequest, o
   const title = confirmation === "cancel" ? "Cancel follow request?" : `Remove ${profileName} from Following?`;
   const description = confirmation === "cancel" ? `Your request to ${profileName} will be cancelled.` : `You will stop following ${profileName}.`;
   const actionLabel = confirmation === "cancel" ? "Cancel Request" : "Remove Following";
+  const pinkButtonClass = "h-11 w-full rounded-lg border border-[#f7b4d5] bg-[#fff3f9] px-6 text-[14px] font-semibold text-[#e33d92] transition hover:bg-[#ffe8f3] disabled:opacity-60";
 
   return (
     <div className={`relative ${className}`}>
       {status === "none" ? (
-        <button type="button" disabled={loading} onClick={() => void act(onFollow)} className="h-11 w-full rounded-lg bg-gradient-to-r from-[#a34cef] to-[#f45ca9] px-6 text-[14px] font-semibold text-white disabled:opacity-60">
-          {loading ? "Please wait…" : "Follow"}
+        <button type="button" disabled={loading} onClick={() => void act(onFollow)} className={pinkButtonClass}>
+          {loading ? "Please wait…" : "Send Request"}
         </button>
       ) : status === "outgoing_pending" ? (
-        <button type="button" disabled={loading} onClick={() => setConfirmation("cancel")} className="h-11 w-full rounded-lg border border-[#f0d4e3] bg-white px-6 text-[14px] font-semibold text-[#0f1419] hover:bg-[#fff7fb] disabled:opacity-60">
+        <button type="button" disabled={loading} onClick={() => setConfirmation("cancel")} className={pinkButtonClass}>
           Requested
         </button>
       ) : status === "incoming_pending" ? (
         <div className="flex w-full gap-2">
-          <button type="button" disabled={loading} onClick={() => void act(onConfirmRequest)} className="h-11 flex-1 rounded-lg bg-gradient-to-r from-[#a34cef] to-[#f45ca9] px-5 text-[14px] font-semibold text-white disabled:opacity-60">
+          <button type="button" disabled={loading} onClick={() => void act(onConfirmRequest)} className="h-11 flex-1 rounded-lg border border-[#f7b4d5] bg-[#fff3f9] px-5 text-[14px] font-semibold text-[#e33d92] transition hover:bg-[#ffe8f3] disabled:opacity-60">
             {loading ? "Please wait…" : "Accept Request"}
           </button>
           <button type="button" disabled={loading} onClick={() => void act(onDeleteRequest)} className="h-11 flex-1 rounded-lg border border-[#cfd9de] bg-white px-5 text-[14px] font-semibold text-[#0f1419] disabled:opacity-60">Delete</button>
         </div>
       ) : (
-        <button type="button" disabled={loading} onClick={() => setConfirmation("unfollow")} className="h-11 w-full rounded-lg border border-[#f0d4e3] bg-white px-6 text-[14px] font-semibold text-[#0f1419] hover:bg-[#fff7fb] disabled:opacity-60">
+        <button type="button" disabled={loading} onClick={() => setConfirmation("unfollow")} className={pinkButtonClass}>
           Following
         </button>
       )}
