@@ -1,0 +1,29 @@
+/* Public homepage only: remove the oversized left gutter and keep every section aligned. */
+body:has(#about):has(#discover):has(#safety) > div:has(> header + main) {
+  --gutter: clamp(20px, 1.7vw, 28px) !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin-inline: 0 !important;
+}
+
+body:has(#about):has(#discover):has(#safety) > div:has(> header + main) > header > div {
+  padding-inline: var(--gutter) !important;
+}
+
+/* Keep text-led sections on the same left edge. */
+body:has(#about):has(#discover):has(#safety) #about > div:first-child,
+body:has(#about):has(#discover):has(#safety) main > section:not(#about):not(#safety) {
+  scroll-margin-left: 0;
+}
+
+@media (max-width: 1023px) {
+  body:has(#about):has(#discover):has(#safety) > div:has(> header + main) {
+    --gutter: 22px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  body:has(#about):has(#discover):has(#safety) > div:has(> header + main) {
+    --gutter: 20px !important;
+  }
+}
