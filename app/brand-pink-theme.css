@@ -231,61 +231,85 @@ input[type="range"] {
   background-color: #ffe8f3 !important;
 }
 
-/* Requests tabs use the same clean treatment as Notifications: white surface,
-   pink active label and a thin pink underline, with no filled active tab. */
-[role="tablist"].gap-9 {
-  gap: 1.5rem !important;
+/* Requests tabs now mirror Notifications: flat white strip, neutral inactive
+   labels, pink active label, and a 2px underline. */
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tablist"] {
+  display: flex !important;
+  height: 64px !important;
+  align-items: center !important;
+  gap: 24px !important;
+  overflow-x: auto !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
 }
 
-[role="tablist"].gap-9 > button {
-  font-weight: 400 !important;
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"] {
+  position: relative !important;
+  display: inline-flex !important;
+  height: 100% !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 0 4px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
   color: var(--text-secondary) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  box-shadow: none !important;
 }
 
-[role="tablist"].gap-9 > button[aria-selected="true"] {
-  font-weight: 600 !important;
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"][aria-selected="true"] {
   color: #f34ca4 !important;
+  font-weight: 600 !important;
 }
 
-[role="tablist"].gap-9 > button[aria-selected="true"]::after {
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"]::after {
+  height: 2px !important;
+  border-radius: 0 !important;
+}
+
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"][aria-selected="true"]::after {
+  background: #f34ca4 !important;
+}
+
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"][aria-selected="false"]::after {
+  background: transparent !important;
+}
+
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"] > span.absolute {
   height: 2px !important;
   border-radius: 0 !important;
   background: #f34ca4 !important;
 }
 
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"] > span[class~="size-6"] {
+  background: #f2f2f2 !important;
+  background-image: none !important;
+  color: var(--text-secondary) !important;
+}
+
+body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"][aria-selected="true"] > span[class~="size-6"] {
+  background: #f34ca4 !important;
+  color: #ffffff !important;
+}
+
 @media (max-width: 767px) {
-  [role="tablist"][class*="rounded-[19px]"] {
+  body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tablist"] {
     height: 56px !important;
-    border: 0 !important;
-    border-bottom: 1px solid var(--border) !important;
-    border-radius: 0 !important;
-    background: #ffffff !important;
-    box-shadow: none !important;
+    gap: 16px !important;
+    width: calc(100% + 32px) !important;
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    padding: 0 16px !important;
   }
 
-  [role="tablist"][class*="rounded-[19px]"] > button {
-    font-weight: 400 !important;
-    color: var(--text-secondary) !important;
-  }
-
-  [role="tablist"][class*="rounded-[19px]"] > button[aria-selected="true"] {
-    font-weight: 600 !important;
-    color: #f34ca4 !important;
-  }
-
-  [role="tablist"][class*="rounded-[19px]"] > button[aria-selected="true"] > span.absolute {
-    height: 2px !important;
-    border-radius: 0 !important;
-    background: #f34ca4 !important;
-  }
-
-  [role="tablist"][class*="rounded-[19px]"] > button > span[class~="size-6"] {
-    background: #f2f2f2 !important;
-    color: var(--text-secondary) !important;
-  }
-
-  [role="tablist"][class*="rounded-[19px]"] > button[aria-selected="true"] > span[class~="size-6"] {
-    background: #f34ca4 !important;
-    color: #ffffff !important;
+  body:has(a[aria-current="page"][title="Requests"]) .app-workspace [role="tab"] {
+    font-size: 13px !important;
   }
 }
