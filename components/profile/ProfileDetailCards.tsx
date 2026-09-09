@@ -63,7 +63,7 @@ export function DetailCard({
     <section className="rounded-2xl border border-[#e6edf2] bg-white p-5 shadow-[0_8px_24px_rgba(15,20,25,.035)]">
       <div className="flex justify-between">
         <h2 className="text-[18px] font-bold">{title}</h2>
-        <Link href={`/settings/edit-profile?section=${encodeURIComponent(editSection ?? title)}`} className="flex h-7 items-center gap-1 rounded-lg border border-[#f7b4d5] bg-[#fff3f9] px-3 text-[13px] font-semibold text-[#e33d92] transition-colors hover:bg-[#ffe8f3] focus-visible:bg-[#ffe8f3]">
+        <Link href={`/settings/edit-profile?section=${encodeURIComponent(editSection ?? title)}`} className="flex h-7 items-center gap-1 rounded-lg border border-[#f7b4d5] !bg-[#fff0f7] px-3 text-[13px] font-semibold text-[#e33d92] transition-colors hover:!bg-[#ffe5f1] focus-visible:!bg-[#ffe5f1]">
           <Pencil size={10} />
           Edit
         </Link>
