@@ -15,6 +15,12 @@ const publicRoutes = [
     priority: 0.9,
   },
   {
+    path: "/safety",
+    lastModified: "2026-09-09T10:24:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.9,
+  },
+  {
     path: "/about",
     lastModified: "2026-09-09T09:20:00.000Z",
     changeFrequency: "monthly",
