@@ -23,13 +23,13 @@ export function PublicLegalHeader() {
           <Link href="/#discover" className="transition-opacity hover:opacity-60">
             Discover
           </Link>
-          <Link href="/#how" className="transition-opacity hover:opacity-60">
+          <Link href="/how-it-works" className="transition-opacity hover:opacity-60">
             How it works
           </Link>
           <Link href="/#safety" className="transition-opacity hover:opacity-60">
             Safety
           </Link>
-          <Link href="/#about" className="transition-opacity hover:opacity-60">
+          <Link href="/about" className="transition-opacity hover:opacity-60">
             About
           </Link>
         </nav>
