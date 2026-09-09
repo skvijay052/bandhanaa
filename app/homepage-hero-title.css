@@ -1,12 +1,34 @@
-/* Homepage-only hero heading calibration. Keep the existing type scale and line breaks,
-   but give the banner title a slightly wider visual measure. */
+/* Homepage-only hero copy calibration.
+   Give the complete banner text area more horizontal room while preserving
+   the approved three-line headline and the existing image composition. */
 body:has(#hero-title) #hero-title {
-  letter-spacing: -0.025em !important;
+  letter-spacing: -0.02em !important;
 }
 
 @media (min-width: 900px) {
   body:has(#hero-title) #hero-title {
-    transform: scaleX(1.025);
+    width: 112% !important;
+    max-width: none !important;
+    transform: scaleX(1.055);
     transform-origin: left center;
+  }
+
+  body:has(#hero-title) #hero-title + p {
+    width: 112% !important;
+    max-width: 640px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  body:has(#hero-title) #hero-title + p {
+    max-width: 680px !important;
+  }
+}
+
+@media (max-width: 899px) {
+  body:has(#hero-title) #hero-title,
+  body:has(#hero-title) #hero-title + p {
+    width: 100% !important;
+    max-width: none !important;
   }
 }
