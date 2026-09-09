@@ -29,6 +29,7 @@ type MessageRow = {
   body: string;
   read_at: string | null;
   created_at: string;
+  reply_to_id?: number | null;
 };
 
 function conversationId(likerId: string, likedId: string) {
@@ -62,9 +63,7 @@ export default async function MessagesPage() {
       .order("created_at", { ascending: false }),
     supabase
       .from("messages")
-      .select(
-        "id, interest_liker_id, interest_liked_id, sender_id, body, read_at, created_at",
-      )
+      .select("*")
       .order("created_at", { ascending: true }),
     supabase
       .from("user_privacy_settings")
@@ -172,6 +171,7 @@ export default async function MessagesPage() {
     time: formatMessageTime(message.created_at),
     createdAt: message.created_at,
     seen: message.sender_id === user.id && Boolean(message.read_at),
+    replyToId: message.reply_to_id ? String(message.reply_to_id) : null,
   }));
   const viewerName = String(
     user.user_metadata?.full_name ??
