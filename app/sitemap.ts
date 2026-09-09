@@ -33,6 +33,30 @@ const publicRoutes = [
     priority: 0.8,
   },
   {
+    path: "/tamil-matrimony",
+    lastModified: "2026-09-09T10:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/telugu-matrimony",
+    lastModified: "2026-09-09T10:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/kannada-matrimony",
+    lastModified: "2026-09-09T10:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
+    path: "/malayalam-matrimony",
+    lastModified: "2026-09-09T10:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.8,
+  },
+  {
     path: "/privacy",
     lastModified: "2026-09-08T13:45:40.000Z",
     changeFrequency: "monthly",
