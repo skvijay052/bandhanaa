@@ -218,3 +218,14 @@ input[type="radio"],
 input[type="range"] {
   accent-color: #f34ca4;
 }
+
+/* My Profile visibility Edit control: remove the final light-blue interaction state. */
+.app-workspace button[class*="hover:bg-[#e8f5fe]"] {
+  border-color: #f34ca4 !important;
+  color: #f34ca4 !important;
+}
+
+.app-workspace button[class*="hover:bg-[#e8f5fe]"]:hover,
+.app-workspace button[class*="hover:bg-[#e8f5fe]"]:focus-visible {
+  background-color: #fff3f9 !important;
+}
