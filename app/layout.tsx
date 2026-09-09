@@ -7,6 +7,7 @@ import "./globals.css";
 import "./mobile-overrides.css";
 import "./homepage-spacing.css";
 import "./homepage-hero-title.css";
+import "./brand-pink-theme.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
