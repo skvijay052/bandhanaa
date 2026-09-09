@@ -9,6 +9,12 @@ const publicRoutes = [
     priority: 1,
   },
   {
+    path: "/discover-matrimony",
+    lastModified: "2026-09-09T10:24:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.9,
+  },
+  {
     path: "/how-it-works",
     lastModified: "2026-09-09T09:20:00.000Z",
     changeFrequency: "monthly",
