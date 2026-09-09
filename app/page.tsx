@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -88,47 +87,58 @@ const showcaseMenu = [
   { icon: MessageSquare, label: "Messages", href: "/messages" },
 ];
 
-// Display only the artwork regions of the supplied 588 × 1536 reference.
-// One immutable local asset is shared and cached across sections. The surrounding
-// headings, copy, links, icons and cards are HTML, not a full-page screenshot.
-const artworkRegions = {
-  hero: [270, 31, 318, 222],
-  values: [311, 253, 277, 192],
-  product: [165, 445, 423, 230],
-  horoscope: [0, 935, 326, 173],
-  zodiac: [540, 935, 48, 173],
-  safety: [285, 1108, 303, 161],
-  plant: [538, 1269, 50, 91],
+// Each scene has its own high-resolution PNG with a genuine alpha channel.
+// Use responsive image delivery without flattening transparency onto a background.
+const homeArtwork = {
+  hero: {
+    src: "/home/hero-woman.png",
+    sizes: "(max-width: 899px) 100vw, 53vw",
+  },
+  values: {
+    src: "/home/shared-values.png",
+    sizes: "(max-width: 899px) 100vw, 45vw",
+  },
+  product: {
+    src: "/home/product-devices.png",
+    sizes: "(max-width: 899px) 100vw, 65vw",
+  },
+  horoscope: {
+    src: "/home/horoscope-tablet.png",
+    sizes: "(max-width: 899px) 100vw, 54vw",
+  },
+  zodiac: { src: "/home/zodiac-disc.png", sizes: "12vw" },
+  safety: {
+    src: "/home/safety-couple.png",
+    sizes: "(max-width: 899px) 100vw, 50vw",
+  },
+  plant: {
+    src: "/home/olive-branch.png",
+    sizes: "(max-width: 899px) 120px, 15vw",
+  },
 } as const;
 
-function ReferenceArtwork({
-  region,
+function HomeArtwork({
+  asset,
   alt,
   className = "",
   priority = false,
 }: {
-  region: keyof typeof artworkRegions;
+  asset: keyof typeof homeArtwork;
   alt: string;
   className?: string;
   priority?: boolean;
 }) {
-  const [x, y, width, height] = artworkRegions[region];
-  const cropStyle = {
-    aspectRatio: `${width} / ${height}`,
-    "--image-width": `${(588 / width) * 100}%`,
-    "--image-left": `${(-x / width) * 100}%`,
-    "--image-top": `${(-y / height) * 100}%`,
-  } as CSSProperties;
+  const { src, sizes } = homeArtwork[asset];
   return (
-    <div className={`${styles.artwork} ${className}`} style={cropStyle}>
+    <div className={`${styles.artwork} ${className}`}>
       <Image
-        src="/home/homepage-reference.png"
+        src={src}
         alt={alt}
-        width={588}
-        height={1536}
+        fill
+        sizes={sizes}
         priority={priority}
-        unoptimized
-        className={styles.referenceImage}
+        quality={90}
+        className={styles.artworkImage}
       />
     </div>
   );
@@ -172,12 +182,52 @@ export default function HomePage() {
           className={styles.hero}
           aria-labelledby="hero-title"
         >
-          <ReferenceArtwork
-            region="hero"
+          <HomeArtwork
+            asset="hero"
             priority
             className={styles.heroArtwork}
-            alt="A woman looking ahead, with a sample Bandhanaa profile and the words Real People, Meaningful Connections."
+            alt="A woman in an ivory embroidered outfit, smiling thoughtfully and looking ahead."
           />
+          <div className={styles.heroDetails}>
+            <p className={styles.handNote}>
+              Real people.
+              <br />
+              Meaningful
+              <br />
+              connections.
+            </p>
+            <div
+              className={styles.profileFloat}
+              aria-label="Illustrative member profile"
+            >
+              <div className={styles.profileTop}>
+                <Image
+                  src="/home/hero-woman.png"
+                  alt=""
+                  width={64}
+                  height={72}
+                  sizes="64px"
+                  quality={90}
+                  className={styles.profileThumb}
+                />
+                <div>
+                  <strong>
+                    Ananya, 26 <BadgeCheck aria-hidden="true" />
+                  </strong>
+                  <p>
+                    Product Manager
+                    <br />
+                    Chennai, Tamil Nadu
+                  </p>
+                </div>
+              </div>
+              <div className={styles.profileTags}>
+                <span>Values</span>
+                <span>Family</span>
+                <span>Lifestyle</span>
+              </div>
+            </div>
+          </div>
           <div className={styles.heroCopy}>
             <p className={styles.eyebrow}>Meaningful connections</p>
             <h1 id="hero-title" className={styles.heroTitle}>
@@ -221,8 +271,8 @@ export default function HomePage() {
           className={styles.meaningful}
           aria-labelledby="meaningful-title"
         >
-          <ReferenceArtwork
-            region="values"
+          <HomeArtwork
+            asset="values"
             className={styles.valuesArtwork}
             alt="Three sculpted tiles: Same Values, Similar Lifestyle and Long-term Goals, with a pink heart."
           />
@@ -281,10 +331,10 @@ export default function HomePage() {
               ))}
             </nav>
           </div>
-          <ReferenceArtwork
-            region="product"
+          <HomeArtwork
+            asset="product"
             className={styles.productArtwork}
-            alt="Illustrative Bandhanaa desktop Discover screen and mobile profile, showing profile cards and a Send Request action."
+            alt="Illustrative desktop Discover screen and mobile profile, showing three member cards and a profile preview."
           />
         </section>
 
@@ -337,15 +387,11 @@ export default function HomePage() {
         </section>
 
         <section className={styles.horoscope} aria-labelledby="horoscope-title">
-          <ReferenceArtwork
-            region="zodiac"
-            className={styles.zodiacArtwork}
-            alt=""
-          />
-          <ReferenceArtwork
-            region="horoscope"
+          <HomeArtwork asset="zodiac" className={styles.zodiacArtwork} alt="" />
+          <HomeArtwork
+            asset="horoscope"
             className={styles.horoscopeArtwork}
-            alt="An illustrative horoscope tablet with Chart, Details and Compatibility tabs, beside green plants."
+            alt="An illustrative horoscope tablet with Rasi, Nakshatra, Lagna and Navamsa panels, beside a green plant."
           />
           <div className={styles.horoscopeCopy}>
             <p className={styles.eyebrow}>Your choice</p>
@@ -379,10 +425,10 @@ export default function HomePage() {
           className={styles.safety}
           aria-labelledby="safety-title"
         >
-          <ReferenceArtwork
-            region="safety"
+          <HomeArtwork
+            asset="safety"
             className={styles.safetyArtwork}
-            alt="A couple smiling at one another in a black and white portrait. Good People, Brighter Tomorrows."
+            alt="A couple smiling at one another in a black and white portrait."
           />
           <div className={styles.safetyCopy}>
             <p className={styles.eyebrow}>A safer space</p>
@@ -408,11 +454,7 @@ export default function HomePage() {
         </section>
 
         <section className={styles.access} aria-labelledby="access-title">
-          <ReferenceArtwork
-            region="plant"
-            className={styles.accessArtwork}
-            alt=""
-          />
+          <HomeArtwork asset="plant" className={styles.accessArtwork} alt="" />
           <div>
             <p className={styles.eyebrow}>Access for everyone</p>
             <h2 id="access-title" className={styles.sectionTitle}>

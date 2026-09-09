@@ -179,39 +179,40 @@
   line-height: 1.4;
   color: var(--muted);
 }
-/* Native image cropping retains the exact supplied artwork. No screenshot
-   headings or CTA hit areas are used as substitutes for the HTML page. */
+/* Standalone alpha-channel artwork: contain every scene without screenshot crops. */
 .artwork {
   position: relative;
-  overflow: hidden;
+  min-width: 0;
   pointer-events: none;
-  isolation: isolate;
+  background: transparent;
 }
-.referenceImage {
-  position: absolute;
+.artworkImage {
   display: block;
-  width: var(--image-width);
-  max-width: none;
-  height: auto;
-  left: var(--image-left);
-  top: var(--image-top);
+  object-fit: contain;
+  object-position: center;
 }
 .hero {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 47%) minmax(0, 53%);
+  align-items: center;
   min-height: calc(222 * var(--u));
   background: #fbf7f8;
 }
 .heroArtwork {
-  position: absolute;
-  right: 0;
-  top: 0;
-  width: 54.0816%;
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: clamp(440px, 39vw, 680px);
+  align-self: end;
 }
 .heroCopy {
   position: relative;
   z-index: 1;
-  width: 49%;
-  padding: calc(20 * var(--u)) 0 calc(10 * var(--u)) var(--gutter);
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  padding: calc(20 * var(--u)) 0 calc(16 * var(--u)) var(--gutter);
 }
 .heroCopy .body {
   max-width: calc(221 * var(--u));
@@ -250,20 +251,25 @@
 }
 .meaningful {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 55%) minmax(0, 45%);
+  align-items: center;
   min-height: calc(192 * var(--u));
   padding: calc(22 * var(--u)) var(--gutter) calc(15 * var(--u));
   background: #f7f3f7;
 }
 .valuesArtwork {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 47.1088%;
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: clamp(300px, 29vw, 440px);
 }
 .meaningfulCopy {
   position: relative;
   z-index: 1;
-  width: 53%;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
 }
 .meaningful .sectionTitle {
   font-size: calc(25 * var(--u));
@@ -302,6 +308,10 @@
 }
 .showcase {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
+  gap: 16px;
+  align-items: center;
   min-height: calc(230 * var(--u));
   padding: calc(17 * var(--u)) var(--gutter) calc(10 * var(--u));
   background: #fbf7f9;
@@ -309,7 +319,8 @@
 .showcaseCopy {
   position: relative;
   z-index: 1;
-  width: 36%;
+  min-width: 0;
+  width: 100%;
 }
 .showcase .sectionTitle {
   font-size: calc(22 * var(--u));
@@ -318,11 +329,8 @@
   font-size: max(16px, calc(7.5 * var(--u)));
 }
 .productArtwork {
-  position: absolute;
-  width: 71.9388%;
-  right: 0;
-  top: 0;
-  clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%, 0 84%, 14% 84%);
+  width: 100%;
+  height: clamp(350px, 35vw, 590px);
 }
 .menu {
   display: grid;
@@ -461,27 +469,33 @@
 }
 .horoscope {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 54%) minmax(0, 46%);
+  align-items: center;
   min-height: calc(173 * var(--u));
   background: #fbf1f5;
 }
 .horoscopeArtwork {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 55.4422%;
+  grid-column: 1;
+  grid-row: 1;
+  width: 100%;
+  height: clamp(320px, 29vw, 480px);
 }
 .zodiacArtwork {
   position: absolute;
   right: 0;
-  top: 0;
-  width: 8.1633%;
+  top: 12%;
+  width: 12%;
+  height: 64%;
+  opacity: 0.65;
 }
 .horoscopeCopy {
   position: relative;
   z-index: 1;
-  width: 42%;
-  margin-left: 57.8%;
-  padding: calc(13 * var(--u)) calc(38 * var(--u)) calc(15 * var(--u)) 0;
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  padding: calc(13 * var(--u)) calc(48 * var(--u)) calc(15 * var(--u)) 18px;
 }
 .horoscope .sectionTitle {
   font-size: calc(23 * var(--u));
@@ -511,31 +525,27 @@
 }
 .safety {
   position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 50%) minmax(0, 50%);
+  align-items: center;
   min-height: calc(161 * var(--u));
   background: #090909;
   color: #fff;
 }
 .safetyArtwork {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 51.5306%;
-  mask-image: linear-gradient(90deg, transparent 0%, transparent 13%, #000 30%);
+  grid-column: 2;
+  grid-row: 1;
+  width: 100%;
+  height: clamp(340px, 31vw, 520px);
+  align-self: end;
 }
 .safetyCopy {
   position: relative;
   z-index: 1;
-  padding: calc(12 * var(--u)) 0 calc(12 * var(--u)) var(--gutter);
-  width: 57%;
-}
-.safetyArtwork::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 21%;
-  height: 34%;
-  background: #090909;
+  grid-column: 1;
+  grid-row: 1;
+  padding: calc(18 * var(--u)) 18px calc(18 * var(--u)) var(--gutter);
+  width: 100%;
 }
 .safety .eyebrow {
   color: #e6c7d5;
@@ -585,8 +595,9 @@
 .accessArtwork {
   position: absolute;
   right: 0;
-  top: 0;
-  width: 8.5034%;
+  bottom: 0;
+  width: 15%;
+  height: 100%;
 }
 .access .sectionTitle {
   font-size: calc(23 * var(--u));
@@ -700,6 +711,86 @@
 .socials svg {
   width: 18px;
   height: 18px;
+}
+
+.heroArtwork .artworkImage,
+.safetyArtwork .artworkImage {
+  object-position: center bottom;
+}
+.heroDetails {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  right: clamp(18px, 3vw, 54px);
+  width: clamp(220px, 20vw, 300px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 32px 0;
+  pointer-events: none;
+}
+.page .handNote {
+  align-self: flex-end;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(20px, 1.9vw, 28px);
+  line-height: 1.1;
+  transform: rotate(-7deg);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--pink);
+}
+.profileFloat {
+  width: 100%;
+  border: 1px solid #eee2e8;
+  border-radius: 16px;
+  padding: 16px;
+  background: #fffcfd;
+  box-shadow: 0 12px 36px #36233018;
+}
+.profileTop {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.profileThumb {
+  width: 58px;
+  height: 68px;
+  object-fit: cover;
+  object-position: center 20%;
+  border-radius: 10px;
+}
+.profileTop strong {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 16px;
+}
+.profileTop strong svg {
+  width: 16px;
+  height: 16px;
+  color: var(--pink);
+}
+.profileTop p {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.profileTags {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.profileTags span {
+  flex: 1;
+  text-align: center;
+  padding: 5px 0;
+  font-size: 12px;
+  color: #53424c;
+  background: #faf2f6;
+  border-radius: 6px;
 }
 
 @media (min-width: 900px) and (max-width: 1150px) {
@@ -875,8 +966,8 @@
     font-size: 13px;
   }
   .valuesArtwork {
-    width: calc(100% + 48px);
-    margin: 20px -24px 0;
+    width: 100%;
+    margin: 20px 0 0;
   }
   .showcaseCopy {
     max-width: 610px;
@@ -895,9 +986,8 @@
     border-radius: 8px;
   }
   .productArtwork {
-    width: calc(100% + 48px);
-    margin: 20px -24px 0;
-    clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%, 0 84%, 14% 84%);
+    width: 100%;
+    margin: 20px 0 0;
   }
   .compat {
     grid-template-columns: 1fr;
@@ -968,6 +1058,7 @@
     font-size: 15px;
   }
   .safetyCopy {
+    order: -1;
     padding: 36px var(--gutter) 28px;
   }
   .page .privacyCards {
@@ -980,14 +1071,6 @@
   .privacyCards svg {
     width: 26px;
     height: 26px;
-  }
-  .safetyArtwork {
-    mask-image: linear-gradient(
-      90deg,
-      transparent 0%,
-      transparent 13%,
-      #000 30%
-    );
   }
   .access {
     grid-template-columns: 1fr;
@@ -1055,6 +1138,56 @@
   }
 }
 
+@media (max-width: 899px) {
+  .heroArtwork {
+    height: clamp(360px, 90vw, 580px);
+  }
+  .valuesArtwork {
+    height: clamp(260px, 65vw, 440px);
+  }
+  .productArtwork {
+    height: clamp(260px, 65vw, 500px);
+  }
+  .horoscopeArtwork {
+    height: clamp(270px, 70vw, 470px);
+  }
+  .safetyArtwork {
+    height: clamp(280px, 70vw, 480px);
+  }
+  .heroDetails {
+    top: auto;
+    right: var(--gutter);
+    bottom: 18px;
+    width: 220px;
+    padding: 0;
+  }
+  .handNote {
+    display: none;
+  }
+  .profileFloat {
+    padding: 12px;
+  }
+  .profileTop {
+    gap: 8px;
+  }
+  .profileThumb {
+    width: 45px;
+    height: 56px;
+  }
+  .profileTop strong {
+    font-size: 14px;
+  }
+  .profileTop p {
+    font-size: 12px;
+  }
+  .accessArtwork {
+    width: 100px;
+    height: 145px;
+    top: 15px;
+    bottom: auto;
+  }
+}
+
 @media (max-width: 479px) {
   .page {
     --gutter: 22px;
@@ -1108,8 +1241,8 @@
   }
   .valuesArtwork,
   .productArtwork {
-    width: calc(100% + 44px);
-    margin-inline: -22px;
+    width: 100%;
+    margin-inline: 0;
   }
   .page .sectionTitle {
     font-size: 34px;
