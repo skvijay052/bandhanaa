@@ -1,0 +1,171 @@
+/* Global Bandhanaa accent normalization.
+   Removes the legacy blue accent across desktop and mobile while preserving
+   the existing black / white / pink visual system. */
+:root {
+  --color-accent: #f34ca4;
+  --color-pink: #f34ca4;
+  --brand-secondary: #f34ca4;
+  --brand-pink: #f34ca4;
+  --brand-purple: #f34ca4;
+  --app-accent: #f34ca4;
+  --app-romantic: #f34ca4;
+
+  /* Tailwind blue/sky utilities resolve to the Bandhanaa pink scale. */
+  --color-blue-50: #fff7fb;
+  --color-blue-100: #ffedf6;
+  --color-blue-200: #ffd4e8;
+  --color-blue-300: #fbb4d4;
+  --color-blue-400: #f681b5;
+  --color-blue-500: #f34ca4;
+  --color-blue-600: #e83e78;
+  --color-blue-700: #c93470;
+  --color-blue-800: #a92f61;
+  --color-blue-900: #892a56;
+  --color-blue-950: #54152f;
+  --color-sky-50: #fff7fb;
+  --color-sky-100: #ffedf6;
+  --color-sky-200: #ffd4e8;
+  --color-sky-300: #fbb4d4;
+  --color-sky-400: #f681b5;
+  --color-sky-500: #f34ca4;
+  --color-sky-600: #e83e78;
+  --color-sky-700: #c93470;
+  --color-sky-800: #a92f61;
+  --color-sky-900: #892a56;
+  --color-sky-950: #54152f;
+}
+
+/* Existing shared components that used the former Twitter-style blue. */
+.sidebar-notification-badge,
+.profile-action-primary {
+  background: #f34ca4 !important;
+}
+
+.profile-action-primary:hover {
+  background: #e83e78 !important;
+}
+
+/* Exact legacy arbitrary blue utilities used throughout the app. */
+:where(
+  [class~="text-[#1d9bf0]"],
+  [class~="text-[#1689df]"],
+  [class~="text-[#0ea5e9]"],
+  [class~="text-[#0284c7]"],
+  [class~="text-[#2563eb]"],
+  [class~="text-[#3b82f6]"],
+  [class~="text-[#38bdf8]"],
+  [class~="text-[#60a5fa]"],
+  [class~="text-[#007aff]"],
+  [class~="text-[#0066cc]"]
+) {
+  color: #f34ca4 !important;
+}
+
+:where(
+  [class~="fill-[#1d9bf0]"],
+  [class~="fill-[#0ea5e9]"],
+  [class~="fill-[#2563eb]"],
+  [class~="fill-[#3b82f6]"]
+) {
+  fill: #f34ca4 !important;
+}
+
+:where(
+  [class~="stroke-[#1d9bf0]"],
+  [class~="stroke-[#0ea5e9]"],
+  [class~="stroke-[#2563eb]"],
+  [class~="stroke-[#3b82f6]"]
+) {
+  stroke: #f34ca4 !important;
+}
+
+:where(
+  [class~="bg-[#1d9bf0]"],
+  [class~="bg-[#0ea5e9]"],
+  [class~="bg-[#2563eb]"],
+  [class~="bg-[#3b82f6]"],
+  [class~="bg-[#38bdf8]"]
+) {
+  background-color: #f34ca4 !important;
+}
+
+:where(
+  [class~="hover:bg-[#1689df]"]:hover,
+  [class~="hover:bg-[#0284c7]"]:hover,
+  [class~="hover:bg-[#1d4ed8]"]:hover,
+  [class~="hover:bg-[#2563eb]"]:hover
+) {
+  background-color: #e83e78 !important;
+}
+
+:where(
+  [class~="border-[#1d9bf0]"],
+  [class~="border-[#0ea5e9]"],
+  [class~="border-[#2563eb]"],
+  [class~="border-[#3b82f6]"]
+) {
+  border-color: #f34ca4 !important;
+}
+
+:where(
+  [class~="ring-[#1d9bf0]"],
+  [class~="focus:ring-[#1d9bf0]"],
+  [class~="focus-visible:ring-[#1d9bf0]"]
+) {
+  --tw-ring-color: #f34ca4 !important;
+}
+
+/* Replace common light-blue arbitrary surfaces with soft Bandhanaa pink. */
+:where(
+  [class~="bg-[#f5fbff]"],
+  [class~="bg-[#f0f9ff]"],
+  [class~="bg-[#eff6ff]"],
+  [class~="bg-[#eaf7ff]"],
+  [class~="bg-[#e0f2fe]"],
+  [class~="bg-[#dbeafe]"]
+) {
+  background-color: #fff3f9 !important;
+}
+
+:where(
+  [class~="border-[#d7e8f5]"],
+  [class~="border-[#bae6fd]"],
+  [class~="border-[#bfdbfe]"]
+) {
+  border-color: #f7b4d5 !important;
+}
+
+/* Restore the original Bandhanaa pink utilities that the legacy global bridge
+   previously remapped to blue. */
+:where(
+  [class~="text-[#ff1682]"],
+  [class~="text-[#ff0a7d]"],
+  [class~="text-[#f32988]"],
+  [class~="text-[#ef20a8]"]
+) {
+  color: #f34ca4 !important;
+}
+
+:where(
+  [class~="bg-[#ff1682]"],
+  [class~="bg-[#ff0a7d]"],
+  [class~="bg-[#f32988]"],
+  [class~="bg-[#ef20a8]"]
+) {
+  background-color: #f34ca4 !important;
+}
+
+:where(
+  [class~="border-[#ff1682]"],
+  [class~="border-[#ff0a7d]"],
+  [class~="border-[#f32988]"],
+  [class~="border-[#ef20a8]"]
+) {
+  border-color: #f34ca4 !important;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"] {
+  accent-color: #f34ca4;
+}
