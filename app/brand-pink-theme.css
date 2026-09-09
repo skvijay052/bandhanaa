@@ -115,6 +115,43 @@
   --tw-ring-color: #f34ca4 !important;
 }
 
+/* Tailwind responsive/state variants keep their prefix in the class token.
+   These selectors catch remaining md:, hover:, focus-visible: and after:
+   usages that exact class-token matching cannot see. */
+[class*="text-[#1d9bf0]"],
+[class*="text-[#1689df]"] {
+  color: #f34ca4 !important;
+}
+
+[class*="fill-[#1d9bf0]"] {
+  fill: #f34ca4 !important;
+}
+
+[class*="bg-[#1d9bf0]"] {
+  background-color: #f34ca4 !important;
+}
+
+[class*="border-[#1d9bf0]"] {
+  border-color: #f34ca4 !important;
+}
+
+[class*="ring-[#1d9bf0]"] {
+  --tw-ring-color: #f34ca4 !important;
+}
+
+[class*="after:bg-[#1d9bf0]"]::after {
+  background-color: #f34ca4 !important;
+}
+
+[class*="hover:text-[#1d9bf0]"]:hover,
+[class*="hover:text-[#1689df]"]:hover {
+  color: #e83e78 !important;
+}
+
+[class*="hover:bg-[#1689df]"]:hover {
+  background-color: #e83e78 !important;
+}
+
 /* Replace common light-blue arbitrary surfaces with soft Bandhanaa pink. */
 :where(
   [class~="bg-[#f5fbff]"],
@@ -122,16 +159,28 @@
   [class~="bg-[#eff6ff]"],
   [class~="bg-[#eaf7ff]"],
   [class~="bg-[#e0f2fe]"],
-  [class~="bg-[#dbeafe]"]
+  [class~="bg-[#dbeafe]"],
+  [class~="bg-[#e8f5fe]"],
+  [class~="bg-[#eff8ff]"]
 ) {
+  background-color: #fff3f9 !important;
+}
+
+[class*="hover:bg-[#e8f5fe]"]:hover,
+[class*="hover:bg-[#eff8ff]"]:hover {
   background-color: #fff3f9 !important;
 }
 
 :where(
   [class~="border-[#d7e8f5]"],
   [class~="border-[#bae6fd]"],
-  [class~="border-[#bfdbfe]"]
+  [class~="border-[#bfdbfe]"],
+  [class~="border-[#b9dff8]"]
 ) {
+  border-color: #f7b4d5 !important;
+}
+
+[class*="hover:border-[#b9dff8]"]:hover {
   border-color: #f7b4d5 !important;
 }
 
