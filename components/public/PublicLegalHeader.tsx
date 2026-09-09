@@ -20,7 +20,7 @@ export function PublicLegalHeader() {
           className="hidden items-center gap-8 text-[12px] font-medium text-[#1d1d1f] md:flex"
           aria-label="Main navigation"
         >
-          <Link href="/#discover" className="transition-opacity hover:opacity-60">
+          <Link href="/discover-matrimony" className="transition-opacity hover:opacity-60">
             Discover
           </Link>
           <Link href="/how-it-works" className="transition-opacity hover:opacity-60">
