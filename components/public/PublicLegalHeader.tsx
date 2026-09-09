@@ -26,7 +26,7 @@ export function PublicLegalHeader() {
           <Link href="/how-it-works" className="transition-opacity hover:opacity-60">
             How it works
           </Link>
-          <Link href="/#safety" className="transition-opacity hover:opacity-60">
+          <Link href="/safety" className="transition-opacity hover:opacity-60">
             Safety
           </Link>
           <Link href="/about" className="transition-opacity hover:opacity-60">
