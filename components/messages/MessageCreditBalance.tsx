@@ -60,14 +60,15 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
     };
   }, [userId, refresh]);
 
-  if (!summary) return null;
-
-  const empty = summary.requires_credit && summary.available_credits <= 0;
-  const description = empty
-    ? "You’ve used all your message credits. Keep the conversation going!"
-    : summary.requires_credit
-      ? "1 credit is used for each outgoing message. Incoming messages are free."
-      : "Your current free messaging access continues. Credits are saved for messages that require them.";
+  const credits = summary?.available_credits ?? 0;
+  const empty = Boolean(summary?.requires_credit && credits <= 0);
+  const description = !summary
+    ? "Checking your message credits…"
+    : empty
+      ? "You’ve used all your message credits. Keep the conversation going!"
+      : summary.requires_credit
+        ? "1 credit is used for each outgoing message. Incoming messages are free."
+        : "Your current free messaging access continues. Credits are saved for messages that require them.";
 
   return (
     <>
@@ -77,7 +78,7 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
             <MessageCircle size={14} aria-hidden="true" />
           </span>
           <span aria-live="polite" className="message-credit-title">
-            <strong>{summary.available_credits}</strong> message credits
+            <strong>{credits}</strong> message credits
           </span>
         </span>
 
@@ -86,18 +87,22 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
             type="button"
             onClick={() => setInviteOpen(true)}
             aria-haspopup="dialog"
-            className="message-credit-invite rounded py-1 font-semibold text-[#b82e63] focus-visible:outline-[#e83e78]"
+            className="message-credit-invite inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#eadfe4] bg-white px-3 py-2 font-semibold text-[#171717] focus-visible:outline-[#e83e78]"
           >
-            <Users size={16} aria-hidden="true" />
+            <Users size={15} aria-hidden="true" />
             <span>Invite &amp; get 10 free</span>
           </button>
           <button
             type="button"
-            onClick={() => setPaymentNotice("Online message-credit purchase is not enabled yet.")}
-            className="message-credit-pay hidden"
+            onClick={() =>
+              setPaymentNotice(
+                "Online message-credit purchase is not enabled yet.",
+              )
+            }
+            className="message-credit-pay inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#121820] px-3 py-2 font-semibold text-white"
             aria-describedby="message-credit-payment-notice"
           >
-            <CreditCard size={17} aria-hidden="true" />
+            <CreditCard size={15} aria-hidden="true" />
             <span>Pay ₹10 for 10</span>
           </button>
         </div>
@@ -105,14 +110,16 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
         <span className="message-credit-description basis-full text-[10px] text-[#747076]">
           {description}
         </span>
-        <span
-          id="message-credit-payment-notice"
-          role="status"
-          aria-live="polite"
-          className="message-credit-payment-notice basis-full text-[10px] text-[#9a526f]"
-        >
-          {paymentNotice}
-        </span>
+        {paymentNotice ? (
+          <span
+            id="message-credit-payment-notice"
+            role="status"
+            aria-live="polite"
+            className="message-credit-payment-notice basis-full text-[10px] text-[#9a526f]"
+          >
+            {paymentNotice}
+          </span>
+        ) : null}
       </div>
       {inviteOpen ? (
         <ReferralShareModal onClose={() => setInviteOpen(false)} />
