@@ -1,5 +1,40 @@
 /* Messages-only color theme: remove legacy blue accents and use Bandhanaa pink. */
 
+@keyframes bandhanaa-credit-attention {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  20%, 60% {
+    opacity: 0.58;
+    transform: scale(1.008);
+  }
+  40%, 80% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.messages-mobile-route .message-credit-balance.message-credit-attention {
+  position: relative;
+  z-index: 2;
+  outline: 2px solid #f43f93 !important;
+  outline-offset: 2px;
+  animation: bandhanaa-credit-attention 720ms ease-in-out 1;
+  transform-origin: center;
+}
+
+.messages-mobile-route .message-credit-input-blocked {
+  cursor: pointer !important;
+  caret-color: transparent !important;
+  color: #9a7d89 !important;
+}
+
+.messages-mobile-route .message-credit-input-blocked::placeholder {
+  color: #b35d80 !important;
+  opacity: 1 !important;
+}
+
 .messages-mobile-route [aria-label="Verified"] {
   color: #f43f93 !important;
   fill: #f43f93 !important;
@@ -173,8 +208,21 @@
     box-shadow: 0 8px 20px rgba(244, 63, 147, 0.22) !important;
   }
 
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > div:last-of-type > div:last-child > button:last-child[data-credit-blocked="true"] {
+    cursor: not-allowed !important;
+    background: #f4bfd5 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+  }
+
   .messages-mobile-route .app-shell section[class*="z-[110]"] > p[role="alert"] {
     border-color: #f4d6e1 !important;
     color: #b52d63 !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .messages-mobile-route .message-credit-balance.message-credit-attention {
+    animation: none !important;
   }
 }
