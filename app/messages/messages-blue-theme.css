@@ -1,0 +1,108 @@
+/* Messages-only color theme: keep the Messages experience blue and remove pink accents. */
+
+.messages-mobile-route [aria-label="Verified"] {
+  color: #1d9bf0 !important;
+  fill: #1d9bf0 !important;
+}
+
+.messages-mobile-route [class*="text-[#f34ca4]"],
+.messages-mobile-route [class*="text-[#f43f93]"],
+.messages-mobile-route [class*="text-[#e83e78]"],
+.messages-mobile-route [class*="text-[#b82e63]"],
+.messages-mobile-route [class*="text-[#a92e61]"],
+.messages-mobile-route [class*="text-[#8b3de8]"],
+.messages-mobile-route [class*="text-[#ff1682]"] {
+  color: #1d9bf0 !important;
+}
+
+.messages-mobile-route [class*="fill-[#f34ca4]"],
+.messages-mobile-route [class*="fill-[#f43f93]"],
+.messages-mobile-route [class*="fill-[#e83e78]"] {
+  fill: #1d9bf0 !important;
+}
+
+.messages-mobile-route [class*="bg-[#f34ca4]"],
+.messages-mobile-route [class*="bg-[#f43f93]"],
+.messages-mobile-route [class*="bg-[#e83e78]"],
+.messages-mobile-route [class*="bg-[#ff1682]"] {
+  background-color: #1d9bf0 !important;
+}
+
+.messages-mobile-route [class*="bg-[#fff3f9]"],
+.messages-mobile-route [class*="bg-[#fff4f9]"],
+.messages-mobile-route [class*="bg-[#fff0f7]"],
+.messages-mobile-route [class*="bg-[#ffeaf4]"],
+.messages-mobile-route [class*="bg-[#fff0f6]"] {
+  background-color: #f2f8fd !important;
+}
+
+.messages-mobile-route [class*="border-[#f7b4d5]"],
+.messages-mobile-route [class*="border-[#f3dce6]"],
+.messages-mobile-route [class*="border-[#f4dbe6]"],
+.messages-mobile-route [class*="border-[#fde3ee]"] {
+  border-color: #d9ebf8 !important;
+}
+
+.messages-mobile-route [class*="ring-[#f34ca4]"],
+.messages-mobile-route [class*="ring-[#e83e78]"] {
+  --tw-ring-color: #b9ddf7 !important;
+}
+
+.messages-mobile-route [class*="from-[#8b3de8]"] {
+  --tw-gradient-from: #1d9bf0 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(29 155 240 / 0) var(--tw-gradient-to-position) !important;
+}
+
+.messages-mobile-route [class*="to-[#f34ca4]"] {
+  --tw-gradient-to: #66bdf6 var(--tw-gradient-to-position) !important;
+}
+
+@media (max-width: 767px) {
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > header [aria-label="Verified"] {
+    color: #1d9bf0 !important;
+    fill: #1d9bf0 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance {
+    border-color: #d9ebf8 !important;
+    background: #f5faff !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-icon {
+    background: #e8f4fd !important;
+    color: #1d9bf0 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-title strong,
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-invite svg {
+    color: #1d9bf0 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] [class*="justify-end"] > div[class*="max-w"] {
+    border-color: #dceefb !important;
+    background: #eef7fe !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] [class*="justify-end"] > div[class*="max-w"] > p:last-child svg {
+    color: #1d9bf0 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] div[class*="max-w"] button[class*="border-l-[3px]"] {
+    border-left-color: #1d9bf0 !important;
+    background: #f5faff !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] div[class*="max-w"] button[class*="border-l-[3px]"] strong {
+    color: #1d9bf0 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > div:last-of-type > div:last-child > button:last-child {
+    background: #1d9bf0 !important;
+    box-shadow: 0 8px 20px rgba(29, 155, 240, 0.22) !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > p[role="alert"] {
+    border-color: #d9ebf8 !important;
+    color: #176da3 !important;
+  }
+}
