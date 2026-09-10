@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Eye, Heart, Star, Target } from "lucide-react";
 
 import { ProfileImage } from "@/components/ui/ProfileImage";
@@ -52,6 +52,7 @@ type Props = {
 };
 
 const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const PROFILE_BATCH_SIZE = 20;
 
 export function DiscoverDesktopExperience({
   profiles,
@@ -72,6 +73,8 @@ export function DiscoverDesktopExperience({
   const [selectedPreferenceIndex, setSelectedPreferenceIndex] = useState<
     number | null
   >(null);
+  const [visibleProfileCount, setVisibleProfileCount] = useState(PROFILE_BATCH_SIZE);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -276,6 +279,33 @@ export function DiscoverDesktopExperience({
     return items.sort((a, b) => b.match - a.match);
   }, [filter, profiles, viewerCity]);
 
+  const renderedProfiles = useMemo(
+    () => visibleProfiles.slice(0, visibleProfileCount),
+    [visibleProfileCount, visibleProfiles],
+  );
+
+  useEffect(() => {
+    setVisibleProfileCount(Math.min(PROFILE_BATCH_SIZE, visibleProfiles.length));
+  }, [filter, profiles, viewerCity, visibleProfiles.length]);
+
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || visibleProfileCount >= visibleProfiles.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        setVisibleProfileCount((current) =>
+          Math.min(current + PROFILE_BATCH_SIZE, visibleProfiles.length),
+        );
+      },
+      { rootMargin: "500px 0px" },
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [visibleProfileCount, visibleProfiles.length]);
+
   const toPeople = (items: DiscoverProfile[]): InsightPerson[] =>
     items.map((profile) => ({
       id: profile.id,
@@ -391,25 +421,39 @@ export function DiscoverDesktopExperience({
         </div>
 
         {visibleProfiles.length ? (
-          <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleProfiles.map((profile) => {
-              const currentProfile = {
-                ...profile,
-                relationship:
-                  relationshipStates[profile.id] ?? profile.relationship,
-              };
+          <>
+            <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+              {renderedProfiles.map((profile) => {
+                const currentProfile = {
+                  ...profile,
+                  relationship:
+                    relationshipStates[profile.id] ?? profile.relationship,
+                };
 
-              return (
-                <ProfileCard
-                  key={profile.id}
-                  profile={currentProfile}
-                  liked={shortlisted.includes(profile.id)}
-                  onLike={() => onShortlist(profile.id)}
-                  onRelationshipAction={() => onRelationshipAction(currentProfile)}
-                />
-              );
-            })}
-          </div>
+                return (
+                  <ProfileCard
+                    key={profile.id}
+                    profile={currentProfile}
+                    liked={shortlisted.includes(profile.id)}
+                    onLike={() => onShortlist(profile.id)}
+                    onRelationshipAction={() => onRelationshipAction(currentProfile)}
+                  />
+                );
+              })}
+            </div>
+            {visibleProfileCount < visibleProfiles.length ? (
+              <div
+                ref={loadMoreRef}
+                className="flex h-16 items-center justify-center"
+                aria-label="More profiles load as you scroll"
+              >
+                <span className="inline-flex items-center gap-2 text-[12px] font-medium text-[#8a8a8a]">
+                  <span className="size-1.5 animate-pulse rounded-full bg-[#f34ca4]" />
+                  Loading more profiles…
+                </span>
+              </div>
+            ) : null}
+          </>
         ) : (
           <div className="mt-8 rounded-[20px] border border-[#ededed] bg-white px-6 py-16 text-center">
             <p className="text-[15px] font-semibold text-[#222]">
