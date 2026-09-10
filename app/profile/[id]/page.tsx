@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { ProfileDetailsClient } from "@/components/profile/ProfileDetailsClient";
+import { ProfilePhotoLightbox } from "@/components/profile/ProfilePhotoLightbox";
 import type { CompactProfile, ProfileDetail } from "@/data/profile";
 import { getRelationshipState } from "@/data/profile";
 import { createClient } from "@/lib/supabase/server";
@@ -214,13 +215,20 @@ export default async function ProfilePage({
     String(user.user_metadata?.avatar_url ?? ""),
   );
   return (
-    <ProfileDetailsClient
-      profile={profile}
-      moreProfiles={moreProfiles}
-      initialRelation={relation}
-      currentUserId={user.id}
-      viewerName={viewerName}
-      avatarUrl={avatarUrl}
-    />
+    <>
+      <ProfileDetailsClient
+        profile={profile}
+        moreProfiles={moreProfiles}
+        initialRelation={relation}
+        currentUserId={user.id}
+        viewerName={viewerName}
+        avatarUrl={avatarUrl}
+      />
+      <ProfilePhotoLightbox
+        profileName={profile.name}
+        profileImage={profile.image}
+        photos={profile.photos}
+      />
+    </>
   );
 }
