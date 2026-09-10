@@ -62,6 +62,7 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
 
   const credits = summary?.available_credits ?? 0;
   const empty = Boolean(summary?.requires_credit && credits <= 0);
+  const creditBlocked = Boolean(summary && credits <= 0);
   const description = !summary
     ? "Checking your message credits…"
     : empty
@@ -72,7 +73,11 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
 
   return (
     <>
-      <div className="message-credit-balance w-full overflow-hidden rounded-[16px] border border-[#f4dbe6] bg-[#fff7fa] px-3 py-2.5 text-[#171717] shadow-none">
+      <div
+        className="message-credit-balance w-full overflow-hidden rounded-[16px] border border-[#f4dbe6] bg-[#fff7fa] px-3 py-2.5 text-[#171717] shadow-none"
+        data-credit-blocked={summary ? String(creditBlocked) : "loading"}
+        data-message-credits={summary ? credits : undefined}
+      >
         <div className="flex items-center gap-2.5">
           <span className="message-credit-icon grid size-8 shrink-0 place-items-center rounded-full bg-[#ffe8f2] text-[#f43f93]">
             <MessageCircle size={15} aria-hidden="true" />
