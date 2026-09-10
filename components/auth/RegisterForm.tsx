@@ -7,6 +7,7 @@ import { useForm, type UseFormRegisterReturn } from "react-hook-form";
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { verificationEmailStorageKey } from "@/lib/auth-verification";
+import { clearReferral, rememberReferral } from "@/lib/referrals";
 import { profileFieldOptions } from "@/data/profile-field-options";
 import { cityOptions, countries, stateOptions } from "@/data/location-options";
 import { SearchableSelect } from "@/components/ui/SearchableSelect";
@@ -37,6 +38,7 @@ function friendlyOtpError(message: string) {
 
 export function RegisterForm() {
   const router = useRouter();
+  useEffect(() => { rememberReferral(); }, []);
   const [step, setStep] = useState(1);
   const [otp, setOtp] = useState("");
   const [countdown, setCountdown] = useState(60);
@@ -73,7 +75,7 @@ export function RegisterForm() {
     setMessage(null); setRegistrationState("submitting");
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: watch("name").trim() } } });
+      const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { full_name: watch("name").trim(), referral_code: rememberReferral() } } });
       const existingRegistration = error?.code === "user_already_exists" || error?.code === "email_exists" || /already registered|already exists/i.test(error?.message ?? "") || Boolean(data.user && data.user.identities?.length === 0);
       if (existingRegistration) {
         const { error: resendError } = await supabase.auth.resend({ type: "signup", email });
@@ -107,7 +109,7 @@ export function RegisterForm() {
     }, preferences: partnerPreferences });
     const row = Array.isArray(completion) ? completion[0] : completion;
     if (error || !row?.onboarding_completed || row.registration_status !== "active") { setMessage({ type: "error", text: "Your email is verified, but we couldn't save your profile. Please try again." }); return; }
-    localStorage.removeItem(verificationEmailStorageKey); router.replace("/discover"); router.refresh();
+    clearReferral(); localStorage.removeItem(verificationEmailStorageKey); router.replace("/discover"); router.refresh();
   }
   async function resendOtp() {
     if (countdown > 0) return; setMessage(null); setRegistrationState("resending");

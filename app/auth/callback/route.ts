@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { normalizeReferralCode, referralCookieName } from "@/lib/referrals";
 
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -43,6 +45,15 @@ export async function GET(request: Request) {
     error: userError,
   } = await supabase.auth.getUser();
   if (userError || !user) return redirectTo(url, GOOGLE_AUTH_ERROR_PATH);
+
+  const cookieStore = await cookies();
+  const referralCode = normalizeReferralCode(cookieStore.get(referralCookieName)?.value);
+  if (referralCode) {
+    // The database limits this to a new OAuth account before onboarding.
+    const { error } = await supabase.rpc("claim_oauth_referral", { candidate_code: referralCode });
+    if (error) console.error("OAuth referral attribution failed:", error.code);
+    else cookieStore.delete(referralCookieName);
+  }
 
   const { data: profile, error: profileError } = await supabase
     .from("profiles")

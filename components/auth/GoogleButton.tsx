@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { rememberReferral } from "@/lib/referrals";
 
 function GoogleMark() {
   return (
@@ -46,6 +47,7 @@ export function GoogleButton({
     onError?.("");
     setLoading(true);
     try {
+      rememberReferral();
       const { error } = await createClient().auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: `${window.location.origin}/auth/callback` },
