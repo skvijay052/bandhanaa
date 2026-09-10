@@ -1,0 +1,85 @@
+/* Messages-only color theme: remove legacy blue accents and use Bandhanaa pink. */
+
+.messages-mobile-route [aria-label="Verified"] {
+  color: #f43f93 !important;
+  fill: #f43f93 !important;
+}
+
+.messages-mobile-route [class*="text-[#1d9bf0]"] {
+  color: #f43f93 !important;
+}
+
+.messages-mobile-route [class*="bg-[#1d9bf0]"] {
+  background-color: #f43f93 !important;
+}
+
+.messages-mobile-route [class*="border-[#1d9bf0]"] {
+  border-color: #f7cfe0 !important;
+}
+
+.messages-mobile-route [class*="ring-[#1d9bf0]"] {
+  --tw-ring-color: #f7cfe0 !important;
+}
+
+.messages-mobile-route [class*="fill-[#1d9bf0]"] {
+  fill: #f43f93 !important;
+}
+
+.messages-mobile-route [class*="from-[#1d9bf0]"] {
+  --tw-gradient-from: #f43f93 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(244 63 147 / 0) var(--tw-gradient-to-position) !important;
+}
+
+.messages-mobile-route [class*="to-[#1d9bf0]"] {
+  --tw-gradient-to: #f43f93 var(--tw-gradient-to-position) !important;
+}
+
+@media (max-width: 767px) {
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > header [aria-label="Verified"] {
+    color: #f43f93 !important;
+    fill: #f43f93 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance {
+    border-color: #f4dbe6 !important;
+    background: #fff7fa !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-icon {
+    background: #ffe8f2 !important;
+    color: #f43f93 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-title strong,
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-invite svg {
+    color: #f43f93 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] [class*="justify-end"] > div[class*="max-w"] {
+    border-color: #fde3ee !important;
+    background: #fff0f6 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] [class*="justify-end"] > div[class*="max-w"] > p:last-child svg {
+    color: #f43f93 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] div[class*="max-w"] button[class*="border-l-[3px]"] {
+    border-left-color: #f43f93 !important;
+    background: #fff4f9 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] div[class*="max-w"] button[class*="border-l-[3px]"] strong {
+    color: #f43f93 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > div:last-of-type > div:last-child > button:last-child {
+    background: #f43f93 !important;
+    box-shadow: 0 8px 20px rgba(244, 63, 147, 0.22) !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > p[role="alert"] {
+    border-color: #f4d6e1 !important;
+    color: #b52d63 !important;
+  }
+}
