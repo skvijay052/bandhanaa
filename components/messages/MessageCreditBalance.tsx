@@ -61,15 +61,14 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
   }, [userId, refresh]);
 
   const credits = summary?.available_credits ?? 0;
-  const empty = Boolean(summary?.requires_credit && credits <= 0);
-  const creditBlocked = Boolean(summary && credits <= 0);
+  const creditBlocked = Boolean(
+    summary?.requires_credit && credits <= 0,
+  );
   const description = !summary
     ? "Checking your message credits…"
-    : empty
+    : creditBlocked
       ? "No credits left. Choose an option below to keep chatting."
-      : summary.requires_credit
-        ? "1 credit is used for each outgoing message."
-        : "Your current free messaging access continues.";
+      : "1 credit is used for each outgoing message.";
 
   return (
     <>
