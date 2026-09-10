@@ -276,7 +276,7 @@ export function RecentVisitorProfileModal({
               ) : null}
 
               {typeof profile.match === "number" && profile.match > 0 ? (
-                <span className="mt-5 inline-flex rounded-full bg-[#fff0f7] px-3 py-1.5 text-[12px] font-bold text-[#e83e78]">
+                <span className="mt-5 inline-flex rounded-full border border-[#f7b4d5] bg-[#fff3f9] px-3 py-1.5 text-[12px] font-bold text-[#e33d92]">
                   {profile.match}% Match
                 </span>
               ) : null}
