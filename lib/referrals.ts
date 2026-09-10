@@ -36,5 +36,5 @@ export function invitationText(referralUrl: string) {
 }
 
 export function referralAfterProfile(displayedCount: number) {
-  return displayedCount > 0 && displayedCount % 10 === 0;
+  return displayedCount > 0 && displayedCount % 8 === 0;
 }
