@@ -42,12 +42,23 @@
 
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance {
     display: block !important;
+    width: auto !important;
+    max-width: calc(100% - 24px) !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    align-self: stretch !important;
     margin: 6px 12px 4px !important;
     padding: 9px 10px !important;
+    overflow: hidden !important;
     border: 1px solid #f4dbe6 !important;
     border-radius: 16px !important;
     background: #fff7fa !important;
     box-shadow: none !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance > div:first-child,
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance > div:first-child > div {
+    min-width: 0 !important;
   }
 
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-icon {
@@ -63,6 +74,7 @@
   }
 
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-title {
+    min-width: 0 !important;
     font-size: 12px !important;
     line-height: 1.15 !important;
   }
@@ -73,7 +85,11 @@
   }
 
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-description {
+    max-width: 100% !important;
     margin: 2px 0 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
     font-size: 9.5px !important;
     line-height: 1.25 !important;
   }
@@ -83,24 +99,43 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     gap: 6px !important;
     width: 100% !important;
+    min-width: 0 !important;
     margin-top: 7px !important;
   }
 
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-invite,
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-pay {
     display: inline-flex !important;
-    min-height: 34px !important;
+    width: 100% !important;
     min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 34px !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 4px !important;
     border-radius: 10px !important;
-    padding: 0 7px !important;
+    padding: 5px 6px !important;
+    overflow: hidden !important;
     font-size: 10px !important;
+    line-height: 1.1 !important;
     font-weight: 700 !important;
-    white-space: nowrap !important;
+    white-space: normal !important;
+    text-align: center !important;
     visibility: visible !important;
     opacity: 1 !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-invite span,
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-pay span {
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-invite svg,
+  .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-pay svg {
+    width: 14px !important;
+    height: 14px !important;
+    flex: 0 0 auto !important;
   }
 
   .messages-mobile-route .app-shell section[class*="z-[110]"] > .message-credit-balance .message-credit-invite {
