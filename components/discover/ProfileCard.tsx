@@ -143,7 +143,7 @@ function Facts({ profile }: { profile: DiscoverProfile }) {
 
 function MatchPill({ match }: { match: number }) {
   return (
-    <span className="mt-3 inline-flex h-7 items-center rounded-full border border-[#f7b4d5] bg-[#f7b4d5] px-3 text-[11px] font-bold text-white">
+    <span className="mt-3 inline-flex h-7 items-center rounded-full border border-[#f7b4d5] bg-[#fff3f9] px-3 text-[11px] font-bold text-[#e33d92]">
       {match}% Match
     </span>
   );
