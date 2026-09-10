@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ChatProfilePictureEnhancer } from "@/components/messages/ChatProfilePictureEnhancer";
 import { MessagesFavouritesEnhancer } from "@/components/messages/MessagesFavouritesEnhancer";
-import "./messages-pink-theme.css";
+import "./messages-blue-theme.css";
 
 export default function MessagesLayout({ children }: { children: ReactNode }) {
   return (
