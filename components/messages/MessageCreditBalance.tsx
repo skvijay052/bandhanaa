@@ -72,15 +72,15 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
 
   return (
     <>
-      <div className="message-credit-balance border-b border-[#f3dce6] bg-[#fff7fb] px-4 py-2.5 text-[#171717]">
+      <div className="message-credit-balance w-full overflow-hidden rounded-[16px] border border-[#f4dbe6] bg-[#fff7fa] px-3 py-2.5 text-[#171717] shadow-none">
         <div className="flex items-center gap-2.5">
-          <span className="message-credit-icon grid size-8 shrink-0 place-items-center rounded-full bg-[#fff0f7] text-[#e83e78]">
+          <span className="message-credit-icon grid size-8 shrink-0 place-items-center rounded-full bg-[#ffe8f2] text-[#f43f93]">
             <MessageCircle size={15} aria-hidden="true" />
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
               <span aria-live="polite" className="message-credit-title text-[13px] font-semibold">
-                <strong className="text-[#e83e78]">{credits}</strong> message credits
+                <strong className="text-[#f43f93]">{credits}</strong> message credits
               </span>
               <span className="shrink-0 text-[10px] font-semibold text-[#b82e63]">
                 Get 10 more messages
@@ -99,7 +99,7 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
             aria-haspopup="dialog"
             className="message-credit-invite inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-[#eadfe4] bg-white px-2.5 text-[11px] font-semibold text-[#171717] transition hover:bg-[#fff8fb] focus-visible:outline-[#e83e78]"
           >
-            <Users size={14} className="text-[#e83e78]" aria-hidden="true" />
+            <Users size={14} className="text-[#f43f93]" aria-hidden="true" />
             <span>Invite &amp; get 10 free</span>
           </button>
           <button
