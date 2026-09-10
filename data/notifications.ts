@@ -1,5 +1,5 @@
 export type NotificationType =
-  "like" | "message" | "accepted" | "view" | "connection" | "profile_complete";
+  "like" | "message" | "accepted" | "view" | "connection" | "profile_complete" | "referral_reward";
 
 export interface NotificationItem {
   id: string;

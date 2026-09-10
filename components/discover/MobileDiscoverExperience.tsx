@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   BadgeCheck,
   Bell,
@@ -20,8 +20,13 @@ import { createClient } from "@/lib/supabase/client";
 import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import type { DiscoverProfile } from "./types";
 import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
+import { ProfileCard } from "./ProfileCard";
+import { ReferralBanner } from "@/components/referrals/ReferralBanner";
+import { referralAfterProfile } from "@/lib/referrals";
 
 type Props = {
+  onRelationshipAction: (profile: DiscoverProfile) => void;
+  onInvite: () => void;
   profiles: DiscoverProfile[];
   query: string;
   onQuery: (value: string) => void;
@@ -62,10 +67,12 @@ type RecentVisitor = {
 
 const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
-export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen, onFilters, completion, shortlisted, onShortlist }: Props) {
+export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen, onFilters, completion, shortlisted, onShortlist, onInvite, onRelationshipAction }: Props) {
   const [filterMode, setFilterMode] = useState<MobileFilterMode>("for-you");
   const [viewerCity, setViewerCity] = useState("");
   const [recentVisitors, setRecentVisitors] = useState<RecentVisitor[]>([]);
+  const [visibleCount, setVisibleCount] = useState(20);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -131,6 +138,17 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
     return byMatch(profiles);
   }, [filterMode, profiles, viewerCity]);
 
+  useEffect(() => { setVisibleCount(20); }, [filteredProfiles]);
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || visibleCount >= filteredProfiles.length) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0]?.isIntersecting) setVisibleCount((count) => Math.min(count + 20, filteredProfiles.length));
+    }, { rootMargin: "500px 0px" });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [visibleCount, filteredProfiles.length]);
+
   const latestProfiles = useMemo(() => [...profiles]
     .filter((profile) => profile.createdAt && Number.isFinite(new Date(profile.createdAt).getTime()))
     .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
@@ -144,7 +162,8 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
   const safeCompletion = Math.max(0, Math.min(100, completion));
 
   return (
-    <div className="mobile-discover-type mobile-half-type relative z-10 px-4 pb-32 pt-0 md:hidden">
+    <div className="relative z-10 px-4 pb-32 pt-0 md:hidden">
+      <div className="mobile-discover-type mobile-half-type contents">
       <header className="sticky top-0 z-[90] -mx-4 grid grid-cols-[40px_1fr_40px] items-center bg-white px-4 py-3">
         <Link href="/discover" aria-label="Bandhanaa"><Brand compact /></Link>
         <span aria-hidden="true" />
@@ -259,6 +278,18 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
           </div>
         </section>
       ) : null}
+      </div>
+      <section className="mt-6" aria-label="Discover profiles">
+        <h2 className="text-[20px] font-bold tracking-[-.02em] text-[#20242d]">Discover profiles</h2>
+        <div className="mt-3 grid grid-cols-2 gap-3">
+          {filteredProfiles.slice(0, visibleCount).map((profile, index) => <Fragment key={profile.id}>
+            <ProfileCard profile={profile} liked={shortlisted.includes(profile.id)} onLike={() => onShortlist(profile.id)} onRelationshipAction={() => onRelationshipAction(profile)} />
+            {referralAfterProfile(index + 1) ? <ReferralBanner onOpen={onInvite} /> : null}
+          </Fragment>)}
+        </div>
+        {!filteredProfiles.length ? <p className="py-8 text-center text-sm text-[#747076]">No profiles match this view.</p> : null}
+        {visibleCount < filteredProfiles.length ? <div ref={loadMoreRef} className="flex h-16 items-center justify-center text-xs text-[#747076]" aria-label="More profiles load as you scroll">Loading more profiles…</div> : null}
+      </section>
     </div>
   );
 }

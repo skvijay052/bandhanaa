@@ -19,6 +19,7 @@ const iconStyles: Record<
   view: { className: "text-[#f34ca4]", Icon: Eye },
   connection: { className: "text-[#f34ca4]", Icon: UsersRound },
   profile_complete: { className: "text-[#f34ca4]", Icon: Shield },
+  referral_reward: { className: "text-[#e83e78]", Icon: MessageCircle },
 };
 
 function TypeIcon({

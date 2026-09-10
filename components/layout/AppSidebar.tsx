@@ -19,6 +19,7 @@ import { resolveProfilePhoto } from "@/lib/profile-photo";
 import { SidebarNavItem } from "@/components/navigation/SidebarNavItem";
 import { createClient } from "@/lib/supabase/client";
 import { MobileBottomNavigation } from "@/components/layout/MobileBottomNavigation";
+import { ReferralRewardToast } from "@/components/referrals/ReferralRewardToast";
 import {
   playIncomingMessageSound,
   unlockIncomingMessageSound,
@@ -71,6 +72,7 @@ export function AppSidebar({
     subtitle: "Bandhanaa member",
   });
   const [badgeCounts, setBadgeCounts] = useState<BadgeCounts>(emptyBadgeCounts);
+  const [rewardNotice, setRewardNotice] = useState(false);
 
   useEffect(() => {
     let activeRequest = true;
@@ -85,6 +87,16 @@ export function AppSidebar({
       } = await supabase.auth.getUser();
       if (!user || !activeRequest) return;
       const userId = user.id;
+
+      function showReward(id: string | number) {
+        if (!activeRequest) return;
+        const key = `bandhanaa-reward-seen:${userId}:${id}`;
+        try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, "1"); } catch { /* Notification still works when storage is unavailable. */ }
+        setRewardNotice(true);
+      }
+      void supabase.from("notifications").select("id").eq("user_id", userId).eq("type", "referral_reward").is("read_at", null).order("created_at", { ascending: false }).limit(1).then(({ data }) => {
+        if (data?.[0]) showReward(data[0].id);
+      });
 
       const { data: privacy } = await supabase
         .from("user_privacy_settings")
@@ -194,7 +206,11 @@ export function AppSidebar({
             table: "notifications",
             filter: `user_id=eq.${userId}`,
           },
-          () => void loadCounts(),
+          (payload) => {
+            void loadCounts();
+            const row = payload.new as { id?: string | number; type?: string };
+            if (payload.eventType === "INSERT" && row.type === "referral_reward" && row.id) showReward(row.id);
+          },
         )
         .subscribe();
       if (!activeRequest) void supabase.removeChannel(channel);
@@ -218,6 +234,7 @@ export function AppSidebar({
 
   return (
     <>
+      {rewardNotice ? <ReferralRewardToast onClose={() => setRewardNotice(false)} /> : null}
       <aside className="hidden h-dvh w-[88px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--surface)] px-3 py-4 md:flex xl:w-[245px] xl:px-4">
         <Link
           href="/discover"

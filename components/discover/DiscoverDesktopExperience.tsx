@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, Eye, Heart, Star, Target } from "lucide-react";
 
 import { ProfileImage } from "@/components/ui/ProfileImage";
 import { createClient } from "@/lib/supabase/client";
 import { genderDiscoverPhoto, resolveProfilePhoto } from "@/lib/profile-photo";
 import { ProfileCard } from "./ProfileCard";
+import { ReferralBanner } from "@/components/referrals/ReferralBanner";
+import { referralAfterProfile } from "@/lib/referrals";
 import {
   RecentVisitorProfileModal,
   type RecentVisitorPopupProfile,
@@ -43,6 +45,7 @@ type InsightPerson = {
 };
 
 type Props = {
+  onInvite: () => void;
   profiles: DiscoverProfile[];
   allProfiles: DiscoverProfile[];
   shortlisted: string[];
@@ -55,6 +58,7 @@ const NEW_PROFILE_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 const PROFILE_BATCH_SIZE = 20;
 
 export function DiscoverDesktopExperience({
+  onInvite,
   profiles,
   allProfiles,
   shortlisted,
@@ -423,7 +427,7 @@ export function DiscoverDesktopExperience({
         {visibleProfiles.length ? (
           <>
             <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
-              {renderedProfiles.map((profile) => {
+              {renderedProfiles.map((profile, index) => {
                 const currentProfile = {
                   ...profile,
                   relationship:
@@ -431,13 +435,17 @@ export function DiscoverDesktopExperience({
                 };
 
                 return (
-                  <ProfileCard
-                    key={profile.id}
-                    profile={currentProfile}
-                    liked={shortlisted.includes(profile.id)}
-                    onLike={() => onShortlist(profile.id)}
-                    onRelationshipAction={() => onRelationshipAction(currentProfile)}
-                  />
+                  <Fragment key={profile.id}>
+                    <ProfileCard
+                      profile={currentProfile}
+                      liked={shortlisted.includes(profile.id)}
+                      onLike={() => onShortlist(profile.id)}
+                      onRelationshipAction={() => onRelationshipAction(currentProfile)}
+                    />
+                    {referralAfterProfile(index + 1) ? (
+                      <ReferralBanner onOpen={onInvite} />
+                    ) : null}
+                  </Fragment>
                 );
               })}
             </div>

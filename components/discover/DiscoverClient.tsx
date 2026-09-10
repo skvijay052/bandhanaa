@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { AppSidebar } from "@/components/layout/AppSidebar";
+import { ReferralShareModal } from "@/components/referrals/ReferralShareModal";
 import { createClient } from "@/lib/supabase/client";
 import { AdvancedDiscoverFilters } from "./AdvancedDiscoverFilters";
 import { DiscoverBannerSlider } from "./DiscoverBannerSlider";
@@ -28,6 +29,7 @@ export function DiscoverClient({
 }) {
   const [shortlisted, setShortlisted] = useState(initialShortlisted);
   const [notice, setNotice] = useState("");
+  const [inviteOpen, setInviteOpen] = useState(false);
   const [relationshipStates, setRelationshipStates] = useState<
     Record<string, DiscoverProfile["relationship"]>
   >(() =>
@@ -118,10 +120,13 @@ export function DiscoverClient({
     religion,
   ]);
 
-  const mobileProfiles =
-    mobileMode === "online"
+  const mobileProfiles = useMemo(() =>
+    (mobileMode === "online"
       ? filteredProfiles.filter((profile) => profile.online)
-      : filteredProfiles;
+      : filteredProfiles).map((profile) => ({
+        ...profile,
+        relationship: relationshipStates[profile.id] ?? profile.relationship,
+      })), [filteredProfiles, mobileMode, relationshipStates]);
 
   useEffect(() => {
     if (!notice) return;
@@ -229,6 +234,7 @@ export function DiscoverClient({
 
   return (
     <div className="h-dvh bg-[#fbfbfb] max-md:bg-[#f8fafc]">
+      {inviteOpen ? <ReferralShareModal onClose={() => setInviteOpen(false)} /> : null}
       {notice ? (
         <p
           role="status"
@@ -244,11 +250,8 @@ export function DiscoverClient({
         <div className="app-workspace min-w-0 flex-1 overflow-y-auto pb-20 md:pb-8">
           <main className="relative px-8 py-7 max-md:px-0 max-md:py-0">
             <MobileDiscoverExperience
-              profiles={mobileProfiles.map((profile) => ({
-                ...profile,
-                relationship:
-                  relationshipStates[profile.id] ?? profile.relationship,
-              }))}
+              profiles={mobileProfiles}
+              onRelationshipAction={(profile) => void updateRelationship(profile)}
               query={query}
               onQuery={setQuery}
               filtersOpen={showFilters}
@@ -256,6 +259,7 @@ export function DiscoverClient({
               mode={mobileMode}
               onMode={setMobileMode}
               completion={profileCompletion}
+              onInvite={() => setInviteOpen(true)}
               shortlisted={shortlisted}
               onShortlist={(id) => void toggleShortlist(id)}
             />
@@ -274,6 +278,7 @@ export function DiscoverClient({
             <DiscoverDesktopExperience
               profiles={filteredProfiles}
               allProfiles={profiles}
+              onInvite={() => setInviteOpen(true)}
               shortlisted={shortlisted}
               relationshipStates={relationshipStates}
               onShortlist={(id) => void toggleShortlist(id)}
