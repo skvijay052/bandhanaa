@@ -9,7 +9,7 @@ export function ReferralBanner({ onOpen }: { onOpen: () => void }) {
       type="button"
       onClick={onOpen}
       aria-haspopup="dialog"
-      className="group relative col-span-full flex w-full items-center gap-4 overflow-hidden rounded-[20px] border border-[#f5d5e3] bg-[#fff7fb] p-5 text-left shadow-[0_8px_24px_rgba(30,22,26,.035)] transition hover:border-[#e83e78] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e83e78] md:px-7 md:py-6"
+      className="group relative col-span-full flex w-full items-center gap-4 overflow-hidden rounded-[20px] border border-[#e6e6e6] bg-white p-5 text-left shadow-[0_8px_24px_rgba(30,22,26,.035)] transition hover:border-[#d6d6d6] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#e83e78] md:px-7 md:py-6"
     >
       <span className="min-w-0 flex-1">
         <span className="flex items-center gap-2 text-[10px] font-semibold tracking-[.17em] text-[#e83e78]">
