@@ -69,6 +69,9 @@ export function DiscoverDesktopExperience({
   const [selectedRecentIndex, setSelectedRecentIndex] = useState<number | null>(
     null,
   );
+  const [selectedPreferenceIndex, setSelectedPreferenceIndex] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -197,6 +200,37 @@ export function DiscoverDesktopExperience({
     [allProfiles],
   );
 
+  const preferencePopupProfiles = useMemo<RecentVisitorPopupProfile[]>(
+    () =>
+      preferenceMatches.map((profile) => ({
+        id: profile.id,
+        name: profile.name,
+        image: profile.image,
+        photos: [profile.image],
+        profession: profile.job,
+        location: profile.city,
+        age: profile.age || undefined,
+        height: profile.height !== "Not added" ? profile.height : undefined,
+        religion:
+          profile.religion !== "Not added" ? profile.religion : undefined,
+        motherTongue:
+          profile.motherTongue !== "Not added"
+            ? profile.motherTongue
+            : undefined,
+        education:
+          profile.education !== "Not added" ? profile.education : undefined,
+        maritalStatus:
+          profile.maritalStatus !== "Not added"
+            ? profile.maritalStatus
+            : undefined,
+        bio: profile.bio || undefined,
+        match: profile.match,
+        relationship:
+          relationshipStates[profile.id] ?? profile.relationship,
+      })),
+    [preferenceMatches, relationshipStates],
+  );
+
   const newMatches = useMemo(() => {
     const cutoff = Date.now() - NEW_PROFILE_WINDOW_MS;
     const recent = allProfiles
@@ -253,6 +287,10 @@ export function DiscoverDesktopExperience({
     if (recentVisitors.length) setSelectedRecentIndex(0);
   }
 
+  function openPreferenceMatches() {
+    if (preferencePopupProfiles.length) setSelectedPreferenceIndex(0);
+  }
+
   function handleRecentInterest(profile: RecentVisitorPopupProfile) {
     const relationship = relationshipStates[profile.id] ?? profile.relationship;
     onRelationshipAction({
@@ -305,7 +343,9 @@ export function DiscoverDesktopExperience({
           description="People aligned with your preferences."
           people={toPeople(preferenceMatches)}
           count={preferenceMatches.length}
-          onOpen={() => setFilter("all")}
+          onOpen={
+            preferencePopupProfiles.length ? openPreferenceMatches : undefined
+          }
         />
         <InsightCard
           icon={<Star size={22} />}
@@ -392,6 +432,22 @@ export function DiscoverDesktopExperience({
           index={Math.min(selectedRecentIndex, recentVisitors.length - 1)}
           onIndex={setSelectedRecentIndex}
           onClose={() => setSelectedRecentIndex(null)}
+          shortlisted={shortlisted}
+          relationshipStates={relationshipStates}
+          onShortlist={onShortlist}
+          onInterest={handleRecentInterest}
+        />
+      ) : null}
+
+      {selectedPreferenceIndex !== null && preferencePopupProfiles.length ? (
+        <RecentVisitorProfileModal
+          profiles={preferencePopupProfiles}
+          index={Math.min(
+            selectedPreferenceIndex,
+            preferencePopupProfiles.length - 1,
+          )}
+          onIndex={setSelectedPreferenceIndex}
+          onClose={() => setSelectedPreferenceIndex(null)}
           shortlisted={shortlisted}
           relationshipStates={relationshipStates}
           onShortlist={onShortlist}
