@@ -3,12 +3,7 @@
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
-  BadgeCheck,
   Bell,
-  Bookmark,
-  BriefcaseBusiness,
-  Eye,
-  GraduationCap,
   MapPin,
   Search,
   SlidersHorizontal,
@@ -231,14 +226,17 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
             </div>
             <Link href="/matches" className="shrink-0 text-[13px] font-semibold text-[#8c45ff]">View All</Link>
           </div>
-          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {newMatchProfiles.map((profile, index) => (
-              <div key={profile.id} className="w-[calc(100vw-32px)] shrink-0 snap-center">
-                <NewMatchCard
+          <div className="-mx-4 mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-4 pb-3 scroll-px-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {newMatchProfiles.map((profile) => (
+              <div
+                key={profile.id}
+                className="w-[calc((100vw-44px)/2)] min-w-[150px] max-w-[180px] shrink-0 snap-start"
+              >
+                <ProfileCard
                   profile={profile}
                   liked={shortlisted.includes(profile.id)}
-                  onShortlist={() => onShortlist(profile.id)}
-                  priority={index === 0}
+                  onLike={() => onShortlist(profile.id)}
+                  onRelationshipAction={() => onRelationshipAction(profile)}
                 />
               </div>
             ))}
@@ -296,39 +294,6 @@ export function MobileDiscoverExperience({ profiles, query, onQuery, filtersOpen
 
 function FilterPill({ icon, label, active = false, onClick }: { icon: React.ReactNode; label: string; active?: boolean; onClick?: () => void }) {
   return <button type="button" onClick={onClick} aria-pressed={active} className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full px-4 text-[14px] font-semibold shadow-[0_5px_16px_rgba(44,33,80,.07)] ${active ? "bg-gradient-to-r from-[#7c3cff] to-[#ee49b5] text-white" : "border border-[#efebf2] bg-white text-[#0f1419]"}`}>{icon}{label}</button>;
-}
-
-function NewMatchCard({ profile, liked, onShortlist, priority = false }: { profile: DiscoverProfile; liked: boolean; onShortlist: () => void; priority?: boolean }) {
-  return (
-    <article className="overflow-hidden rounded-[24px] bg-white shadow-[0_14px_38px_rgba(44,33,80,.12)]">
-      <div className="relative h-[360px] overflow-hidden bg-[#eee]">
-        <Link href={`/profile/${profile.id}`} className="absolute inset-0">
-          <ProfileImage src={profile.image} alt={profile.name} fill priority={priority} sizes="calc(100vw - 32px)" className="object-cover" />
-        </Link>
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-        <span className={`absolute left-4 top-4 rounded-full px-3 py-1.5 text-[11px] font-medium ${profile.online ? "bg-[#075d2d]/85 text-[#50ef8d]" : "bg-black/55 text-white"}`}>● {profile.online ? "Online" : "Offline"}</span>
-        <button type="button" onClick={onShortlist} aria-label={liked ? "Remove bookmark" : "Bookmark profile"} className="absolute right-4 top-4 grid size-10 place-items-center rounded-[14px] bg-white text-[#8c45ff] shadow-lg"><Bookmark size={20} fill={liked ? "currentColor" : "none"} /></button>
-        <div className="absolute inset-x-5 bottom-5 text-white">
-          <Link href={`/profile/${profile.id}`} className="inline-flex">
-            <h3 className="flex items-center gap-1.5 text-[23px] font-bold tracking-[-.03em]">{profile.name}, {profile.age || "Age hidden"}<BadgeCheck size={18} className="fill-[#ff4d9b] text-white" /></h3>
-          </Link>
-          <p className="mt-1 truncate text-[13px]">{profile.job}</p>
-          <p className="mt-1.5 flex items-center gap-1.5 truncate pr-16 text-[12px]"><MapPin size={14} fill="white" />{profile.city}</p>
-        </div>
-        <span className="absolute bottom-5 right-5 rounded-full bg-black/60 px-3 py-1 text-[11px] font-semibold text-white">{profile.match}% Match</span>
-      </div>
-      <div className="grid grid-cols-3 gap-2 px-4 py-3">
-        <Detail icon={<GraduationCap size={17} />} label="Education" value={profile.education} />
-        <Detail icon={<BriefcaseBusiness size={16} />} label="Profession" value={profile.job} />
-        <Detail icon={<Eye size={16} />} label="Profile" value={`${profile.photoCount || 1} photo${profile.photoCount === 1 ? "" : "s"}`} />
-      </div>
-      <p className="line-clamp-2 border-t border-[#f0edf3] px-4 py-3 text-[12px] leading-5 text-[#687184]">{profile.bio}</p>
-    </article>
-  );
-}
-
-function Detail({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return <div className="flex min-w-0 gap-2"><span className="mobile-profile-detail-icon grid size-8 shrink-0 place-items-center rounded-xl bg-[#f7f3ff] text-[#6d6890]">{icon}</span><span className="min-w-0"><span className="mobile-profile-detail-text block text-[10px] text-[#8b93a1]">{label}</span><strong className="mobile-profile-detail-text mt-1 block truncate text-[10px] font-medium text-[var(--text-primary)]">{value}</strong></span></div>;
 }
 
 function normalizeCity(value: string) { return value.split(",")[0]?.trim().toLowerCase() ?? ""; }
