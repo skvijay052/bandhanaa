@@ -127,7 +127,7 @@ export function ReferralShareModal({ onClose }: { onClose: () => void }) {
   }
 
   const actionClass =
-    "flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#f1dce5] bg-white px-3 text-[13px] font-medium text-[#171717] transition hover:bg-[#fff3f9] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e83e78]";
+    "flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#e6e6e6] bg-white px-3 text-[13px] font-medium text-[#171717] transition hover:bg-[#fafafa] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#e83e78]";
 
   return createPortal(
     <dialog
@@ -142,15 +142,15 @@ export function ReferralShareModal({ onClose }: { onClose: () => void }) {
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
-      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none overflow-y-auto bg-transparent p-0 text-[#171717] backdrop:bg-black/40"
+      className="fixed inset-0 m-0 h-dvh max-h-none w-screen max-w-none overflow-y-auto bg-transparent p-0 text-[#171717] outline-none ring-0 backdrop:bg-black/40"
     >
       <div className="pointer-events-none flex min-h-full items-end justify-center sm:items-center sm:p-6">
-        <section className="pointer-events-auto relative w-full max-w-lg rounded-t-[24px] border border-[#f3dce6] bg-[#fffafb] p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-xl sm:rounded-[24px] sm:p-8">
+        <section className="pointer-events-auto relative w-full max-w-lg rounded-t-[24px] border border-[#e6e6e6] bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] outline-none ring-0 shadow-xl sm:rounded-[24px] sm:p-8">
           <button
             type="button"
             onClick={onClose}
             aria-label="Close invitation"
-            className="absolute right-4 top-4 grid size-10 place-items-center rounded-full text-[#747076] hover:bg-[#fff0f7] focus-visible:outline-[#e83e78]"
+            className="absolute right-4 top-4 grid size-10 place-items-center rounded-full text-[#747076] hover:bg-[#f7f7f7] focus-visible:outline-[#e83e78]"
           >
             <X size={21} />
           </button>
@@ -193,14 +193,14 @@ export function ReferralShareModal({ onClose }: { onClose: () => void }) {
               >
                 Your invitation link
               </label>
-              <div className="mt-2 flex items-center gap-2 rounded-xl border border-[#efd8e2] bg-white p-2">
+              <div className="mt-2 flex items-center gap-2 rounded-xl border border-[#e6e6e6] bg-white p-2 focus-within:border-[#d6d6d6] focus-within:ring-0">
                 <input
                   ref={linkRef}
                   id={`${titleId}-link`}
                   value={referralUrl}
                   readOnly
                   onFocus={(event) => event.currentTarget.select()}
-                  className="min-w-0 flex-1 bg-transparent px-1 text-[12px] outline-[#e83e78]"
+                  className="min-w-0 flex-1 bg-transparent px-1 text-[12px] outline-none ring-0 focus:outline-none focus:ring-0"
                 />
                 <button
                   type="button"
