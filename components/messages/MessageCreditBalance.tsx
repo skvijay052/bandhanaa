@@ -65,31 +65,41 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
   const description = !summary
     ? "Checking your message credits…"
     : empty
-      ? "You’ve used all your message credits. Keep the conversation going!"
+      ? "No credits left. Choose an option below to keep chatting."
       : summary.requires_credit
-        ? "1 credit is used for each outgoing message. Incoming messages are free."
-        : "Your current free messaging access continues. Credits are saved for messages that require them.";
+        ? "1 credit is used for each outgoing message."
+        : "Your current free messaging access continues.";
 
   return (
     <>
-      <div className="message-credit-balance flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-[#f3dce6] bg-[#fff7fb] px-4 py-2 text-[11px] text-[#171717]">
-        <span className="message-credit-heading inline-flex items-center gap-1.5">
-          <span className="message-credit-icon grid size-7 shrink-0 place-items-center rounded-full bg-[#fff0f7] text-[#e83e78]">
-            <MessageCircle size={14} aria-hidden="true" />
+      <div className="message-credit-balance border-b border-[#f3dce6] bg-[#fff7fb] px-4 py-2.5 text-[#171717]">
+        <div className="flex items-center gap-2.5">
+          <span className="message-credit-icon grid size-8 shrink-0 place-items-center rounded-full bg-[#fff0f7] text-[#e83e78]">
+            <MessageCircle size={15} aria-hidden="true" />
           </span>
-          <span aria-live="polite" className="message-credit-title">
-            <strong>{credits}</strong> message credits
-          </span>
-        </span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <span aria-live="polite" className="message-credit-title text-[13px] font-semibold">
+                <strong className="text-[#e83e78]">{credits}</strong> message credits
+              </span>
+              <span className="shrink-0 text-[10px] font-semibold text-[#b82e63]">
+                Get 10 more messages
+              </span>
+            </div>
+            <p className="message-credit-description mt-0.5 truncate text-[10px] text-[#747076]">
+              {description}
+            </p>
+          </div>
+        </div>
 
-        <div className="message-credit-actions flex items-center gap-2">
+        <div className="message-credit-actions mt-2 grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={() => setInviteOpen(true)}
             aria-haspopup="dialog"
-            className="message-credit-invite inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#eadfe4] bg-white px-3 py-2 font-semibold text-[#171717] focus-visible:outline-[#e83e78]"
+            className="message-credit-invite inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl border border-[#eadfe4] bg-white px-2.5 text-[11px] font-semibold text-[#171717] transition hover:bg-[#fff8fb] focus-visible:outline-[#e83e78]"
           >
-            <Users size={15} aria-hidden="true" />
+            <Users size={14} className="text-[#e83e78]" aria-hidden="true" />
             <span>Invite &amp; get 10 free</span>
           </button>
           <button
@@ -99,26 +109,23 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
                 "Online message-credit purchase is not enabled yet.",
               )
             }
-            className="message-credit-pay inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#121820] px-3 py-2 font-semibold text-white"
+            className="message-credit-pay inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl bg-[#121820] px-2.5 text-[11px] font-semibold text-white transition hover:bg-black"
             aria-describedby="message-credit-payment-notice"
           >
-            <CreditCard size={15} aria-hidden="true" />
-            <span>Pay ₹10 for 10</span>
+            <CreditCard size={14} aria-hidden="true" />
+            <span>₹10 for 10 messages</span>
           </button>
         </div>
 
-        <span className="message-credit-description basis-full text-[10px] text-[#747076]">
-          {description}
-        </span>
         {paymentNotice ? (
-          <span
+          <p
             id="message-credit-payment-notice"
             role="status"
             aria-live="polite"
-            className="message-credit-payment-notice basis-full text-[10px] text-[#9a526f]"
+            className="message-credit-payment-notice mt-1.5 text-center text-[9px] text-[#9a526f]"
           >
             {paymentNotice}
-          </span>
+          </p>
         ) : null}
       </div>
       {inviteOpen ? (
