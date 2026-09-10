@@ -14,7 +14,7 @@ type Props = {
 
 function decodeSource(value: string) {
   let decoded = value;
-  for (let index = 0; index < 2; index += 1) {
+  for (let index = 0; index < 3; index += 1) {
     try {
       const next = decodeURIComponent(decoded);
       if (next === decoded) break;
@@ -24,6 +24,12 @@ function decodeSource(value: string) {
     }
   }
   return decoded;
+}
+
+function isPhotosSection(section: HTMLElement | null) {
+  if (!section) return false;
+  const heading = section.querySelector("h2");
+  return heading?.textContent?.trim().startsWith("Photos") ?? false;
 }
 
 export function ProfilePhotoLightbox({ profileName, profileImage, photos }: Props) {
@@ -39,22 +45,60 @@ export function ProfilePhotoLightbox({ profileName, profileImage, photos }: Prop
       if (!(target instanceof HTMLImageElement)) return;
       if (!target.closest("main")) return;
 
-      // The mobile hero already has its own full-screen viewer.
+      // The mobile hero image already owns its own full-screen viewer.
       if (target.closest("button")) return;
 
+      // Desktop profile photo.
       if (target.alt === profileName) {
         setActiveIndex(0);
         return;
       }
 
+      // Photo-section thumbnails. Resolve by their visual position first so
+      // Next/Image URL rewriting cannot prevent the lightbox from opening.
+      const section = target.closest("section");
+      if (isPhotosSection(section)) {
+        const sectionImages = Array.from(section!.querySelectorAll("img"));
+        const sectionIndex = sectionImages.indexOf(target);
+        const selectedPhoto = photos[sectionIndex];
+        if (selectedPhoto) {
+          const galleryIndex = gallery.indexOf(selectedPhoto);
+          setActiveIndex(galleryIndex >= 0 ? galleryIndex : 0);
+          return;
+        }
+      }
+
+      // Fallback for any profile gallery image rendered through a rewritten
+      // Next/Image URL.
       const source = decodeSource(`${target.currentSrc} ${target.src}`);
-      const index = gallery.findIndex((photo) => source.includes(photo));
+      const index = gallery.findIndex((photo) =>
+        source.includes(decodeSource(photo)),
+      );
       if (index >= 0) setActiveIndex(index);
     }
 
     document.addEventListener("click", handleImageClick);
     return () => document.removeEventListener("click", handleImageClick);
-  }, [gallery, profileName]);
+  }, [gallery, photos, profileName]);
+
+  useEffect(() => {
+    const images = Array.from(document.querySelectorAll("main img"));
+    const previous = new Map<HTMLImageElement, string>();
+
+    for (const image of images) {
+      const section = image.closest("section");
+      if (image.alt === profileName || isPhotosSection(section)) {
+        previous.set(image, image.style.cursor);
+        image.style.cursor = "zoom-in";
+      }
+    }
+
+    return () => {
+      previous.forEach((cursor, image) => {
+        image.style.cursor = cursor;
+      });
+    };
+  }, [profileName]);
 
   useEffect(() => {
     if (activeIndex === null) return;
