@@ -26,7 +26,7 @@ function decodeSource(value: string) {
   return decoded;
 }
 
-function isPhotosSection(section: HTMLElement | null) {
+function isPhotosSection(section: Element | null) {
   if (!section) return false;
   const heading = section.querySelector("h2");
   return heading?.textContent?.trim().startsWith("Photos") ?? false;
@@ -58,7 +58,9 @@ export function ProfilePhotoLightbox({ profileName, profileImage, photos }: Prop
       // Next/Image URL rewriting cannot prevent the lightbox from opening.
       const section = target.closest("section");
       if (isPhotosSection(section)) {
-        const sectionImages = Array.from(section!.querySelectorAll("img"));
+        const sectionImages = Array.from(
+          section!.querySelectorAll<HTMLImageElement>("img"),
+        );
         const sectionIndex = sectionImages.indexOf(target);
         const selectedPhoto = photos[sectionIndex];
         if (selectedPhoto) {
@@ -82,7 +84,9 @@ export function ProfilePhotoLightbox({ profileName, profileImage, photos }: Prop
   }, [gallery, photos, profileName]);
 
   useEffect(() => {
-    const images = Array.from(document.querySelectorAll("main img"));
+    const images = Array.from(
+      document.querySelectorAll<HTMLImageElement>("main img"),
+    );
     const previous = new Map<HTMLImageElement, string>();
 
     for (const image of images) {
