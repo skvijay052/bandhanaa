@@ -1,32 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import { MessageCircle } from "lucide-react";
+import { useEffect } from "react";
 
 import { createClient } from "@/lib/supabase/client";
 
-type CreditTargets = {
-  mobileMessagesHeader: Element | null;
-  desktopMessagesTitle: Element | null;
-  chatHeaderActions: Element | null;
-};
+const pillBaseClass =
+  "message-credit-pill inline-flex shrink-0 items-center justify-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm";
 
-const emptyTargets: CreditTargets = {
-  mobileMessagesHeader: null,
-  desktopMessagesTitle: null,
-  chatHeaderActions: null,
-};
-
-function sameTargets(a: CreditTargets, b: CreditTargets) {
-  return (
-    a.mobileMessagesHeader === b.mobileMessagesHeader &&
-    a.desktopMessagesTitle === b.desktopMessagesTitle &&
-    a.chatHeaderActions === b.chatHeaderActions
-  );
-}
-
-function findTargets(root: HTMLElement): CreditTargets {
+function findTargets(root: HTMLElement) {
   const sections = Array.from(root.querySelectorAll("section"));
   const conversationSection = sections.find((section) =>
     section.querySelector('input[placeholder="Search messages"]'),
@@ -46,7 +27,7 @@ function findTargets(root: HTMLElement): CreditTargets {
 
   const desktopMessagesTitle = conversationSection
     ? Array.from(conversationSection.querySelectorAll("h2")).find(
-        (element) => element.textContent?.trim() === "Messages",
+        (element) => element.textContent?.trim().startsWith("Messages"),
       ) ?? null
     : null;
 
@@ -60,84 +41,85 @@ function findTargets(root: HTMLElement): CreditTargets {
   };
 }
 
-function CreditPill({
-  credits,
-  className = "",
-  compact = false,
-}: {
-  credits: number;
-  className?: string;
-  compact?: boolean;
-}) {
-  const low = credits < 5;
+function ensurePill(
+  id: string,
+  target: Element | null,
+  credits: number,
+  compact: boolean,
+) {
+  if (!target) return;
 
-  return (
-    <span
-      className={`message-credit-pill inline-flex shrink-0 items-center justify-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-semibold leading-none shadow-sm ${
-        low
-          ? "border-[#f5cada] bg-[#fff0f6] text-[#c72d68]"
-          : "border-[#eadfe4] bg-white text-[#4a4650]"
-      } ${className}`}
-      title={`${credits} message credits`}
-      aria-label={`${credits} message credits`}
-    >
-      <MessageCircle
-        size={compact ? 13 : 14}
-        className={low ? "text-[#f43f93]" : "text-[#8a7d84]"}
-        aria-hidden="true"
-      />
-      <strong className="font-bold tabular-nums">{credits}</strong>
-      {!compact ? <span className="font-medium">credits</span> : null}
-    </span>
-  );
+  let pill = document.getElementById(id) as HTMLSpanElement | null;
+  if (!pill) {
+    pill = document.createElement("span");
+    pill.id = id;
+  }
+
+  const low = credits < 5;
+  pill.className = `${pillBaseClass} ${
+    low
+      ? "border-[#f5cada] bg-[#fff0f6] text-[#c72d68]"
+      : "border-[#eadfe4] bg-white text-[#4a4650]"
+  }`;
+  pill.textContent = compact ? `💬 ${credits}` : `💬 ${credits} credits`;
+  pill.title = `${credits} message credits`;
+  pill.setAttribute("aria-label", `${credits} message credits`);
+  pill.dataset.lowCredits = String(low);
+
+  if (pill.parentElement !== target) target.appendChild(pill);
 }
 
 export function MessageCreditPillEnhancer() {
-  const [credits, setCredits] = useState<number | null>(null);
-  const [targets, setTargets] = useState<CreditTargets>(emptyTargets);
-
-  const refreshCredits = useCallback(async () => {
-    const { data, error } = await createClient().rpc(
-      "get_message_credit_summary",
-    );
-    if (!error && data?.[0]) {
-      setCredits(Number(data[0].available_credits ?? 0));
-    }
-  }, []);
-
   useEffect(() => {
     const root = document.querySelector<HTMLElement>(".messages-mobile-route");
     if (!root) return;
 
-    const refreshTargets = () => {
-      const next = findTargets(root);
-      setTargets((current) => (sameTargets(current, next) ? current : next));
-    };
-
-    const observer = new MutationObserver(refreshTargets);
-    observer.observe(root, { childList: true, subtree: true });
-    refreshTargets();
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    let active = true;
     const supabase = createClient();
-    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let active = true;
+    let credits: number | null = null;
+    let removeRealtime: (() => void) | undefined;
 
-    const refreshActive = () => {
-      if (active) void refreshCredits();
+    const render = () => {
+      if (!active || credits === null) return;
+      const targets = findTargets(root);
+      ensurePill(
+        "message-credit-pill-mobile",
+        targets.mobileMessagesHeader,
+        credits,
+        false,
+      );
+      ensurePill(
+        "message-credit-pill-desktop",
+        targets.desktopMessagesTitle,
+        credits,
+        false,
+      );
+      ensurePill(
+        "message-credit-pill-chat",
+        targets.chatHeaderActions,
+        credits,
+        true,
+      );
     };
+
+    const refreshCredits = async () => {
+      const { data, error } = await supabase.rpc("get_message_credit_summary");
+      if (!active || error || !data?.[0]) return;
+      credits = Number(data[0].available_credits ?? 0);
+      render();
+    };
+
+    const observer = new MutationObserver(render);
+    observer.observe(root, { childList: true, subtree: true });
 
     const subscribe = async () => {
-      refreshActive();
+      await refreshCredits();
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!active || !user) return;
 
-      channel = supabase
+      const channel = supabase
         .channel(`message-credit-pill:${user.id}`)
         .on(
           "postgres_changes",
@@ -147,52 +129,36 @@ export function MessageCreditPillEnhancer() {
             table: "message_credit_wallets",
             filter: `user_id=eq.${user.id}`,
           },
-          refreshActive,
+          () => {
+            void refreshCredits();
+          },
         )
         .subscribe();
+
+      removeRealtime = () => {
+        void supabase.removeChannel(channel);
+      };
+    };
+
+    const refreshFromEvent = () => {
+      void refreshCredits();
     };
 
     void subscribe();
-    window.addEventListener("bandhanaa-message-sent", refreshActive);
-    window.addEventListener("focus", refreshActive);
+    window.addEventListener("bandhanaa-message-sent", refreshFromEvent);
+    window.addEventListener("focus", refreshFromEvent);
 
     return () => {
       active = false;
-      window.removeEventListener("bandhanaa-message-sent", refreshActive);
-      window.removeEventListener("focus", refreshActive);
-      if (channel) void supabase.removeChannel(channel);
+      observer.disconnect();
+      window.removeEventListener("bandhanaa-message-sent", refreshFromEvent);
+      window.removeEventListener("focus", refreshFromEvent);
+      removeRealtime?.();
+      document.getElementById("message-credit-pill-mobile")?.remove();
+      document.getElementById("message-credit-pill-desktop")?.remove();
+      document.getElementById("message-credit-pill-chat")?.remove();
     };
-  }, [refreshCredits]);
+  }, []);
 
-  if (credits === null) return null;
-
-  return (
-    <>
-      {targets.mobileMessagesHeader
-        ? createPortal(
-            <CreditPill credits={credits} className="ml-auto md:hidden" />,
-            targets.mobileMessagesHeader,
-          )
-        : null}
-      {targets.desktopMessagesTitle
-        ? createPortal(
-            <CreditPill
-              credits={credits}
-              className="ml-2 hidden align-middle md:inline-flex"
-            />,
-            targets.desktopMessagesTitle,
-          )
-        : null}
-      {targets.chatHeaderActions
-        ? createPortal(
-            <CreditPill
-              credits={credits}
-              compact
-              className="order-first mr-1"
-            />,
-            targets.chatHeaderActions,
-          )
-        : null}
-    </>
-  );
+  return null;
 }
