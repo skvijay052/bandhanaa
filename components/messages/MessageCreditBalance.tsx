@@ -1,11 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CreditCard, MessageCircle, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { ReferralShareModal } from "@/components/referrals/ReferralShareModal";
 
+const blockedPlaceholder = "Get message credits to continue";
+
 export function MessageCreditBalance({ userId }: { userId: string }) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const [summary, setSummary] = useState<{
     available_credits: number;
     requires_credit: boolean;
@@ -49,9 +52,11 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
         refreshActive,
       )
       .subscribe(refreshActive);
+
     refreshActive();
     window.addEventListener("bandhanaa-message-sent", refreshActive);
     window.addEventListener("focus", refreshActive);
+
     return () => {
       active = false;
       window.removeEventListener("bandhanaa-message-sent", refreshActive);
@@ -67,15 +72,112 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
   const shouldShowCreditCard = Boolean(
     summary?.requires_credit && credits < 5,
   );
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const section = container?.closest("section");
+    if (!container || !section) return;
+
+    const input = section.querySelector<HTMLInputElement>(
+      'input[placeholder="Type a message..."], input[placeholder="Type your reply..."], input[data-credit-guarded="true"]',
+    );
+    const sendButton = section.querySelector<HTMLButtonElement>(
+      'button[aria-label="Send message"]',
+    );
+    if (!input || !sendButton) return;
+
+    if (
+      input.placeholder !== blockedPlaceholder &&
+      !input.dataset.creditOriginalPlaceholder
+    ) {
+      input.dataset.creditOriginalPlaceholder = input.placeholder;
+    }
+
+    input.dataset.creditGuarded = "true";
+    input.readOnly = creditBlocked;
+    input.setAttribute("aria-disabled", creditBlocked ? "true" : "false");
+    input.classList.toggle("message-credit-input-blocked", creditBlocked);
+
+    if (creditBlocked) {
+      input.placeholder = blockedPlaceholder;
+      sendButton.dataset.creditBlocked = "true";
+      sendButton.disabled = true;
+      sendButton.setAttribute("aria-disabled", "true");
+    } else {
+      if (input.placeholder === blockedPlaceholder) {
+        input.placeholder =
+          input.dataset.creditOriginalPlaceholder || "Type a message...";
+      }
+      if (sendButton.dataset.creditBlocked === "true") {
+        delete sendButton.dataset.creditBlocked;
+        sendButton.disabled = !input.value.trim();
+        sendButton.removeAttribute("aria-disabled");
+      }
+    }
+
+    let attentionTimer: number | undefined;
+    const blinkCard = () => {
+      if (!creditBlocked) return;
+      container.classList.remove("message-credit-attention");
+      void container.offsetWidth;
+      container.classList.add("message-credit-attention");
+      if (attentionTimer) window.clearTimeout(attentionTimer);
+      attentionTimer = window.setTimeout(() => {
+        container.classList.remove("message-credit-attention");
+      }, 900);
+    };
+
+    const handleBlockedTap = (event: Event) => {
+      if (!creditBlocked) return;
+      event.preventDefault();
+      blinkCard();
+    };
+
+    input.addEventListener("pointerdown", handleBlockedTap);
+    input.addEventListener("focus", blinkCard);
+
+    return () => {
+      input.removeEventListener("pointerdown", handleBlockedTap);
+      input.removeEventListener("focus", blinkCard);
+      if (attentionTimer) window.clearTimeout(attentionTimer);
+    };
+  }, [creditBlocked, summary]);
+
+  if (!summary) {
+    return (
+      <div
+        ref={containerRef}
+        className="message-credit-compact inline-flex min-h-8 items-center gap-1.5 rounded-full border border-[#eadfe4] bg-white px-3 text-[11px] font-semibold text-[#6f6670] shadow-sm"
+      >
+        <MessageCircle size={13} aria-hidden="true" />
+        <span>Checking credits…</span>
+      </div>
+    );
+  }
+
+  if (!shouldShowCreditCard) {
+    return (
+      <div
+        ref={containerRef}
+        className="message-credit-compact inline-flex min-h-8 items-center gap-1.5 rounded-full border border-[#eadfe4] bg-white px-3 text-[11px] font-semibold text-[#4a4650] shadow-sm"
+        aria-label={`${credits} message credits`}
+        title={`${credits} message credits`}
+      >
+        <MessageCircle size={13} className="text-[#8a7d84]" aria-hidden="true" />
+        <strong className="font-bold tabular-nums">{credits}</strong>
+        <span>credits</span>
+      </div>
+    );
+  }
+
   const description = creditBlocked
     ? "No credits left. Choose an option below to keep chatting."
     : "Low credits — 1 credit is used for each outgoing message.";
 
-  if (!shouldShowCreditCard) return null;
-
   return (
     <>
       <div
+        ref={containerRef}
         className="message-credit-balance w-full overflow-hidden rounded-[16px] border border-[#f4dbe6] bg-[#fff7fa] px-3 py-2.5 text-[#171717] shadow-none"
         data-credit-blocked={String(creditBlocked)}
         data-message-credits={credits}
@@ -86,7 +188,10 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
           </span>
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
-              <span aria-live="polite" className="message-credit-title text-[13px] font-semibold">
+              <span
+                aria-live="polite"
+                className="message-credit-title text-[13px] font-semibold"
+              >
                 <strong className="text-[#f43f93]">{credits}</strong> message credits
               </span>
               <span className="shrink-0 text-[10px] font-semibold text-[#b82e63]">
