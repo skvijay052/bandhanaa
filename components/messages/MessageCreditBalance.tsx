@@ -220,10 +220,7 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
             <Users size={14} className="text-[#f43f93]" aria-hidden="true" />
             <span>Invite &amp; get 10 free</span>
           </button>
-          <PaytmCreditPurchaseButton
-            onSuccess={refresh}
-            onStatus={setPaymentNotice}
-          />
+          <PaytmCreditPurchaseButton onStatus={setPaymentNotice} />
         </div>
 
         {paymentNotice ? (
