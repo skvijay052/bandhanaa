@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ChatProfilePictureEnhancer } from "@/components/messages/ChatProfilePictureEnhancer";
 import { MessagesFavouritesEnhancer } from "@/components/messages/MessagesFavouritesEnhancer";
+import { PaytmPaymentResultNotice } from "@/components/messages/PaytmPaymentResultNotice";
 import "./messages-pink-theme.css";
 
 export default function MessagesLayout({ children }: { children: ReactNode }) {
@@ -70,6 +71,7 @@ export default function MessagesLayout({ children }: { children: ReactNode }) {
           }
         }
       `}</style>
+      <PaytmPaymentResultNotice />
       <ChatProfilePictureEnhancer />
       <MessagesFavouritesEnhancer />
       {children}
