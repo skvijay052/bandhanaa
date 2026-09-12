@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { ChatCreditGuard } from "@/components/messages/ChatCreditGuard";
 import { ChatProfilePictureEnhancer } from "@/components/messages/ChatProfilePictureEnhancer";
+import { MessageCreditPillEnhancer } from "@/components/messages/MessageCreditPillEnhancer";
 import { MessagesFavouritesEnhancer } from "@/components/messages/MessagesFavouritesEnhancer";
 import "./messages-pink-theme.css";
 
@@ -73,6 +74,7 @@ export default function MessagesLayout({ children }: { children: ReactNode }) {
       `}</style>
       <ChatCreditGuard />
       <ChatProfilePictureEnhancer />
+      <MessageCreditPillEnhancer />
       <MessagesFavouritesEnhancer />
       {children}
     </div>
