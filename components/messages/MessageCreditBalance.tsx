@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CreditCard, MessageCircle, Users } from "lucide-react";
+import { MessageCircle, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { PaytmCreditPurchaseButton } from "@/components/messages/PaytmCreditPurchaseButton";
 import { ReferralShareModal } from "@/components/referrals/ReferralShareModal";
 
 const blockedPlaceholder = "Get message credits to continue";
@@ -55,11 +56,16 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
 
     refreshActive();
     window.addEventListener("bandhanaa-message-sent", refreshActive);
+    window.addEventListener("bandhanaa-message-credits-changed", refreshActive);
     window.addEventListener("focus", refreshActive);
 
     return () => {
       active = false;
       window.removeEventListener("bandhanaa-message-sent", refreshActive);
+      window.removeEventListener(
+        "bandhanaa-message-credits-changed",
+        refreshActive,
+      );
       window.removeEventListener("focus", refreshActive);
       void supabase.removeChannel(channel);
     };
@@ -214,19 +220,10 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
             <Users size={14} className="text-[#f43f93]" aria-hidden="true" />
             <span>Invite &amp; get 10 free</span>
           </button>
-          <button
-            type="button"
-            onClick={() =>
-              setPaymentNotice(
-                "Online message-credit purchase is not enabled yet.",
-              )
-            }
-            className="message-credit-pay inline-flex min-h-9 items-center justify-center gap-1.5 rounded-xl bg-[#121820] px-2.5 text-[11px] font-semibold text-white transition hover:bg-black"
-            aria-describedby="message-credit-payment-notice"
-          >
-            <CreditCard size={14} aria-hidden="true" />
-            <span>₹10 for 10 messages</span>
-          </button>
+          <PaytmCreditPurchaseButton
+            onSuccess={refresh}
+            onStatus={setPaymentNotice}
+          />
         </div>
 
         {paymentNotice ? (
