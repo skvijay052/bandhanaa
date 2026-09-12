@@ -107,6 +107,7 @@ export async function POST() {
       txnToken,
       amount: MESSAGE_CREDIT_PACK.amount,
       credits: MESSAGE_CREDIT_PACK.credits,
+      callbackUrl: config.callbackUrl,
       checkoutScriptUrl: checkoutScriptUrl(config.host, config.mid),
       environment: config.environment,
     });
