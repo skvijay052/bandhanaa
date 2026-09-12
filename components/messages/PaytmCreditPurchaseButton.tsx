@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { CreditCard, LoaderCircle } from "lucide-react";
 
 type CheckoutConfig = {
@@ -15,19 +15,20 @@ type CheckoutConfig = {
   merchant: {
     mid: string;
     name: string;
-    redirect: false;
+    redirect: true;
+    callbackUrl: string;
   };
   payMode: {
     order: string[];
   };
   handler: {
-    transactionStatus: (data: unknown) => void;
     notifyMerchant: (eventName: string, data: unknown) => void;
   };
 };
 
 type PaytmCheckout = {
-  init: (config: CheckoutConfig) => Promise<void>;
+  onLoad: (callback: () => void) => void;
+  init: (config: CheckoutConfig) => Promise<unknown>;
   invoke: () => void;
 };
 
@@ -47,58 +48,39 @@ type CreateOrderResponse = {
   txnToken?: string;
   amount?: string;
   credits?: number;
+  callbackUrl?: string;
   checkoutScriptUrl?: string;
 };
 
-type VerifyResponse = {
-  ok?: boolean;
-  message?: string;
-  status?: "success" | "pending" | "failed";
-  availableCredits?: number;
-  creditsAdded?: number;
-};
-
 async function loadPaytmCheckout(scriptUrl: string) {
-  if (window.Paytm?.CheckoutJS) return window.Paytm.CheckoutJS;
+  if (!window.Paytm?.CheckoutJS) {
+    document
+      .querySelector<HTMLScriptElement>(
+        'script[data-bandhanaa-paytm-checkout="true"]',
+      )
+      ?.remove();
 
-  const existing = document.querySelector<HTMLScriptElement>(
-    'script[data-bandhanaa-paytm-checkout="true"]',
-  );
-
-  await new Promise<void>((resolve, reject) => {
-    const script = existing ?? document.createElement("script");
-
-    const loaded = () => {
-      cleanup();
-      resolve();
-    };
-    const failed = () => {
-      cleanup();
-      reject(new Error("Paytm checkout could not be loaded."));
-    };
-    const cleanup = () => {
-      script.removeEventListener("load", loaded);
-      script.removeEventListener("error", failed);
-    };
-
-    script.addEventListener("load", loaded, { once: true });
-    script.addEventListener("error", failed, { once: true });
-
-    if (!existing) {
+    await new Promise<void>((resolve, reject) => {
+      const script = document.createElement("script");
       script.src = scriptUrl;
       script.async = true;
+      script.crossOrigin = "anonymous";
       script.dataset.bandhanaaPaytmCheckout = "true";
+      script.addEventListener("load", () => resolve(), { once: true });
+      script.addEventListener(
+        "error",
+        () => reject(new Error("Paytm checkout could not be loaded.")),
+        { once: true },
+      );
       document.head.appendChild(script);
-    } else if (window.Paytm?.CheckoutJS) {
-      loaded();
-    }
-  });
-
-  if (!window.Paytm?.CheckoutJS) {
-    throw new Error("Paytm checkout is unavailable.");
+    });
   }
 
-  return window.Paytm.CheckoutJS;
+  const checkout = window.Paytm?.CheckoutJS;
+  if (!checkout) throw new Error("Paytm checkout is unavailable.");
+
+  await new Promise<void>((resolve) => checkout.onLoad(resolve));
+  return checkout;
 }
 
 async function readJson<T>(response: Response) {
@@ -110,56 +92,11 @@ async function readJson<T>(response: Response) {
 }
 
 export function PaytmCreditPurchaseButton({
-  onSuccess,
   onStatus,
 }: {
-  onSuccess: () => void | Promise<void>;
   onStatus: (message: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
-  const verifyingRef = useRef(false);
-
-  const verifyPayment = async (orderId: string) => {
-    if (verifyingRef.current) return;
-    verifyingRef.current = true;
-    onStatus("Verifying your Paytm payment…");
-
-    try {
-      const response = await fetch("/api/paytm/verify", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ orderId }),
-      });
-      const result = await readJson<VerifyResponse>(response);
-
-      if (!response.ok || !result.ok) {
-        throw new Error(
-          result.message ?? "We couldn't verify the payment yet.",
-        );
-      }
-
-      if (result.status === "success") {
-        onStatus(
-          `Payment successful. ${result.creditsAdded ?? 10} message credits added.`,
-        );
-        window.dispatchEvent(new Event("bandhanaa-message-credits-changed"));
-        await onSuccess();
-      } else if (result.status === "pending") {
-        onStatus("Payment is still pending. Your credits will be added after Paytm confirms it.");
-      } else {
-        onStatus(result.message ?? "Payment was not successful. No credits were added.");
-      }
-    } catch (error) {
-      onStatus(
-        error instanceof Error
-          ? error.message
-          : "We couldn't verify the payment yet.",
-      );
-    } finally {
-      verifyingRef.current = false;
-      setBusy(false);
-    }
-  };
 
   const startPayment = async () => {
     if (busy) return;
@@ -169,7 +106,6 @@ export function PaytmCreditPurchaseButton({
     try {
       const response = await fetch("/api/paytm/create-order", {
         method: "POST",
-        headers: { "content-type": "application/json" },
       });
       const order = await readJson<CreateOrderResponse>(response);
 
@@ -180,6 +116,7 @@ export function PaytmCreditPurchaseButton({
         !order.orderId ||
         !order.txnToken ||
         !order.amount ||
+        !order.callbackUrl ||
         !order.checkoutScriptUrl
       ) {
         throw new Error(order.message ?? "We couldn't start the payment.");
@@ -198,19 +135,19 @@ export function PaytmCreditPurchaseButton({
         merchant: {
           mid: order.mid,
           name: "Bandhanaa",
-          redirect: false,
+          redirect: true,
+          callbackUrl: order.callbackUrl,
         },
-        // UPI is deliberately first for the INR 10 mobile credit pack.
+        // Keep UPI first for Bandhanaa's INR 10 mobile credit pack.
         payMode: {
           order: ["UPI", "CARD", "NB"],
         },
         handler: {
-          transactionStatus: () => {
-            void verifyPayment(order.orderId!);
-          },
           notifyMerchant: (eventName) => {
             if (eventName === "APP_CLOSED") {
-              onStatus("Payment window closed. No credits are added until Paytm confirms payment.");
+              onStatus(
+                "Payment window closed. No credits are added until Paytm confirms payment.",
+              );
               setBusy(false);
             }
           },
