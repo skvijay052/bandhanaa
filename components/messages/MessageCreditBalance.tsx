@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { MessageCircle, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { PaytmCreditPurchaseButton } from "@/components/messages/PaytmCreditPurchaseButton";
+import { RazorpayCreditPurchaseButton } from "@/components/messages/RazorpayCreditPurchaseButton";
 import { ReferralShareModal } from "@/components/referrals/ReferralShareModal";
 
 const blockedPlaceholder = "Get message credits to continue";
@@ -220,7 +220,10 @@ export function MessageCreditBalance({ userId }: { userId: string }) {
             <Users size={14} className="text-[#f43f93]" aria-hidden="true" />
             <span>Invite &amp; get 10 free</span>
           </button>
-          <PaytmCreditPurchaseButton onStatus={setPaymentNotice} />
+          <RazorpayCreditPurchaseButton
+            onSuccess={refresh}
+            onStatus={setPaymentNotice}
+          />
         </div>
 
         {paymentNotice ? (
