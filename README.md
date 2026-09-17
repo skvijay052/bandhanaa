@@ -52,3 +52,7 @@ Keep future model/provider clients under `lib/ai`, server-only orchestration in 
 ## Generated visual
 
 The original hero artwork lives at `public/bandhanaa-hero.png` and was generated specifically for this UI. Prompt: “A premium soft-focus editorial illustration of an adult couple facing each other, warm backlight, flowing translucent blush-pink and violet ribbons, airy white background, no text, logo, watermark, or UI.”
+
+## Admin dashboard
+
+The isolated operations console lives at `/admin`. See [admin architecture](docs/admin-architecture-assessment.md) and [setup, first administrator and verification](docs/admin-setup.md). Apply the reviewed admin migration before deploying the admin code; no member is automatically granted access.

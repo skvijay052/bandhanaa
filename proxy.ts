@@ -25,6 +25,12 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
   const path = request.nextUrl.pathname;
+  // Admin auth is independent of member onboarding. Pages and RPCs enforce roles.
+  if (path === "/admin" || path.startsWith("/admin/")) {
+    response.headers.set("Cache-Control", "private, no-store, max-age=0");
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+    return response;
+  }
   const protectedPath = [
     "/dashboard",
     "/discover",
@@ -48,9 +54,23 @@ export async function proxy(request: NextRequest) {
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("registration_status,onboarding_completed,is_verified")
+      .select(
+        "registration_status,onboarding_completed,is_verified,account_status",
+      )
       .eq("id", user.id)
       .maybeSingle();
+    if (
+      profile?.account_status &&
+      profile.account_status !== "active" &&
+      path !== "/settings/contact"
+    ) {
+      const target = request.nextUrl.clone();
+      target.pathname = "/account-unavailable";
+      target.search = "";
+      const denied = NextResponse.redirect(target);
+      response.cookies.getAll().forEach((cookie) => denied.cookies.set(cookie));
+      return denied;
+    }
     const destination = registrationDestination(
       user,
       profile as RegistrationProfileState | null,
@@ -89,6 +109,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
+    "/admin/:path*",
     "/dashboard/:path*",
     "/discover/:path*",
     "/matches/:path*",

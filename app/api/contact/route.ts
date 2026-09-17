@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
 
@@ -68,10 +69,46 @@ export async function POST(request: Request) {
     );
   }
 
+  const { subject, message } = parsed.data;
+  const { data: ticketId, error: ticketError } = await supabase.rpc(
+    "submit_support_request",
+    {
+      p_subject: subject,
+      p_body: message,
+    },
+  );
+  if (ticketError || typeof ticketId !== "string") {
+    return jsonError(
+      ticketError?.code === "P0001"
+        ? "Please wait before submitting another request."
+        : "We couldn't save your request. Please try again.",
+      ticketError?.code === "P0001" ? 429 : 503,
+    );
+  }
+  async function delivery(status: "sent" | "failed") {
+    try {
+      const { error } = await createAdminClient()
+        .from("support_requests")
+        .update({ email_delivery_status: status })
+        .eq("id", ticketId);
+      if (error)
+        console.error("Support delivery status could not be saved", {
+          code: error.code,
+        });
+    } catch {
+      console.error("Support delivery tracking is not configured");
+    }
+  }
+  const savedResponse = () =>
+    NextResponse.json({
+      ok: true,
+      message: "Your request has been received by Bandhanaa Support.",
+    });
   const missingKey = requiredEnvironmentKeys.find((key) => !process.env[key]);
   if (missingKey) {
     console.error("Contact email configuration is missing:", missingKey);
-    return jsonError("We couldn't send your message. Please try again.", 500);
+    await delivery("failed");
+    return savedResponse();
   }
 
   const port = Number(process.env.BREVO_SMTP_PORT);
@@ -79,11 +116,11 @@ export async function POST(request: Request) {
     console.error(
       "Contact email configuration has an invalid BREVO_SMTP_PORT.",
     );
-    return jsonError("We couldn't send your message. Please try again.", 500);
+    await delivery("failed");
+    return savedResponse();
   }
 
   const submittedAt = new Date();
-  const { subject, message } = parsed.data;
   const safeMessage = escapeHtml(message).replaceAll("\n", "<br />");
 
   try {
@@ -123,6 +160,7 @@ export async function POST(request: Request) {
         <p><strong>Submitted At:</strong> ${escapeHtml(submittedAt.toISOString())}</p>`,
     });
 
+    await delivery("sent");
     return NextResponse.json({
       ok: true,
       message: "Your message has been sent to Bandhanaa Support.",
@@ -132,6 +170,7 @@ export async function POST(request: Request) {
       userId: user.id,
       error: error instanceof Error ? error.name : "UnknownError",
     });
-    return jsonError("We couldn't send your message. Please try again.", 500);
+    await delivery("failed");
+    return savedResponse();
   }
 }
