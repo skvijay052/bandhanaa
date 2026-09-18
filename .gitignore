@@ -7,3 +7,6 @@ npm-debug.log*
 .netlify/
 *.tsbuildinfo
 /login-live-*.png
+
+# Local Supabase CLI state
+supabase/.temp/

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
+import { MemberExperienceBoundary } from "@/components/admin/MemberExperienceBoundary";
 import { RouteProgressBar } from "@/components/layout/RouteProgressBar";
 import { MobileRelationshipActionEnhancer } from "@/components/profile/MobileRelationshipActionEnhancer";
 import { HomepageHeaderMount } from "@/components/home/HomepageHeaderMount";
@@ -30,11 +31,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Suspense fallback={null}>
-          <RouteProgressBar />
-        </Suspense>
-        <MobileRelationshipActionEnhancer />
-        <HomepageHeaderMount />
+        <MemberExperienceBoundary>
+          <Suspense fallback={null}>
+            <RouteProgressBar />
+          </Suspense>
+          <MobileRelationshipActionEnhancer />
+          <HomepageHeaderMount />
+        </MemberExperienceBoundary>
         {children}
       </body>
     </html>

@@ -1,7 +1,11 @@
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 
-import { createRazorpayOrder, getRazorpayConfig, MESSAGE_CREDIT_PACK } from "@/lib/razorpay";
+import {
+  createRazorpayOrder,
+  getRazorpayConfig,
+  MESSAGE_CREDIT_PACK,
+} from "@/lib/razorpay";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,6 +24,15 @@ export async function POST() {
 
   if (authError || !user) {
     return jsonError("Your session has expired. Please sign in again.", 401);
+  }
+
+  const { data: member, error: memberError } = await supabase
+    .from("profiles")
+    .select("account_status")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (memberError || !member || member.account_status !== "active") {
+    return jsonError("This account cannot create payment orders.", 403);
   }
 
   try {
