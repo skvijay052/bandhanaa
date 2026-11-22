@@ -13,7 +13,9 @@ import "./brand-pink-theme.css";
 
 export const metadata: Metadata = {
   title: { default: "Bandhanaa", template: "%s | Bandhanaa" },
-  description: "Meaningful connections begin here.",
+  description: "Find meaningful marriage connections on Bandhanaa Matrimony. Create your profile, explore compatible matches and connect with serious intentions.",
+  metadataBase: new URL("https://bandhanaa.in"),
+  openGraph: { siteName: "Bandhanaa", type: "website" },
 };
 
 export const viewport: Viewport = {
