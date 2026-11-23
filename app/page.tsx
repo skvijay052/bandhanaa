@@ -25,9 +25,11 @@ import { HomeShowcaseTabs } from "@/components/home/HomeShowcaseTabs";
 import styles from "./homepage.module.css";
 
 export const metadata: Metadata = {
-  title: "Bandhanaa | Meaningful Matrimony Connections",
+  title: "Bandhanaa Matrimony | Find Your Life Partner Online",
   description:
-    "Discover meaningful matrimony connections based on values, compatibility and long-term intentions.",
+    "Explore meaningful marriage connections with Bandhanaa Matrimony. Create your profile, discover compatible matches and connect with serious intentions.",
+  alternates: { canonical: "https://bandhanaa.in/" },
+  openGraph: { title: "Bandhanaa Matrimony | Find Your Life Partner Online", description: "A thoughtful Indian matrimony platform for compatible marriage connections.", url: "https://bandhanaa.in/", siteName: "Bandhanaa", type: "website" },
 };
 
 const meaningfulFeatures = [
@@ -480,6 +482,11 @@ export default function HomePage() {
             />
           </Link>
           <nav className={styles.footerLinks} aria-label="Footer navigation">
+            <Link href="/guides">Matrimony guides</Link>
+            <Link href="/kannada-matrimony">Kannada Matrimony</Link>
+            <Link href="/tamil-matrimony">Tamil Matrimony</Link>
+            <Link href="/telugu-matrimony">Telugu Matrimony</Link>
+            <Link href="/malayalam-matrimony">Malayalam Matrimony</Link>
             <a href="#about">About</a>
             <a href="#safety">Safety</a>
             <Link href="/privacy">Privacy</Link>

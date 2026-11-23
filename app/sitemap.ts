@@ -57,6 +57,30 @@ const publicRoutes = [
     priority: 0.8,
   },
   {
+    path: "/guides",
+    lastModified: "2026-11-22T12:30:00.000Z",
+    changeFrequency: "weekly",
+    priority: 0.8,
+  },
+  {
+    path: "/guides/how-to-create-a-matrimony-profile",
+    lastModified: "2026-11-22T12:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/guides/questions-to-ask-before-arranged-marriage",
+    lastModified: "2026-11-22T12:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
+    path: "/guides/online-matrimony-safety-tips",
+    lastModified: "2026-11-22T12:30:00.000Z",
+    changeFrequency: "monthly",
+    priority: 0.7,
+  },
+  {
     path: "/privacy",
     lastModified: "2026-09-08T13:45:40.000Z",
     changeFrequency: "monthly",
